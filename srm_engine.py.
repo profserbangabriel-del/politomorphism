@@ -1,0 +1,18 @@
+import math
+
+def calculeaza_rezonanta(V, A, D, N, lam=0.5):
+    """
+    V = Viteza, A = Greutate Afectiva, D = Drift, N = Network Reach
+    Formula SRM v1.1: V * A * e^(-lambda * D) * N
+    """
+    drift_penalty = math.exp(-lam * D)
+    score = V * A * drift_penalty * N
+    
+    # Clasificarea starilor conform modelului tau
+    if score >= 0.8: return "HEGEMONIC RESONANCE"
+    if score >= 0.5: return "ACTIVE RESONANCE"
+    if score >= 0.2: return "MARGINAL SIGNAL"
+    return "SYMBOLIC EXTINCTION"
+
+# Test cu valorile tale
+print(f"Stare Simbol: {calculeaza_rezonanta(0.8, 0.7, 0.1, 0.9)}")
