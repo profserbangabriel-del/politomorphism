@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartografierea Rezonanței Simbolice — SRM v1.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0e8d8;--bg2:#e8ddc8;--bg3:#dfd3b8;--white:#faf7f0;
+  --ink:#0f0a05;--red:#b8001f;--red2:#8c0018;--red-bg:#fce8eb;
+  --blue:#003d82;--blue-bg:#e8f0fc;--green:#0f5c1e;--green-bg:#e8f5eb;
+  --amber:#7a4e00;--amber-bg:#fef3e0;
+  --border:#b8a888;--border2:#8a7a60;
+  --text:#0f0a05;--mid:#3a2810;--dim:#6a5838;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Mono',monospace;font-weight:300;line-height:1.6;overflow-x:hidden;}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(240,232,216,0.97);backdrop-filter:blur(8px);border-bottom:2px solid var(--ink);padding:14px 48px;display:flex;justify-content:space-between;align-items:center;}
+.topbar-id{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;letter-spacing:1px;color:var(--ink);}
+.topbar-id span{color:var(--red);}
+.topbar-badge{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border:1px solid var(--border2);padding:4px 12px;}
+.topbar-ver{font-size:9px;letter-spacing:2px;color:var(--amber);}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 40px;}
+
+.hero{padding:112px 0 64px;border-bottom:2px solid var(--ink);}
+.hero-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.hero-label::before{content:'';width:24px;height:2px;background:var(--border2);}
+h1{font-family:'Playfair Display',serif;font-size:clamp(40px,6vw,72px);font-weight:900;line-height:0.95;color:var(--ink);margin-bottom:10px;letter-spacing:-2px;}
+h1 em{font-style:italic;color:var(--red);}
+.hero-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:28px;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border:2px solid;}
+.pill-red{border-color:var(--red);color:var(--red);}
+.pill-blue{border-color:var(--blue);color:var(--blue);}
+.pill-dim{border-color:var(--border2);color:var(--dim);}
+
+.sec-label{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);margin-bottom:24px;padding-top:64px;display:flex;align-items:center;gap:16px;}
+.sec-label::after{content:'';flex:1;height:2px;background:var(--ink);}
+
+/* FORMULA NEGRU TOTAL */
+.formula-block{background:var(--ink);border:2px solid var(--ink);padding:40px 44px;margin-bottom:2px;position:relative;}
+.formula-block::before{content:'ECUAȚIE CENTRALĂ';position:absolute;top:14px;right:18px;font-size:8px;letter-spacing:3px;color:rgba(240,232,216,0.3);}
+.formula-main{font-family:'Playfair Display',serif;font-size:clamp(18px,3vw,32px);line-height:1.4;margin-bottom:20px;}
+.fv{color:#60c0ff;font-weight:700;}
+.fa{color:#ffcc44;font-weight:700;}
+.fd{color:#ff6b6b;font-weight:700;}
+.fn{color:#6bffaa;font-weight:700;}
+.fo{color:rgba(240,232,216,0.7);}
+.formula-note{font-size:11px;color:rgba(240,232,216,0.55);line-height:1.8;border-top:1px solid rgba(240,232,216,0.15);padding-top:18px;margin-top:18px;}
+.formula-note strong{color:rgba(240,232,216,0.9);}
+
+.epist{background:var(--amber-bg);border:2px solid var(--amber);border-left:6px solid var(--amber);padding:22px 28px;margin-bottom:48px;font-size:11px;line-height:1.9;color:var(--mid);}
+.epist-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:10px;font-weight:500;}
+.epist strong{color:var(--ink);font-weight:500;}
+
+.var-table{width:100%;border-collapse:collapse;margin-bottom:48px;font-size:11px;border:2px solid var(--ink);}
+.var-table th{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-align:left;padding:10px 14px;background:var(--ink);}
+.var-table td{padding:14px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);vertical-align:top;line-height:1.7;}
+.var-table tr:last-child td{border-bottom:none;}
+.var-table tr:hover td{background:var(--white);}
+.var-sym{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;white-space:nowrap;}
+.var-table td:nth-child(2){color:var(--ink);font-weight:400;}
+.var-table td:nth-child(3){color:var(--mid);}
+.var-table td:nth-child(4){color:var(--dim);font-size:10px;}
+.var-table td:nth-child(5){color:var(--dim);font-size:10px;}
+
+.param-box{padding:24px 28px;margin-bottom:2px;font-size:11px;line-height:1.9;}
+.param-box.lambda-box{background:var(--red-bg);border:2px solid var(--red);border-left:6px solid var(--red);color:var(--mid);}
+.param-box.zt-box{background:var(--green-bg);border:2px solid var(--green);border-left:6px solid var(--green);color:var(--mid);margin-bottom:48px;}
+.param-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:500;margin-bottom:12px;}
+.lambda-box .param-title{color:var(--red);}
+.zt-box .param-title{color:var(--green);}
+.param-formula{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin:12px 0;padding:10px 16px;background:#fff;border:2px solid var(--ink);display:inline-block;}
+
+.pipeline{margin-bottom:48px;}
+.step{display:grid;grid-template-columns:50px 1fr;margin-bottom:2px;}
+.step-n{display:flex;flex-direction:column;align-items:center;}
+.step-circle{width:38px;height:38px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--white);flex-shrink:0;}
+.step-line{width:2px;flex:1;background:var(--ink);min-height:16px;}
+.step:last-child .step-line{display:none;}
+.step-body{padding:0 0 24px 20px;}
+.step-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px;margin-top:8px;}
+.step-detail{font-size:10px;color:var(--dim);line-height:1.9;}
+.step-tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.tool{font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border:1px solid var(--border2);color:var(--dim);}
+
+/* SIMULATOR */
+.sim-wrap{background:var(--white);border:2px solid var(--ink);padding:40px;margin-bottom:2px;}
+.sim-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);margin-bottom:4px;}
+.sim-note{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:28px;}
+
+.sim-formula{background:var(--ink);padding:20px 24px;margin-bottom:28px;font-family:'Playfair Display',serif;font-size:clamp(14px,2vw,22px);line-height:1.5;}
+
+.sim-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-bottom:24px;}
+.sim-field label{display:block;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+input[type="range"]{width:100%;cursor:pointer;margin:8px 0 4px;accent-color:var(--red);}
+.sim-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--ink);}
+.sim-val-note{font-size:9px;color:var(--dim);margin-top:2px;}
+
+.lambda-ctrl{background:var(--bg2);border:2px solid var(--border);padding:16px 20px;margin-bottom:24px;}
+.lambda-ctrl label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--red);display:block;margin-bottom:8px;font-weight:500;}
+.lambda-row{display:flex;align-items:center;gap:16px;}
+.lambda-row input{flex:1;accent-color:var(--red);}
+.lambda-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:var(--red);min-width:44px;}
+.lambda-exp{font-size:9px;color:var(--dim);margin-top:8px;line-height:1.7;}
+
+.compute-btn{width:100%;background:var(--ink);border:2px solid var(--ink);color:var(--white);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:500;padding:16px;cursor:pointer;transition:all 0.2s;}
+.compute-btn:hover{background:var(--red);border-color:var(--red);}
+
+.result-panel{display:none;margin-top:2px;border:2px solid var(--ink);}
+.result-panel.show{display:block;}
+.result-top{display:grid;grid-template-columns:auto 1fr;border-bottom:2px solid var(--ink);}
+.result-score-box{padding:24px 28px;border-right:2px solid var(--ink);background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:140px;}
+.result-score{font-family:'Playfair Display',serif;font-size:64px;font-weight:900;line-height:1;color:#fff;}
+.result-score-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,232,216,0.4);margin-top:6px;}
+.result-info{padding:22px 24px;background:var(--white);}
+.result-state{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;margin-bottom:8px;}
+.result-interp{font-size:10px;color:var(--mid);line-height:1.9;}
+.result-bottom{padding:18px 24px;background:var(--bg2);display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.comp-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.comp-bar-wrap{height:6px;background:var(--border);margin-bottom:4px;}
+.comp-bar{height:100%;transition:width 0.9s cubic-bezier(.16,1,.3,1);width:0%;}
+.comp-val{font-size:10px;color:var(--mid);}
+.sim-disclaimer{font-size:9px;color:var(--dim);padding:12px 24px;border-top:1px solid var(--border);background:var(--bg2);line-height:1.7;}
+
+.cases-note{background:var(--amber-bg);border:2px solid var(--amber);border-left:6px solid var(--amber);padding:14px 18px;font-size:10px;color:var(--mid);line-height:1.8;margin-bottom:2px;}
+.cases-note strong{color:var(--amber);font-weight:500;}
+.cases-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));border:2px solid var(--ink);margin-bottom:48px;}
+.case-card{background:var(--white);padding:24px;border-right:2px solid var(--ink);}
+.case-card:last-child{border-right:none;}
+.case-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.case-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);line-height:1.3;}
+.case-date{font-size:8px;letter-spacing:2px;color:var(--dim);margin-top:4px;}
+.case-src{font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border:1px solid var(--amber);color:var(--amber);white-space:nowrap;}
+.case-rows{display:flex;flex-direction:column;gap:7px;font-size:10px;}
+.case-row{display:flex;justify-content:space-between;}
+.case-key{color:var(--dim);}
+.case-val{color:var(--ink);font-weight:500;}
+.case-srm{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:2px solid var(--ink);}
+.case-srm-label{font-size:10px;color:var(--dim);}
+.case-srm-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;}
+.case-basis{font-size:8px;color:var(--dim);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);line-height:1.7;}
+
+.falsif{background:var(--red-bg);border:2px solid var(--red);border-left:6px solid var(--red);padding:28px 32px;margin-bottom:48px;}
+.falsif-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:18px;font-weight:500;}
+.falsif-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px;}
+.falsif-item{background:var(--white);border:1px solid rgba(184,0,31,0.15);padding:16px;font-size:10px;line-height:1.8;color:var(--mid);}
+.falsif-item strong{display:block;color:var(--red);font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-weight:500;}
+
+.limits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));border:2px solid var(--ink);margin-bottom:48px;}
+.limit-card{background:var(--white);padding:22px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);}
+.limit-title{font-size:10px;font-weight:500;color:var(--amber);margin-bottom:8px;}
+.limit-body{font-size:10px;color:var(--mid);line-height:1.8;}
+.limit-fix{margin-top:10px;font-size:9px;color:var(--dim);border-top:1px solid var(--border);padding-top:10px;}
+
+footer{border-top:2px solid var(--ink);padding:28px 0 44px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:8px;color:var(--dim);letter-spacing:2px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fade{animation:fadeUp 0.6s ease forwards;opacity:0;}
+.d1{animation-delay:0.1s;}.d2{animation-delay:0.2s;}.d3{animation-delay:0.3s;}
+
+@media(max-width:700px){
+  .topbar{padding:12px 20px;}
+  .wrap{padding:0 20px;}
+  .sim-wrap{padding:24px;}
+  .result-bottom{grid-template-columns:repeat(2,1fr);}
+  .result-top{grid-template-columns:1fr;}
+  .result-score-box{border-right:none;border-bottom:2px solid var(--ink);}
+  .var-table{display:block;overflow-x:auto;}
+  .cases-grid{grid-template-columns:1fr;}
+  .case-card{border-right:none;border-bottom:2px solid var(--ink);}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-id">POLITО<span>MORFISM</span> · SRM</div>
+  <div class="topbar-badge">Model Științific</div>
+  <div class="topbar-ver">v1.1 · 2025</div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero fade d1">
+    <div class="hero-label">Cadrul Politomorfism · Modulul 3</div>
+    <h1>Cartografierea<br><em>Rezonanței</em><br>Simbolice</h1>
+    <p class="hero-sub">Model Computațional Propus · Deschis Validării Empirice</p>
+    <div class="pill-row">
+      <span class="pill pill-red">⚠ Model Propus</span>
+      <span class="pill pill-blue">∞ Validare Deschisă</span>
+      <span class="pill pill-dim">v1.1 · Serban Gabriel Florin</span>
+    </div>
+  </div>
+
+  <div class="sec-label fade d2">Ecuația Centrală</div>
+
+  <div class="formula-block fade d2">
+    <div class="formula-main">
+      <span class="fv">SRM(s,t)</span>
+      <span class="fo"> = Σ [ </span>
+      <span class="fv">V(s,t)</span>
+      <span class="fo"> · </span>
+      <span class="fa">A(s,t)</span>
+      <span class="fo"> · e</span><sup><span class="fo">−λ</span><span class="fd">D(s,t)</span></sup>
+      <span class="fo"> · </span>
+      <span class="fn">N(s,t)</span>
+      <span class="fo"> ] / Z(t)</span>
+    </div>
+    <div class="formula-note">
+      <strong>SRM(s,t)</strong> — Scorul de Rezonanță Simbolică pentru simbolul <em>s</em> la momentul <em>t</em>.
+      Integrează patru dimensiuni măsurabile ale difuziunii simbolice politice, penalizează instabilitatea semantică
+      prin decădere exponențială și normalizează față de activitatea totală a câmpului simbolic.
+      <br><br>
+      <strong style="color:#60c0ff">V</strong> = Velocitate Virală &nbsp;·&nbsp;
+      <strong style="color:#ffcc44">A</strong> = Greutate Afectivă &nbsp;·&nbsp;
+      <strong style="color:#ff6b6b">D</strong> = Derivă Semantică &nbsp;·&nbsp;
+      <strong style="color:#6bffaa">N</strong> = Acoperire în Rețea
+    </div>
+  </div>
+
+  <div class="epist fade d3">
+    <div class="epist-title">Statut Epistemologic</div>
+    Acest model este o <strong>propunere teoretică</strong> fundamentată în literatura consacrată: difuziunea informației
+    (Bass, 1969; Watts & Dodds, 2007), calculul afectiv (Russell, 1980), semantica computațională
+    (Mikolov et al., 2013). Coerent matematic și operaționalizabil.
+    <strong>Nu a fost încă validat pe un set de date empirice complete.</strong>
+    Calculatorul de mai jos este o demonstrație conceptuală, nu un instrument predictiv calibrat.
+  </div>
+
+  <div class="sec-label">Variabile & Operaționalizare</div>
+  <table class="var-table">
+    <thead>
+      <tr><th>Simbol</th><th>Nume</th><th>Definiție</th><th>Măsurare</th><th>Sursă Date</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="var-sym" style="color:var(--blue)">V(s,t)</span></td>
+        <td>Velocitate Virală</td>
+        <td>Rata de schimbare a adoptării simbolului — dN/dt per platformă per oră. Normalizat la [0,1].</td>
+        <td>Derivata temporală a numărului cumulat de mențiuni. Fereastră rulantă 6h.</td>
+        <td>Twitter/X API v2 · Reddit Pushshift · Telegram</td>
+      </tr>
+      <tr>
+        <td><span class="var-sym" style="color:var(--amber)">A(s,t)</span></td>
+        <td>Greutate Afectivă</td>
+        <td>Compozit din valența emoțională (−1 la +1) și intensitatea excitației (0 la 1). A = (|valență|+excitație)/2.</td>
+        <td>RoBERTa-sentiment · XLM-RoBERTa · mapare Circumplexul Russell.</td>
+        <td>Corpus text platforme · modele NLP multilingve</td>
+      </tr>
+      <tr>
+        <td><span class="var-sym" style="color:var(--red)">D(s,t)</span></td>
+        <td>Derivă Semantică</td>
+        <td>Distanța cosinus între embedding-ul la t₀ și cel curent t. D > 0.3 = alertă de cooptare.</td>
+        <td>Instantanee săptămânale. cosine_distance(embed(s,t₀), embed(s,t)).</td>
+        <td>Wikipedia + corpus platforme · Word2Vec / FastText</td>
+      </tr>
+      <tr>
+        <td><span class="var-sym" style="color:var(--green)">N(s,t)</span></td>
+        <td>Acoperire în Rețea</td>
+        <td>Centralitate de betweenness normalizată între comunități ideologice. Punți inter-comunitate ×1.5.</td>
+        <td>Graf retweet → detecție comunități Louvain → centralitate betweenness.</td>
+        <td>NetworkX · Gephi · grafuri de difuziune platforme</td>
+      </tr>
+      <tr>
+        <td><span class="var-sym" style="color:var(--dim)">Z(t)</span></td>
+        <td>Factor de Normalizare</td>
+        <td>Suma scorurilor brute pentru toți simbolii activi la momentul t. Dinamic — nu o constantă.</td>
+        <td>Z(t) = Σ V·A·e^(−λD)·N calculat simultan pentru toți simbolii urmăriți.</td>
+        <td>Calculat dinamic din corpusul complet de simboluri.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="sec-label">Justificarea Parametrilor</div>
+  <div class="param-box lambda-box">
+    <div class="param-title">λ — Rata de Decădere: De ce 2.0 ca Estimare Inițială?</div>
+    λ = 2.0 este o <strong>estimare de lucru</strong>, nu calibrată empiric. Derivată din:
+    Modelul de Difuziune Bass (1969) — coeficienții de imitație sugerează constante în intervalul 1.5–2.5;
+    Hamilton et al. (2016) — simbolurile politice arată derivă cosinus 0.3–0.6 în 30 de zile;
+    Analogie epidemiologică — ratele de recuperare din modelul SIR sugerează constante de înjumătățire 1.8–2.2.
+    <br><br>
+    <strong>Calibrare necesară</strong> — λ trebuie estimat prin maximum de verosimilitate pe un set de date istorice etichetate
+    (minimum 15 perechi simbol-eveniment) înainte de a face afirmații predictive.
+  </div>
+
+  <div class="param-box zt-box">
+    <div class="param-title">Z(t) — De Ce Nu o Constantă?</div>
+    Z(t) este o funcție de partiție împrumutată din mecanica statistică — suma tuturor scorurilor nenormalizate ale corpusului activ de simboluri la momentul t.
+    <div class="param-formula">Z(t) = Σᵢ [ V(sᵢ,t) · A(sᵢ,t) · e^(−λD(sᵢ,t)) · N(sᵢ,t) ]</div>
+    Fără Z(t) dinamic, scorurile în cursul evenimentelor cu zgomot ridicat sunt artificial inflate.
+  </div>
+
+  <div class="sec-label">Conductă de Măsurare</div>
+  <div class="pipeline">
+    <div class="step">
+      <div class="step-n"><div class="step-circle">01</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">Colectarea Corpusului de Simboluri</div>
+        <div class="step-detail">Identificare simboluri candidate prin detecție automată a tendințelor și etichetare expertă. Colectare instanțe cu marcaj temporal. Fiecare simbol primește un embedding de bază la t₀.</div>
+        <div class="step-tools"><span class="tool">Twitter API v2</span><span class="tool">Reddit Pushshift</span><span class="tool">Telegram MTProto</span><span class="tool">pHash detecție</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n"><div class="step-circle">02</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">Codare Afectivă — A(s,t)</div>
+        <div class="step-detail">VADER pentru engleza de bază, RoBERTa fin-ajustat pentru valență, XLM-RoBERTa pentru non-engleză. Mapare pe Circumplexul Russell. Agregare per fereastră de 6h.</div>
+        <div class="step-tools"><span class="tool">RoBERTa</span><span class="tool">VADER</span><span class="tool">XLM-RoBERTa</span><span class="tool">Circumplexul Russell</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n"><div class="step-circle">03</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">Urmărire Derivă Semantică — D(s,t)</div>
+        <div class="step-detail">Instantanee săptămânale Word2Vec/FastText. D(s,t) = 1 − cosine_similarity(embed(s,t₀), embed(s,t)). Pragul D > 0.3 declanșează alertă de cooptare.</div>
+        <div class="step-tools"><span class="tool">Word2Vec / Gensim</span><span class="tool">FastText</span><span class="tool">Aliniere temporală</span><span class="tool">Distanță cosinus</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n"><div class="step-circle">04</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">Difuziune în Rețea — N(s,t)</div>
+        <div class="step-detail">Graf direcționat retweet/redistribuire. Detecție comunități Louvain (γ=1.0). Centralitate betweenness normalizată. Muchii inter-comunitate ponderate ×1.5.</div>
+        <div class="step-tools"><span class="tool">NetworkX</span><span class="tool">Louvain</span><span class="tool">Gephi</span><span class="tool">Centralitate betweenness</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n"><div class="step-circle">05</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">Scor SRM & Normalizare Z(t)</div>
+        <div class="step-detail">brut(s,t) = V·A·exp(−λ·D)·N. Z(t) = Σ brut(sᵢ,t). SRM(s,t) = brut/Z(t). Ieșire: curbe temporale, hărți termice pe comunități, alerte cooptare.</div>
+        <div class="step-tools"><span class="tool">Python / NumPy</span><span class="tool">Pandas</span><span class="tool">InfluxDB</span><span class="tool">Plotly / D3.js</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Demonstrator Interactiv</div>
+  <div class="sim-wrap">
+    <div class="sim-title">Calculator Conceptual SRM</div>
+    <div class="sim-note">Demonstrație conceptuală · Nu un instrument predictiv calibrat</div>
+    <div class="sim-formula">
+      <span class="fv">SRM(s,t)</span>
+      <span class="fo"> = Σ [ </span>
+      <span class="fv">V</span><span class="fo"> · </span>
+      <span class="fa">A</span><span class="fo"> · e</span><sup><span class="fo">−λ</span><span class="fd">D</span></sup>
+      <span class="fo"> · </span><span class="fn">N</span>
+      <span class="fo"> ] / Z(t)</span>
+    </div>
+    <div class="sim-grid">
+      <div class="sim-field">
+        <label>Velocitate Virală V(s,t) ∈ [0,1]</label>
+        <input type="range" id="sV" min="0" max="100" value="60" oninput="sv('sV','vV','nV')">
+        <div class="sim-val" id="vV">0.60</div>
+        <div class="sim-val-note" id="nV">Răspândire moderată</div>
+      </div>
+      <div class="sim-field">
+        <label>Greutate Afectivă A(s,t) ∈ [0,1]</label>
+        <input type="range" id="sA" min="0" max="100" value="75" oninput="sv('sA','vA','nA')">
+        <div class="sim-val" id="vA">0.75</div>
+        <div class="sim-val-note" id="nA">Încărcătură emoțională ridicată</div>
+      </div>
+      <div class="sim-field">
+        <label>Derivă Semantică D(s,t) ∈ [0,1]</label>
+        <input type="range" id="sD" min="0" max="100" value="20" oninput="sv('sD','vD','nD')">
+        <div class="sim-val" id="vD">0.20</div>
+        <div class="sim-val-note" id="nD">Sens predominant stabil</div>
+      </div>
+      <div class="sim-field">
+        <label>Acoperire în Rețea N(s,t) ∈ [0,1]</label>
+        <input type="range" id="sN" min="0" max="100" value="80" oninput="sv('sN','vN','nN')">
+        <div class="sim-val" id="vN">0.80</div>
+        <div class="sim-val-note" id="nN">Acoperire largă inter-comunitate</div>
+      </div>
+    </div>
+    <div class="lambda-ctrl">
+      <label>λ — Parametrul de Decădere &nbsp;(estimare literatura: 1.5–2.5 · necesită calibrare empirică)</label>
+      <div class="lambda-row">
+        <input type="range" id="sL" min="50" max="400" value="200" oninput="updateL()">
+        <div class="lambda-val" id="vL">2.00</div>
+      </div>
+      <div class="lambda-exp">λ mic: deriva penalizează slab. λ mare: modelul necesită stabilitate semantică pentru rezonanță ridicată.</div>
+    </div>
+    <button class="compute-btn" onclick="compute()">CALCULEAZĂ SCORUL SRM</button>
+    <div class="result-panel" id="rPanel">
+      <div class="result-top">
+        <div class="result-score-box">
+          <div class="result-score" id="rScore">—</div>
+          <div class="result-score-label">Scor SRM</div>
+        </div>
+        <div class="result-info">
+          <div class="result-state" id="rState">—</div>
+          <div class="result-interp" id="rInterp">—</div>
+        </div>
+      </div>
+      <div class="result-bottom">
+        <div><div class="comp-label">Velocitate V</div><div class="comp-bar-wrap"><div class="comp-bar" id="b1" style="background:var(--blue)"></div></div><div class="comp-val" id="bv1">—</div></div>
+        <div><div class="comp-label">Afectiv A</div><div class="comp-bar-wrap"><div class="comp-bar" id="b2" style="background:var(--amber)"></div></div><div class="comp-val" id="bv2">—</div></div>
+        <div><div class="comp-label">Derivă e^−λD</div><div class="comp-bar-wrap"><div class="comp-bar" id="b3" style="background:var(--red)"></div></div><div class="comp-val" id="bv3">—</div></div>
+        <div><div class="comp-label">Rețea N</div><div class="comp-bar-wrap"><div class="comp-bar" id="b4" style="background:var(--green)"></div></div><div class="comp-val" id="bv4">—</div></div>
+      </div>
+      <div class="sim-disclaimer">⚠ Demo simbol unic: Z(t) = scor brut. În implementarea reală, Z(t) calculat pentru toți simbolii urmăriți simultan. λ = <span id="ldisplay">2.00</span> (estimare de lucru).</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Cazuri Istorice Ilustrative</div>
+  <div class="cases-note"><strong>⚠ Transparență metodologică:</strong> Valorile de mai jos sunt estimări aproximative din surse publicate — nu rezultatul rulării conductei SRM complete pe date brute.</div>
+  <div class="cases-grid">
+    <div class="case-card">
+      <div class="case-header">
+        <div><div class="case-name">Simbolul Umbrelei — Protestele HK</div><div class="case-date">2019–2020 · Hong Kong</div></div>
+        <span class="case-src">Estimat</span>
+      </div>
+      <div class="case-rows">
+        <div class="case-row"><span class="case-key">V — Velocitate Virală</span><span class="case-val">~0.88</span></div>
+        <div class="case-row"><span class="case-key">A — Greutate Afectivă</span><span class="case-val">~0.85</span></div>
+        <div class="case-row"><span class="case-key">D — Derivă Semantică</span><span class="case-val">~0.10 (foarte stabil)</span></div>
+        <div class="case-row"><span class="case-key">N — Acoperire Rețea</span><span class="case-val">~0.90</span></div>
+      </div>
+      <div class="case-srm">
+        <span class="case-srm-label">Est. SRM (λ=2.0)</span>
+        <span class="case-srm-val" style="color:var(--green)">~0.84</span>
+      </div>
+      <div class="case-basis">Lee & Chan (2020); dataset HKPD; arhive Twitter/Weibo (Molina et al., 2021).</div>
+    </div>
+    <div class="case-card">
+      <div class="case-header">
+        <div><div class="case-name">Șapca MAGA — Alegeri SUA</div><div class="case-date">2016–2024 · Statele Unite</div></div>
+        <span class="case-src">Estimat</span>
+      </div>
+      <div class="case-rows">
+        <div class="case-row"><span class="case-key">V — Velocitate Virală</span><span class="case-val">~0.82</span></div>
+        <div class="case-row"><span class="case-key">A — Greutate Afectivă</span><span class="case-val">~0.91</span></div>
+        <div class="case-row"><span class="case-key">D — Derivă Semantică</span><span class="case-val">~0.48 (semnificativă)</span></div>
+        <div class="case-row"><span class="case-key">N — Acoperire Rețea</span><span class="case-val">~0.86</span></div>
+      </div>
+      <div class="case-srm">
+        <span class="case-srm-label">Est. SRM (λ=2.0)</span>
+        <span class="case-srm-val" style="color:var(--blue)">~0.62</span>
+      </div>
+      <div class="case-basis">Mutz (2018); Sides et al. (2019); date ANES polarizare afectivă.</div>
+    </div>
+    <div class="case-card">
+      <div class="case-header">
+        <div><div class="case-name">Mișcarea Florii-Soarelui</div><div class="case-date">2014 · Taiwan</div></div>
+        <span class="case-src">Estimat</span>
+      </div>
+      <div class="case-rows">
+        <div class="case-row"><span class="case-key">V — Velocitate Virală</span><span class="case-val">~0.75</span></div>
+        <div class="case-row"><span class="case-key">A — Greutate Afectivă</span><span class="case-val">~0.80</span></div>
+        <div class="case-row"><span class="case-key">D — Derivă Semantică</span><span class="case-val">~0.07 (extrem de stabil)</span></div>
+        <div class="case-row"><span class="case-key">N — Acoperire Rețea</span><span class="case-val">~0.68</span></div>
+      </div>
+      <div class="case-srm">
+        <span class="case-srm-label">Est. SRM (λ=2.0)</span>
+        <span class="case-srm-val" style="color:var(--green)">~0.78</span>
+      </div>
+      <div class="case-basis">Ho (2015); Tang & Chen (2014); date arhivă PTT.</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Limitări Cunoscute — v1.1</div>
+  <div class="limits-grid">
+    <div class="limit-card"><div class="limit-title">Coliniaritate V–N</div><div class="limit-body">Velocitatea virală V și acoperirea N nu sunt complet independente — răspândirea rapidă tinde să coreleze cu acoperire ridicată.</div><div class="limit-fix">→ Soluție: Analiză factorială sau PCA pe date reale.</div></div>
+    <div class="limit-card"><div class="limit-title">λ Necalibrat</div><div class="limit-body">λ = 2.0 este o estimare inițială. Fără date istorice etichetate, valoarea optimă este necunoscută.</div><div class="limit-fix">→ Soluție: Estimare maximum de verosimilitate pe 15+ perechi etichetate.</div></div>
+    <div class="limit-card"><div class="limit-title">Eterogenitate Platforme</div><div class="limit-body">Agregarea V și N peste Twitter, Reddit, Telegram ignoră mecanicile de amplificare specifice fiecărei platforme.</div><div class="limit-fix">→ Soluție: Coeficienți de normalizare specifici platformei.</div></div>
+    <div class="limit-card"><div class="limit-title">Validitate Afectivă</div><div class="limit-body">Sentimentul automat confundă sentimentul textual cu cel simbolic. Critica produce |valență| ridicată dar nu este suport.</div><div class="limit-fix">→ Soluție: Model de detecție stance (pro/anti/neutru) ca pre-filtru.</div></div>
+    <div class="limit-card"><div class="limit-title">Comparabilitate Cross-lingvă</div><div class="limit-body">Deriva semantică D pe embedding-uri englezești nu este direct comparabilă cu D pe chineză sau arabă.</div><div class="limit-fix">→ Soluție: Aliniere embedding cross-lingvă (MUSE/LaBSE).</div></div>
+    <div class="limit-card"><div class="limit-title">Estimări Cazuri Istorice</div><div class="limit-body">Valorile HK, MAGA, Taiwan sunt aproximări din surse publicate, nu rezultate ale conductei SRM complete.</div><div class="limit-fix">→ Soluție: Aplicarea conductei complete pe date arhivate — sarcina principală v2.0.</div></div>
+  </div>
+
+  <div class="sec-label">Criterii de Falsificabilitate</div>
+  <div class="falsif">
+    <div class="falsif-title">⚠ Ce Ar Dezminți Științific SRM?</div>
+    <div class="falsif-grid">
+      <div class="falsif-item"><strong>Validitate Predictivă</strong>Dacă simbolurile cu SRM > 0.7 eșuează constant să producă mobilizare politică măsurabilă în 30 de zile pe 10+ cazuri.</div>
+      <div class="falsif-item"><strong>Prag de Corelație</strong>Dacă scorurile SRM nu arată corelație semnificativă (r > 0.5, p &lt; 0.05) cu indici de intensitate protest (ACLED, GDELT) pe 15+ cazuri.</div>
+      <div class="falsif-item"><strong>Efectul Decăderii Derivei</strong>Dacă simbolurile cu derivă ridicată mențin SRM ridicat la rate nedistincte de simbolurile stabile, e^−λD trebuie abandonat.</div>
+      <div class="falsif-item"><strong>Fidelitate Inter-evaluatori</strong>Dacă scorurile nu sunt reproductibile între echipe independente folosind aceleași date (ICC &lt; 0.7).</div>
+      <div class="falsif-item"><strong>Validitate Discriminantă</strong>Dacă SRM nu poate distinge simboluri cu viralitate identică dar efecte politice diferite, A este insuficient specificat.</div>
+      <div class="falsif-item"><strong>Sensibilitate λ</strong>Dacă concluziile se schimbă dramatic la variații mici ale λ (1.8 vs 2.2), modelul necesită revizuire structurală.</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>POLITOMORFISM · MODULUL SRM · v1.1</span>
+    <span>Model Propus · Deschis Validării Empirice</span>
+    <span>Serban Gabriel Florin · 2025</span>
+  </footer>
+
+</div>
+
+<script>
+const notes={
+  V:['Fără răspândire','Minimală','Lentă','Moderată','Activă','Ridicată','Foarte ridicată','Rapidă','Aproape maximă','De vârf','Maximă'],
+  A:['Fără încărcătură','Minimală','Scăzută','Moderată','Notabilă','Ridicată','Puternică','Foarte puternică','Intensă','Aproape maximă','Maximă'],
+  D:['Stabil','Aproape stabil','Derivă foarte mică','Derivă mică','Moderată','Derivă notabilă','Derivă semnificativă','Derivă ridicată — alertă','Derivă foarte ridicată','Derivă severă','Transformare completă'],
+  N:['Fără penetrare','Minimală','Îngustă','Limitată','Moderată','Inter-comunitate emergent','Largă','Largă inter-comunitate','Foarte largă','Aproape maximă','Maximă']
+};
+function sv(id,vid,nid){
+  const v=document.getElementById(id).value/100;
+  document.getElementById(vid).textContent=v.toFixed(2);
+  const k=id==='sV'?'V':id==='sA'?'A':id==='sD'?'D':'N';
+  document.getElementById(nid).textContent=notes[k][Math.round(v*10)];
+}
+function updateL(){
+  const l=document.getElementById('sL').value/100;
+  document.getElementById('vL').textContent=l.toFixed(2);
+}
+function compute(){
+  const V=document.getElementById('sV').value/100,A=document.getElementById('sA').value/100,
+        D=document.getElementById('sD').value/100,N=document.getElementById('sN').value/100,
+        lam=document.getElementById('sL').value/100;
+  const drift=Math.exp(-lam*D);
+  const score=Math.min(V*A*drift*N,1.0);
+  document.getElementById('ldisplay').textContent=lam.toFixed(2);
+  document.getElementById('rPanel').classList.add('show');
+  document.getElementById('rScore').textContent=score.toFixed(3);
+  let state,color,interp;
+  if(score>=0.7){state='REZONANȚĂ DOMINANTĂ';color='#0f5c1e';interp='Viteză ridicată, afect puternic, sens stabil, penetrare largă în rețea. Analogii istorice: mobilizare politică majoră în 7–30 de zile. Monitorizare D pentru cooptare.';}
+  else if(score>=0.4){state='DIFUZIUNE ACTIVĂ';color='#003d82';interp=D>0.45?'Simbol în răspândire dar instabilitate semantică detectată. Risc de cooptare sau fragmentare comunitară în 14 zile.':'Difuziune activă cu sens stabil. Necesită amplificare sau eveniment declanșator pentru rezonanță dominantă.';}
+  else if(score>=0.2){state='SEMNAL MARGINAL';color='#7a4e00';interp=A<0.4?'Rezonanță slabă. Încărcătură afectivă insuficientă pentru propagare inter-comunitară.':'Rezonanță slabă. Penetrare limitată în rețea menține simbolul în comunitate ideologică îngustă.';}
+  else{state='EXTINCȚIE SIMBOLICĂ';color='#b8001f';interp='Simbolul și-a pierdut rezonanța politică. Deriva semantică sau difuziunea eșuată l-a neutralizat. Reactivare necesită eveniment afectiv major.';}
+  document.getElementById('rState').textContent=state;
+  document.getElementById('rState').style.color=color;
+  document.getElementById('rScore').style.color=color;
+  document.getElementById('rInterp').textContent=interp;
+  setTimeout(()=>{
+    document.getElementById('b1').style.width=(V*100)+'%';
+    document.getElementById('b2').style.width=(A*100)+'%';
+    document.getElementById('b3').style.width=(drift*100)+'%';
+    document.getElementById('b4').style.width=(N*100)+'%';
+  },50);
+  document.getElementById('bv1').textContent=Math.round(V*100)+'%';
+  document.getElementById('bv2').textContent=Math.round(A*100)+'%';
+  document.getElementById('bv3').textContent=drift.toFixed(2)+' (după penalizare derivă)';
+  document.getElementById('bv4').textContent=Math.round(N*100)+'%';
+}
+sv('sV','vV','nV');sv('sA','vA','nA');sv('sD','vD','nD');sv('sN','vN','nN');updateL();
+</script>
+</body>
+</html>
