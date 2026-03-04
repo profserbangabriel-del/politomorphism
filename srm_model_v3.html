@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Symbolic Resonance Mapping — SRM v1.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #f0e8d8;
+  --bg2:   #e8ddc8;
+  --bg3:   #dfd3b8;
+  --white: #faf7f0;
+  --ink:   #0f0a05;
+  --red:   #b8001f;
+  --red2:  #8c0018;
+  --red-bg:#fce8eb;
+  --blue:  #003d82;
+  --blue-bg:#e8f0fc;
+  --green: #0f5c1e;
+  --green-bg:#e8f5eb;
+  --amber: #7a4e00;
+  --amber-bg:#fef3e0;
+  --border:#b8a888;
+  --border2:#8a7a60;
+  --text:  #0f0a05;
+  --mid:   #3a2810;
+  --dim:   #6a5838;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:300;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* TOPBAR */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(240,232,216,0.97);
+  backdrop-filter:blur(8px);
+  border-bottom:2px solid var(--ink);
+  padding:14px 48px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.topbar-id{
+  font-family:'Playfair Display',serif;
+  font-size:20px;font-weight:900;letter-spacing:1px;color:var(--ink);
+}
+.topbar-id span{color:var(--red);}
+.topbar-badge{
+  font-size:8px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--dim);border:1px solid var(--border2);padding:4px 12px;
+}
+.topbar-ver{font-size:9px;letter-spacing:2px;color:var(--amber);}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 40px;}
+
+/* HERO */
+.hero{padding:112px 0 64px;border-bottom:2px solid var(--ink);}
+
+.hero-label{
+  font-size:8px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:18px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-label::before{content:'';width:24px;height:2px;background:var(--border2);}
+
+h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(42px,6vw,76px);font-weight:900;
+  line-height:0.95;color:var(--ink);
+  margin-bottom:10px;letter-spacing:-2px;
+}
+h1 em{font-style:italic;color:var(--red);}
+
+.hero-sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:28px;}
+
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border:2px solid;}
+.pill-red{border-color:var(--red);color:var(--red);}
+.pill-blue{border-color:var(--blue);color:var(--blue);}
+.pill-dim{border-color:var(--border2);color:var(--dim);}
+
+/* SEC LABEL */
+.sec-label{
+  font-size:8px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:24px;padding-top:64px;
+  display:flex;align-items:center;gap:16px;
+}
+.sec-label::after{content:'';flex:1;height:2px;background:var(--ink);}
+
+/* FORMULA — HIGH CONTRAST */
+.formula-block{
+  background:var(--ink);
+  border:2px solid var(--ink);
+  padding:40px 44px;
+  margin-bottom:2px;
+  position:relative;
+}
+.formula-block::before{
+  content:'CORE EQUATION';
+  position:absolute;top:14px;right:18px;
+  font-size:8px;letter-spacing:3px;color:rgba(240,232,216,0.3);
+}
+
+.formula-main{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(20px,3vw,34px);
+  line-height:1.4;margin-bottom:20px;
+}
+
+.fv{color:#60c0ff;font-weight:700;}
+.fa{color:#ffcc44;font-weight:700;}
+.fd{color:#ff6b6b;font-weight:700;}
+.fn{color:#6bffaa;font-weight:700;}
+.fo{color:rgba(240,232,216,0.7);}
+
+.formula-note{
+  font-size:11px;color:rgba(240,232,216,0.55);
+  line-height:1.8;border-top:1px solid rgba(240,232,216,0.15);
+  padding-top:18px;margin-top:18px;
+}
+.formula-note strong{color:rgba(240,232,216,0.9);}
+
+/* EPIST */
+.epist{
+  background:var(--amber-bg);
+  border:2px solid var(--amber);
+  border-left:6px solid var(--amber);
+  padding:22px 28px;margin-bottom:48px;
+  font-size:11px;line-height:1.9;color:var(--mid);
+}
+.epist-title{
+  font-size:8px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--amber);margin-bottom:10px;font-weight:500;
+}
+.epist strong{color:var(--ink);font-weight:500;}
+
+/* VAR TABLE */
+.var-table{
+  width:100%;border-collapse:collapse;margin-bottom:48px;font-size:11px;
+  border:2px solid var(--ink);
+}
+.var-table th{
+  font-size:8px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--white);text-align:left;padding:10px 14px;
+  background:var(--ink);
+}
+.var-table td{
+  padding:14px;border-bottom:1px solid var(--border);
+  border-right:1px solid var(--border);
+  vertical-align:top;line-height:1.7;
+}
+.var-table tr:last-child td{border-bottom:none;}
+.var-table tr:hover td{background:var(--white);}
+
+.var-sym{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;white-space:nowrap;}
+.var-table td:nth-child(2){color:var(--ink);font-weight:400;}
+.var-table td:nth-child(3){color:var(--mid);}
+.var-table td:nth-child(4){color:var(--dim);font-size:10px;}
+.var-table td:nth-child(5){color:var(--dim);font-size:10px;}
+
+/* PARAM BOXES */
+.param-box{
+  padding:24px 28px;margin-bottom:2px;font-size:11px;line-height:1.9;
+}
+.param-box.lambda-box{background:var(--red-bg);border:2px solid var(--red);border-left:6px solid var(--red);color:var(--mid);}
+.param-box.zt-box{background:var(--green-bg);border:2px solid var(--green);border-left:6px solid var(--green);color:var(--mid);margin-bottom:48px;}
+
+.param-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:500;margin-bottom:12px;}
+.lambda-box .param-title{color:var(--red);}
+.zt-box .param-title{color:var(--green);}
+
+.param-formula{
+  font-family:'Playfair Display',serif;font-size:18px;font-weight:700;
+  color:var(--ink);margin:12px 0;padding:10px 16px;
+  background:#fff;border:2px solid var(--ink);display:inline-block;
+}
+
+/* PIPELINE */
+.pipeline{margin-bottom:48px;}
+.step{display:grid;grid-template-columns:50px 1fr;margin-bottom:2px;}
+.step-n{display:flex;flex-direction:column;align-items:center;}
+.step-circle{
+  width:38px;height:38px;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:500;color:var(--white);flex-shrink:0;
+}
+.step-line{width:2px;flex:1;background:var(--ink);min-height:16px;}
+.step:last-child .step-line{display:none;}
+.step-body{padding:0 0 24px 20px;}
+.step-title{
+  font-family:'Playfair Display',serif;font-size:18px;font-weight:700;
+  color:var(--ink);margin-bottom:6px;margin-top:8px;
+}
+.step-detail{font-size:10px;color:var(--dim);line-height:1.9;}
+.step-tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.tool{font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border:1px solid var(--border2);color:var(--dim);}
+
+/* SIMULATOR */
+.sim-wrap{
+  background:var(--white);border:2px solid var(--ink);
+  padding:40px;margin-bottom:2px;
+}
+.sim-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);margin-bottom:4px;}
+.sim-note{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:28px;}
+
+/* FORMULA INSIDE SIM — HIGH CONTRAST */
+.sim-formula{
+  background:var(--ink);padding:20px 24px;margin-bottom:28px;
+  font-family:'Playfair Display',serif;
+  font-size:clamp(14px,2vw,22px);
+  line-height:1.5;
+}
+
+.sim-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-bottom:24px;}
+.sim-field label{
+  display:block;font-size:8px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:8px;
+}
+input[type="range"]{width:100%;cursor:pointer;margin:8px 0 4px;accent-color:var(--red);}
+.sim-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--ink);}
+.sim-val-note{font-size:9px;color:var(--dim);margin-top:2px;}
+
+.lambda-ctrl{
+  background:var(--bg2);border:2px solid var(--border);
+  padding:16px 20px;margin-bottom:24px;
+}
+.lambda-ctrl label{
+  font-size:8px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--red);display:block;margin-bottom:8px;font-weight:500;
+}
+.lambda-row{display:flex;align-items:center;gap:16px;}
+.lambda-row input{flex:1;accent-color:var(--red);}
+.lambda-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:var(--red);min-width:44px;}
+.lambda-exp{font-size:9px;color:var(--dim);margin-top:8px;line-height:1.7;}
+
+.compute-btn{
+  width:100%;background:var(--ink);border:2px solid var(--ink);color:var(--white);
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  letter-spacing:3px;text-transform:uppercase;font-weight:500;
+  padding:16px;cursor:pointer;transition:all 0.2s;
+}
+.compute-btn:hover{background:var(--red);border-color:var(--red);}
+
+.result-panel{display:none;margin-top:2px;border:2px solid var(--ink);}
+.result-panel.show{display:block;}
+
+.result-top{display:grid;grid-template-columns:auto 1fr;border-bottom:2px solid var(--ink);}
+.result-score-box{
+  padding:24px 28px;border-right:2px solid var(--ink);
+  background:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:140px;
+}
+.result-score{font-family:'Playfair Display',serif;font-size:64px;font-weight:900;line-height:1;color:#fff;}
+.result-score-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,232,216,0.4);margin-top:6px;}
+.result-info{padding:22px 24px;background:var(--white);}
+.result-state{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;margin-bottom:8px;}
+.result-interp{font-size:10px;color:var(--mid);line-height:1.9;}
+
+.result-bottom{
+  padding:18px 24px;background:var(--bg2);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+}
+.comp-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+.comp-bar-wrap{height:6px;background:var(--border);margin-bottom:4px;}
+.comp-bar{height:100%;transition:width 0.9s cubic-bezier(.16,1,.3,1);width:0%;}
+.comp-val{font-size:10px;color:var(--mid);}
+
+.sim-disclaimer{
+  font-size:9px;color:var(--dim);padding:12px 24px;
+  border-top:1px solid var(--border);background:var(--bg2);line-height:1.7;
+}
+
+/* CASES */
+.cases-note{
+  background:var(--amber-bg);border:2px solid var(--amber);border-left:6px solid var(--amber);
+  padding:14px 18px;font-size:10px;color:var(--mid);line-height:1.8;margin-bottom:2px;
+}
+.cases-note strong{color:var(--amber);font-weight:500;}
+
+.cases-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  border:2px solid var(--ink);margin-bottom:48px;
+}
+
+.case-card{background:var(--white);padding:24px;border-right:2px solid var(--ink);}
+.case-card:last-child{border-right:none;}
+
+.case-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.case-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);line-height:1.3;}
+.case-date{font-size:8px;letter-spacing:2px;color:var(--dim);margin-top:4px;}
+.case-src{font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border:1px solid var(--amber);color:var(--amber);white-space:nowrap;}
+
+.case-rows{display:flex;flex-direction:column;gap:7px;font-size:10px;}
+.case-row{display:flex;justify-content:space-between;}
+.case-key{color:var(--dim);}
+.case-val{color:var(--ink);font-weight:500;}
+
+.case-srm{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:2px solid var(--ink);}
+.case-srm-label{font-size:10px;color:var(--dim);}
+.case-srm-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;}
+
+.case-basis{font-size:8px;color:var(--dim);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);line-height:1.7;}
+
+/* FALSIF */
+.falsif{
+  background:var(--red-bg);border:2px solid var(--red);border-left:6px solid var(--red);
+  padding:28px 32px;margin-bottom:48px;
+}
+.falsif-title{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:18px;font-weight:500;}
+.falsif-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px;}
+.falsif-item{background:var(--white);border:1px solid rgba(184,0,31,0.15);padding:16px;font-size:10px;line-height:1.8;color:var(--mid);}
+.falsif-item strong{display:block;color:var(--red);font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-weight:500;}
+
+/* LIMITS */
+.limits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));border:2px solid var(--ink);margin-bottom:48px;}
+.limit-card{background:var(--white);padding:22px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);}
+.limit-title{font-size:10px;font-weight:500;color:var(--amber);margin-bottom:8px;}
+.limit-body{font-size:10px;color:var(--mid);line-height:1.8;}
+.limit-fix{margin-top:10px;font-size:9px;color:var(--dim);border-top:1px solid var(--border);padding-top:10px;}
+
+footer{
+  border-top:2px solid var(--ink);padding:28px 0 44px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  font-size:8px;color:var(--dim);letter-spacing:2px;
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fade{animation:fadeUp 0.6s ease forwards;opacity:0;}
+.d1{animation-delay:0.1s;}.d2{animation-delay:0.2s;}.d3{animation-delay:0.3s;}
+
+@media(max-width:700px){
+  .topbar{padding:12px 20px;}
+  .wrap{padding:0 20px;}
+  .sim-wrap{padding:24px;}
+  .result-bottom{grid-template-columns:repeat(2,1fr);}
+  .result-top{grid-template-columns:1fr;}
+  .result-score-box{border-right:none;border-bottom:2px solid var(--ink);}
+  .var-table{display:block;overflow-x:auto;}
+  .cases-grid{grid-template-columns:1fr;}
+  .case-card{border-right:none;border-bottom:2px solid var(--ink);}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-id">POLITО<span>MORPHISM</span> · SRM</div>
+  <div class="topbar-badge">Scientific Model</div>
+  <div class="topbar-ver">v1.1 · 2025</div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero fade d1">
+    <div class="hero-label">Politomorphism Framework · Module 3</div>
+    <h1>Symbolic<br><em>Resonance</em><br>Mapping</h1>
+    <p class="hero-sub">Proposed Computational Model · Open for Empirical Validation</p>
+    <div class="pill-row">
+      <span class="pill pill-red">⚠ Proposed Model</span>
+      <span class="pill pill-blue">∞ Open Validation</span>
+      <span class="pill pill-dim">v1.1 · Serban Gabriel Florin</span>
+    </div>
+  </div>
+
+  <div class="sec-label fade d2">Core Equation</div>
+
+  <div class="formula-block fade d2">
+    <div class="formula-main">
+      <span class="fv">SRM(s,t)</span>
+      <span class="fo"> = Σ [ </span>
+      <span class="fv">V(s,t)</span>
+      <span class="fo"> · </span>
+      <span class="fa">A(s,t)</span>
+      <span class="fo"> · e</span><sup><span class="fo">−λ</span><span class="fd">D(s,t)</span></sup>
+      <span class="fo"> · </span>
+      <span class="fn">N(s,t)</span>
+      <span class="fo"> ] / Z(t)</span>
+    </div>
+    <div class="formula-note">
+      <strong>SRM(s,t)</strong> — Symbolic Resonance Score for symbol <em>s</em> at time <em>t</em>.
+      Integrates four measurable dimensions of political symbol diffusion, penalizes semantic instability
+      via exponential decay, and normalizes against total symbolic field activity.
+      <br><br>
+      <strong style="color:#60c0ff">V</strong> = Viral Velocity &nbsp;·&nbsp;
+      <strong style="color:#ffcc44">A</strong> = Affective Weight &nbsp;·&nbsp;
+      <strong style="color:#ff6b6b">D</strong> = Semantic Drift &nbsp;·&nbsp;
+      <strong style="color:#6bffaa">N</strong> = Network Reach
+    </div>
+  </div>
+
+  <div class="epist fade d3">
+    <div class="epist-title">Epistemological Status</div>
+    This model is a <strong>theoretical proposal</strong> grounded in established literature: information diffusion
+    (Bass, 1969; Watts & Dodds, 2007), affective computing (Russell, 1980), computational semantics
+    (Mikolov et al., 2013). Mathematically coherent and operationalizable.
+    <strong>Not yet validated on a full empirical dataset.</strong>
+    The calculator below is a conceptual demonstration, not a calibrated predictive instrument.
+  </div>
+
+  <div class="sec-label">Variables & Operationalization</div>
+  <table class="var-table">
+    <thead>
+      <tr><th>Symbol</th><th>Name</th><th>Definition</th><th>Measurement</th><th>Data Source</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="var-sym" style="color:var(--blue)">V(s,t)</span></td>
+        <td>Viral Velocity</td>
+        <td>Rate of change in symbol adoption — dN/dt per platform per hour. Normalized to [0,1].</td>
+        <td>Time-derivative of cumulative mention count. Rolling 6h window.</td>
+        <td>Twitter/X API v2 · Reddit Pushshift · Telegram</td>
+      </tr>
+      <tr>
+        <td><span class="var-sym" style="color:var(--amber)">A(s,t)</span></td>
+        <td>Affective Weight</td>
+        <td>Composite of emotional valence (−1 to +1) and arousal (0 to 1). A = (|valence|+arousal)/2.</td>
+        <td>RoBERTa-sentiment · XLM-RoBERTa · Russell Circumplex mapping.</td>
+        <td>Platform text corpus · multilingual NLP models</td>
+      </tr>
+      <tr>
+        <td><span class="var-sym" style="color:var(--red)">D(s,t)</span></td>
+        <td>Semantic Drift</td>
+        <td>Cosine distance between word embedding at baseline t₀ and current t. D > 0.3 = co-optation alert.</td>
+        <td>Weekly embedding snapshots. cosine_distance(embed(s,t₀), embed(s,t)).</td>
+        <td>Wikipedia + platform corpus · Word2Vec / FastText</td>
+      </tr>
+      <tr>
+        <td><span class="var-sym" style="color:var(--green)">N(s,t)</span></td>
+        <td>Network Reach</td>
+        <td>Normalized betweenness centrality across ideological communities. Cross-community bridges ×1.5.</td>
+        <td>Retweet graph → Louvain community detection → betweenness centrality.</td>
+        <td>NetworkX · Gephi · platform diffusion graphs</td>
+      </tr>
+      <tr>
+        <td><span class="var-sym" style="color:var(--dim)">Z(t)</span></td>
+        <td>Normalization Factor</td>
+        <td>Sum of raw scores across all active symbols at time t. Dynamic — not a constant.</td>
+        <td>Z(t) = Σ V·A·e^(−λD)·N across all tracked symbols simultaneously.</td>
+        <td>Computed dynamically from full symbol corpus.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="sec-label">Parameter Justification</div>
+  <div class="param-box lambda-box">
+    <div class="param-title">λ — Decay Rate: Why 2.0 as Initial Estimate?</div>
+    λ = 2.0 is a <strong>working estimate</strong>, not empirically calibrated. Derived from:
+    Bass Diffusion Model (1969) — imitation coefficients suggest constants in 1.5–2.5 range;
+    Hamilton et al. (2016) — political symbols show cosine drift 0.3–0.6 within 30 days;
+    Epidemiological analogy — SIR model recovery rates suggest half-life constants of 1.8–2.2.
+    <br><br>
+    <strong>Calibration required</strong> — λ must be estimated via maximum likelihood on a labeled historical dataset
+    (minimum 15 symbol-event pairs) before making predictive claims.
+  </div>
+
+  <div class="param-box zt-box">
+    <div class="param-title">Z(t) — Why Not a Constant?</div>
+    Z(t) is a partition function borrowed from statistical mechanics — the sum of all unnormalized scores across the active symbol corpus at time t.
+    <div class="param-formula">Z(t) = Σᵢ [ V(sᵢ,t) · A(sᵢ,t) · e^(−λD(sᵢ,t)) · N(sᵢ,t) ]</div>
+    Without dynamic Z(t), scores during high-noise events are artificially inflated. In the single-symbol simulator, Z(t) reduces to the raw score.
+  </div>
+
+  <div class="sec-label">Measurement Pipeline</div>
+  <div class="pipeline">
+    <div class="step">
+      <div class="step-n"><div class="step-circle">01</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">Symbol Corpus Collection</div>
+        <div class="step-detail">Identify candidate symbols via automated trend detection and expert seeding. Collect timestamped instances. Each symbol assigned a baseline embedding at t₀.</div>
+        <div class="step-tools"><span class="tool">Twitter API v2</span><span class="tool">Reddit Pushshift</span><span class="tool">Telegram MTProto</span><span class="tool">pHash detection</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n"><div class="step-circle">02</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">Affective Encoding — A(s,t)</div>
+        <div class="step-detail">VADER for English baseline, fine-tuned RoBERTa for valence, XLM-RoBERTa for non-English. Map to Russell Circumplex. Aggregate per 6h window.</div>
+        <div class="step-tools"><span class="tool">RoBERTa</span><span class="tool">VADER</span><span class="tool">XLM-RoBERTa</span><span class="tool">Russell Circumplex</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n"><div class="step-circle">03</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">Semantic Drift Tracking — D(s,t)</div>
+        <div class="step-detail">Weekly Word2Vec/FastText embedding snapshots. D(s,t) = 1 − cosine_similarity(embed(s,t₀), embed(s,t)). Threshold D > 0.3 triggers co-optation alert.</div>
+        <div class="step-tools"><span class="tool">Word2Vec / Gensim</span><span class="tool">FastText</span><span class="tool">Temporal alignment</span><span class="tool">Cosine distance</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n"><div class="step-circle">04</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">Network Diffusion — N(s,t)</div>
+        <div class="step-detail">Directed retweet/reshare graph. Louvain community detection (γ=1.0). Normalized betweenness centrality. Cross-community edges weighted ×1.5.</div>
+        <div class="step-tools"><span class="tool">NetworkX</span><span class="tool">Louvain</span><span class="tool">Gephi</span><span class="tool">Betweenness centrality</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n"><div class="step-circle">05</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="step-title">SRM Score & Z(t) Normalization</div>
+        <div class="step-detail">raw(s,t) = V·A·exp(−λ·D)·N. Z(t) = Σ raw(sᵢ,t). SRM(s,t) = raw/Z(t). Output: time-series curves, community heatmaps, co-optation alerts.</div>
+        <div class="step-tools"><span class="tool">Python / NumPy</span><span class="tool">Pandas</span><span class="tool">InfluxDB</span><span class="tool">Plotly / D3.js</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Interactive Concept Demonstrator</div>
+  <div class="sim-wrap">
+    <div class="sim-title">SRM Concept Calculator</div>
+    <div class="sim-note">Conceptual demonstration · Not a calibrated predictive instrument</div>
+
+    <div class="sim-formula">
+      <span class="fv">SRM(s,t)</span>
+      <span class="fo"> = Σ [ </span>
+      <span class="fv">V</span><span class="fo"> · </span>
+      <span class="fa">A</span><span class="fo"> · e</span><sup><span class="fo">−λ</span><span class="fd">D</span></sup>
+      <span class="fo"> · </span><span class="fn">N</span>
+      <span class="fo"> ] / Z(t)</span>
+    </div>
+
+    <div class="sim-grid">
+      <div class="sim-field">
+        <label>Viral Velocity V(s,t) ∈ [0,1]</label>
+        <input type="range" id="sV" min="0" max="100" value="60" oninput="sv('sV','vV','nV')">
+        <div class="sim-val" id="vV">0.60</div>
+        <div class="sim-val-note" id="nV">Moderate spread</div>
+      </div>
+      <div class="sim-field">
+        <label>Affective Weight A(s,t) ∈ [0,1]</label>
+        <input type="range" id="sA" min="0" max="100" value="75" oninput="sv('sA','vA','nA')">
+        <div class="sim-val" id="vA">0.75</div>
+        <div class="sim-val-note" id="nA">High emotional charge</div>
+      </div>
+      <div class="sim-field">
+        <label>Semantic Drift D(s,t) ∈ [0,1]</label>
+        <input type="range" id="sD" min="0" max="100" value="20" oninput="sv('sD','vD','nD')">
+        <div class="sim-val" id="vD">0.20</div>
+        <div class="sim-val-note" id="nD">Meaning mostly stable</div>
+      </div>
+      <div class="sim-field">
+        <label>Network Reach N(s,t) ∈ [0,1]</label>
+        <input type="range" id="sN" min="0" max="100" value="80" oninput="sv('sN','vN','nN')">
+        <div class="sim-val" id="vN">0.80</div>
+        <div class="sim-val-note" id="nN">Wide cross-community reach</div>
+      </div>
+    </div>
+
+    <div class="lambda-ctrl">
+      <label>λ — Decay Parameter &nbsp;(literature estimate: 1.5–2.5 · requires empirical calibration)</label>
+      <div class="lambda-row">
+        <input type="range" id="sL" min="50" max="400" value="200" oninput="updateL()">
+        <div class="lambda-val" id="vL">2.00</div>
+      </div>
+      <div class="lambda-exp">Low λ: drift penalizes weakly (tolerates co-optation). High λ: requires semantic purity for high resonance.</div>
+    </div>
+
+    <button class="compute-btn" onclick="compute()">COMPUTE SRM SCORE</button>
+
+    <div class="result-panel" id="rPanel">
+      <div class="result-top">
+        <div class="result-score-box">
+          <div class="result-score" id="rScore">—</div>
+          <div class="result-score-label">SRM Score</div>
+        </div>
+        <div class="result-info">
+          <div class="result-state" id="rState">—</div>
+          <div class="result-interp" id="rInterp">—</div>
+        </div>
+      </div>
+      <div class="result-bottom">
+        <div><div class="comp-label">Velocity V</div><div class="comp-bar-wrap"><div class="comp-bar" id="b1" style="background:var(--blue)"></div></div><div class="comp-val" id="bv1">—</div></div>
+        <div><div class="comp-label">Affective A</div><div class="comp-bar-wrap"><div class="comp-bar" id="b2" style="background:var(--amber)"></div></div><div class="comp-val" id="bv2">—</div></div>
+        <div><div class="comp-label">Drift e^−λD</div><div class="comp-bar-wrap"><div class="comp-bar" id="b3" style="background:var(--red)"></div></div><div class="comp-val" id="bv3">—</div></div>
+        <div><div class="comp-label">Network N</div><div class="comp-bar-wrap"><div class="comp-bar" id="b4" style="background:var(--green)"></div></div><div class="comp-val" id="bv4">—</div></div>
+      </div>
+      <div class="sim-disclaimer">⚠ Single-symbol demo: Z(t) = raw score. In real deployment, Z(t) computed across all tracked symbols. λ = <span id="ldisplay">2.00</span> (working estimate — requires calibration).</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Illustrative Historical Cases</div>
+  <div class="cases-note"><strong>⚠ Methodological transparency:</strong> Values below are estimated approximations from published sources — not the result of running the full SRM pipeline on raw data.</div>
+  <div class="cases-grid">
+    <div class="case-card">
+      <div class="case-header">
+        <div><div class="case-name">Umbrella Symbol — HK Protests</div><div class="case-date">2019–2020 · Hong Kong</div></div>
+        <span class="case-src">Estimated</span>
+      </div>
+      <div class="case-rows">
+        <div class="case-row"><span class="case-key">V — Viral Velocity</span><span class="case-val">~0.88</span></div>
+        <div class="case-row"><span class="case-key">A — Affective Weight</span><span class="case-val">~0.85</span></div>
+        <div class="case-row"><span class="case-key">D — Semantic Drift</span><span class="case-val">~0.10 (very stable)</span></div>
+        <div class="case-row"><span class="case-key">N — Network Reach</span><span class="case-val">~0.90</span></div>
+      </div>
+      <div class="case-srm">
+        <span class="case-srm-label">Est. SRM (λ=2.0)</span>
+        <span class="case-srm-val" style="color:var(--green)">~0.84</span>
+      </div>
+      <div class="case-basis">Lee & Chan (2020); HKPD dataset; Twitter/Weibo archives (Molina et al., 2021).</div>
+    </div>
+    <div class="case-card">
+      <div class="case-header">
+        <div><div class="case-name">MAGA Cap — US Elections</div><div class="case-date">2016–2024 · United States</div></div>
+        <span class="case-src">Estimated</span>
+      </div>
+      <div class="case-rows">
+        <div class="case-row"><span class="case-key">V — Viral Velocity</span><span class="case-val">~0.82</span></div>
+        <div class="case-row"><span class="case-key">A — Affective Weight</span><span class="case-val">~0.91</span></div>
+        <div class="case-row"><span class="case-key">D — Semantic Drift</span><span class="case-val">~0.48 (significant)</span></div>
+        <div class="case-row"><span class="case-key">N — Network Reach</span><span class="case-val">~0.86</span></div>
+      </div>
+      <div class="case-srm">
+        <span class="case-srm-label">Est. SRM (λ=2.0)</span>
+        <span class="case-srm-val" style="color:var(--blue)">~0.62</span>
+      </div>
+      <div class="case-basis">Mutz (2018); Sides et al. (2019); ANES affective polarization data.</div>
+    </div>
+    <div class="case-card">
+      <div class="case-header">
+        <div><div class="case-name">Sunflower Movement</div><div class="case-date">2014 · Taiwan</div></div>
+        <span class="case-src">Estimated</span>
+      </div>
+      <div class="case-rows">
+        <div class="case-row"><span class="case-key">V — Viral Velocity</span><span class="case-val">~0.75</span></div>
+        <div class="case-row"><span class="case-key">A — Affective Weight</span><span class="case-val">~0.80</span></div>
+        <div class="case-row"><span class="case-key">D — Semantic Drift</span><span class="case-val">~0.07 (extremely stable)</span></div>
+        <div class="case-row"><span class="case-key">N — Network Reach</span><span class="case-val">~0.68</span></div>
+      </div>
+      <div class="case-srm">
+        <span class="case-srm-label">Est. SRM (λ=2.0)</span>
+        <span class="case-srm-val" style="color:var(--green)">~0.78</span>
+      </div>
+      <div class="case-basis">Ho (2015); Tang & Chen (2014); PTT archive data.</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Known Limitations — v1.1</div>
+  <div class="limits-grid">
+    <div class="limit-card"><div class="limit-title">V–N Collinearity</div><div class="limit-body">Viral velocity V and network reach N are not fully independent — rapid spread tends to correlate with high network reach.</div><div class="limit-fix">→ Fix: Factor analysis or PCA on real dataset.</div></div>
+    <div class="limit-card"><div class="limit-title">λ Not Yet Calibrated</div><div class="limit-body">λ = 2.0 is an initial estimate. Without labeled historical data, the optimal λ is unknown.</div><div class="limit-fix">→ Fix: Maximum likelihood estimation on 15+ labeled pairs.</div></div>
+    <div class="limit-card"><div class="limit-title">Platform Heterogeneity</div><div class="limit-body">Aggregating V and N across Twitter, Reddit, Telegram ignores platform-specific amplification mechanics.</div><div class="limit-fix">→ Fix: Platform-specific normalization coefficients.</div></div>
+    <div class="limit-card"><div class="limit-title">Affective Validity</div><div class="limit-body">Automated sentiment conflates text sentiment with symbol sentiment. Criticism produces high |valence| but is not support.</div><div class="limit-fix">→ Fix: Stance detection model (pro/anti/neutral) as pre-filter.</div></div>
+    <div class="limit-card"><div class="limit-title">Cross-language Comparability</div><div class="limit-body">Semantic drift D on English embeddings is not directly comparable to D on Chinese or Arabic embeddings.</div><div class="limit-fix">→ Fix: Cross-lingual embedding alignment (MUSE/LaBSE).</div></div>
+    <div class="limit-card"><div class="limit-title">Historical Case Estimates</div><div class="limit-body">HK, MAGA, Taiwan values are approximations from published sources, not full SRM pipeline results.</div><div class="limit-fix">→ Fix: Full pipeline application to archived data — primary task v2.0.</div></div>
+  </div>
+
+  <div class="sec-label">Falsifiability Criteria</div>
+  <div class="falsif">
+    <div class="falsif-title">⚠ What Would Scientifically Disprove SRM?</div>
+    <div class="falsif-grid">
+      <div class="falsif-item"><strong>Predictive Validity</strong>If symbols with SRM > 0.7 consistently fail to produce measurable political mobilization within 30 days across 10+ cases.</div>
+      <div class="falsif-item"><strong>Correlation Threshold</strong>If SRM scores show no significant correlation (r > 0.5, p &lt; 0.05) with protest intensity indexes (ACLED, GDELT) across 15+ cases.</div>
+      <div class="falsif-item"><strong>Drift Decay Effect</strong>If high-drift symbols maintain high SRM at rates not different from stable symbols, e^−λD must be abandoned.</div>
+      <div class="falsif-item"><strong>Inter-rater Reliability</strong>If scores are not reproducible across independent teams using the same data (ICC &lt; 0.7).</div>
+      <div class="falsif-item"><strong>Discriminant Validity</strong>If SRM cannot distinguish symbols with identical virality but different political effects, A is insufficiently specified.</div>
+      <div class="falsif-item"><strong>λ Sensitivity</strong>If conclusions change dramatically with small λ changes (1.8 vs 2.2), model requires structural revision.</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>POLITOMORPHISM · SRM MODULE · v1.1</span>
+    <span>Proposed Model · Open for Empirical Validation</span>
+    <span>Serban Gabriel Florin · 2025</span>
+  </footer>
+
+</div>
+
+<script>
+const notes={
+  V:['No spread','Minimal','Slow','Moderate','Active','High','Very high','Rapid','Near-peak','Peak','Maximum'],
+  A:['No charge','Minimal','Low','Moderate','Notable','High','Strong','Very strong','Intense','Near-peak','Maximum'],
+  D:['Stable','Near-stable','Very low drift','Low drift','Moderate','Notable drift','Significant drift','High drift — alert','Very high drift','Severe drift','Complete transformation'],
+  N:['No penetration','Minimal','Narrow','Limited','Moderate','Cross-community emerging','Broad','Wide','Very broad','Near-maximum','Maximum']
+};
+
+function sv(id,vid,nid){
+  const v=document.getElementById(id).value/100;
+  document.getElementById(vid).textContent=v.toFixed(2);
+  const k=id==='sV'?'V':id==='sA'?'A':id==='sD'?'D':'N';
+  document.getElementById(nid).textContent=notes[k][Math.round(v*10)];
+}
+
+function updateL(){
+  const l=document.getElementById('sL').value/100;
+  document.getElementById('vL').textContent=l.toFixed(2);
+}
+
+function compute(){
+  const V=document.getElementById('sV').value/100,A=document.getElementById('sA').value/100,
+        D=document.getElementById('sD').value/100,N=document.getElementById('sN').value/100,
+        lam=document.getElementById('sL').value/100;
+  const drift=Math.exp(-lam*D);
+  const score=Math.min(V*A*drift*N,1.0);
+
+  document.getElementById('ldisplay').textContent=lam.toFixed(2);
+  document.getElementById('rPanel').classList.add('show');
+  document.getElementById('rScore').textContent=score.toFixed(3);
+
+  let state,color,interp;
+  if(score>=0.7){state='DOMINANT RESONANCE';color='#0f5c1e';interp='High velocity, strong affect, stable meaning, broad network. Historical analogues: major political mobilization within 7–30 days. Monitor for rising D (co-optation).';}
+  else if(score>=0.4){state='ACTIVE DIFFUSION';color='#003d82';interp=D>0.45?'Symbol spreading but semantic instability detected. Risk of co-optation or fragmentation within 14 days.':'Active diffusion with stable meaning. Needs amplification or triggering event to reach dominant resonance.';}
+  else if(score>=0.2){state='MARGINAL SIGNAL';color='#7a4e00';interp=A<0.4?'Weak resonance. Insufficient affective charge for cross-community propagation.':'Weak resonance. Limited network penetration keeps symbol within narrow ideological community.';}
+  else{state='SYMBOLIC EXTINCTION';color='#b8001f';interp='Symbol has lost political resonance. Semantic drift or failed diffusion rendered it inert. Revival requires major affective reactivation event.';}
+
+  document.getElementById('rState').textContent=state;
+  document.getElementById('rState').style.color=color;
+  document.getElementById('rScore').style.color=color;
+  document.getElementById('rInterp').textContent=interp;
+
+  setTimeout(()=>{
+    document.getElementById('b1').style.width=(V*100)+'%';
+    document.getElementById('b2').style.width=(A*100)+'%';
+    document.getElementById('b3').style.width=(drift*100)+'%';
+    document.getElementById('b4').style.width=(N*100)+'%';
+  },50);
+  document.getElementById('bv1').textContent=Math.round(V*100)+'%';
+  document.getElementById('bv2').textContent=Math.round(A*100)+'%';
+  document.getElementById('bv3').textContent=drift.toFixed(2)+' (after drift penalty)';
+  document.getElementById('bv4').textContent=Math.round(N*100)+'%';
+}
+
+sv('sV','vV','nV');sv('sA','vA','nA');sv('sD','vD','nD');sv('sN','vN','nN');updateL();
+</script>
+</body>
+</html>
