@@ -44,3 +44,7 @@ dS/dt = Π(t) − Φ(t)
 Serban Gabriel Florin (2026). *Politomorphism: Symbolic Resonance 
 Mapping (SRM) and the Entropic Equilibrium Function (EEF).*  
 OSF. https://doi.org/10.17605/OSF.IO/YA9VQ
+Serban, G. F. (2026). *Politomorphism Research Project: SRM Framework, 
+Computational Validation, and Case Studies.*  
+Zenodo. https://doi.org/10.5281/zenodo.18962821
+
