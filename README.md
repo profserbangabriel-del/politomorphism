@@ -1,5 +1,4 @@
 # Politomorphism
-
 **Author:** Serban Gabriel Florin  
 **Version:** 1.1 · 2026  
 **License:** CC-By Attribution 4.0 International  
@@ -8,7 +7,6 @@
 ---
 
 ## What is Politomorphism?
-
 Politomorphism is an original theoretical framework for analyzing 
 the diffusion and transformation of political symbols. A symbol is 
 politomorphic to the degree that the same signifying form condenses 
@@ -41,9 +39,13 @@ dS/dt = Π(t) − Φ(t)
 ---
 
 ## Academic Citation
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18962821.svg)](https://doi.org/10.5281/zenodo.18962821)
+
 Serban Gabriel Florin (2026). *Politomorphism: Symbolic Resonance 
 Mapping (SRM) and the Entropic Equilibrium Function (EEF).*  
 OSF. https://doi.org/10.17605/OSF.IO/YA9VQ
+
 Serban, G. F. (2026). *Politomorphism Research Project: SRM Framework, 
 Computational Validation, and Case Studies.*  
 Zenodo. https://doi.org/10.5281/zenodo.18962821
