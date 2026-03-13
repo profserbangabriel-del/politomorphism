@@ -82,7 +82,7 @@ Raw data and semantic drift calculations for this case study can be found in the
 
 ### Validation Results
 
-![SRM Georgescu](SRM_grafic_final.png)
+![SRM Georgescu](SRM_grafic_final_EN.png)
 
 ---
 
