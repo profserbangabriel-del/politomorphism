@@ -1,8 +1,8 @@
 # Politomorphism
 
-**Author:** Serban Gabriel Florin
-**Version:** 1.1 · 2026
-**License:** CC-By Attribution 4.0 International
+**Author:** Serban Gabriel Florin  
+**Version:** 1.1 · 2026  
+**License:** CC-By Attribution 4.0 International  
 **DOI:** https://doi.org/10.17605/OSF.IO/YA9VQ
 
 ---
@@ -19,10 +19,11 @@ Politomorphism is an original theoretical framework for analyzing the diffusion 
 
 This is the general formula as defined in the official preprint:
 
-SRM = V · A · e^(−λD) · N
+**SRM = V · A · e^(−λD) · N**
 
 - **V** — Visibility / Velocity: The speed and clarity of the symbolic transmission.
-- **A** — Affiliation / Amplitude: The intensity of the connection between the group and the symbol.
+- **A** — Affiliation / Amplitude: The intensity of the connection between the group and the symbol.  
+  *In computational validations, this variable is operationalized through measurable proxies such as affective weight (sentiment analysis), but its theoretical meaning remains affiliation/amplitude.*
 - **e^(−λD)** — Exponential Decay: Signal loss based on cultural distance (*D*) and decay constant (*λ*).
 - **N** — Network Density: The total size and connectivity of the target audience nodes.
 
@@ -58,7 +59,7 @@ The model operates as a multi-stage feedback loop:
 
 Serban Gabriel Florin (2026). *Politomorphism: Symbolic Resonance Mapping (SRM) and the Entropic Equilibrium Function (EEF).* OSF. https://doi.org/10.17605/OSF.IO/YA9VQ
 
-**Serban, G. F. (2026).** *Politomorphism Research Project: SRM Framework, Computational Validation, and Case Studies.* Zenodo. https://doi.org/10.5281/zenodo.18962821
+Serban, G. F. (2026). *Politomorphism Research Project: SRM Framework, Computational Validation, and Case Studies.* Zenodo. https://doi.org/10.5281/zenodo.18962821
 
 ---
 
@@ -72,19 +73,35 @@ Raw data and semantic drift calculations for this case study can be found in the
 
 ![SRM Ciolacu](data_ciolacu/SRM_grafic_ciolacu.png)
 
+| Variable | Name | Value |
+|----------|------|-------|
+| **V** | Viral Velocity | 0.73 |
+| **A** | Affiliation / Amplitude | 0.42 |
+| **D** | Semantic Drift | — |
+| **e^(−λD)** | Exponential Decay (λ=2) | 0.1858 |
+| **N** | Network Coverage | 0.65 |
+
 **SRM = V × A × e^(−λD) × N = 0.73 × 0.42 × 0.1858 × 0.65 = 0.0365 → LOW RESONANCE**
 
 [View the complete dataset here](data_ciolacu/)
 
 ---
 
-## Case Study 2: SRM Validation — Calin Georgescu
+## Case Study 2: SRM Validation — Călin Georgescu
 
 **Period:** November – December 2024
 
 ### Validation Results
 
 ![SRM Georgescu](SRM_grafic_final.png)
+
+| Variable | Name | Value |
+|----------|------|-------|
+| **V** | Viral Velocity | 0.75 |
+| **A** | Affiliation / Amplitude | 0.398 |
+| **D** | Semantic Drift | — |
+| **e^(−λD)** | Exponential Decay (λ=2) | 0.119 |
+| **N** | Network Coverage | 0.60 |
 
 **SRM = V × A × e^(−λD) × N = 0.75 × 0.398 × 0.119 × 0.60 = 0.0307 → LOW RESONANCE**
 
@@ -99,36 +116,41 @@ Raw data and semantic drift calculations for this case study can be found in the
 ### Validation Results
 
 ![SRM Trump Temporal](SRM_trump_temporal.png)
-
 ![SRM Trump](SRM_trump_grafic.png)
+
+| Variable | Name | Value |
+|----------|------|-------|
+| **V** | Viral Velocity | 0.9580 |
+| **A** | Affiliation / Amplitude | 0.5800 |
+| **D** | Semantic Drift | 0.734 |
+| **e^(−λD)** | Exponential Decay (λ=2) | 0.2660 |
+| **N** | Network Coverage | 0.7200 |
 
 **SRM = V × A × e^(−λD) × N = 0.9580 × 0.5800 × 0.2660 × 0.7200 = 0.0922 → MEDIUM RESONANCE**
 
 [View raw data](SRM_trump_result.json)
 
+---
 
 ## Case Study 4: SRM Validation — Sunflower Movement
 
-**Period:** March - April 2014 (validation run: March 2026)
+**Period:** March – April 2014 (validation run: March 2026)
 
 Raw data and semantic drift calculations for this case study can be found in the `/data_sunflower` folder.
 
 ### Validation Results
-
-**Symbolic Resonance Mapping (SRM) — Sunflower Movement**  
-*2014 Movement | SRM = 0.0376 | LOW RESONANCE*
 
 ![SRM Sunflower Graph](SRM_sunflower_grafic.png)
 
 | Variable | Name | Value |
 |----------|------|-------|
 | **V** | Viral Velocity | 0.750 |
-| **A** | Affective Weight | 0.393 |
+| **A** | Affiliation / Amplitude | 0.393 |
 | **D** | Semantic Drift | 0.7737 |
-| **e^(−λD)** | Semantic Factor (λ=2) | 0.2128 |
+| **e^(−λD)** | Exponential Decay (λ=2) | 0.2128 |
 | **N** | Network Coverage | 0.600 (12 countries) |
 
-**SRM = V × A × e^(−λD) × N = 0.750 × 0.393 × 0.2128 × 0.600 = 0.0376 — LOW RESONANCE**
+**SRM = V × A × e^(−λD) × N = 0.750 × 0.393 × 0.2128 × 0.600 = 0.0376 → LOW RESONANCE**
 
 ### The Resonance Paradox
 
