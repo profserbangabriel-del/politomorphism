@@ -1,0 +1,32 @@
+name: Trump SRM Analysis
+on:
+  push:
+    paths:
+      - 'TRUMP+DATA.csv'
+      - 'srm_trump_engine.py'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install pandas numpy matplotlib
+
+      - name: Run Trump Analysis
+        run: python srm_trump_engine.py
+
+      - name: Commit and Push Results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add trump_srm_report.json trump_srm_chart.png
+          git commit -m "Update Trump SRM results" || exit 0
+          git push
