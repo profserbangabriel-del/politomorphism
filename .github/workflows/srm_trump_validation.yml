@@ -1,32 +1,37 @@
-name: Trump SRM Analysis
+name: SRM Validation Pipeline - Trump
+
 on:
+  workflow_dispatch:
   push:
     paths:
-      - 'TRUMP+DATA.csv'
       - 'srm_trump_engine.py'
+      - 'TRUMP+DATA.csv'
 
 jobs:
-  build:
+  run-srm-trump:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install pandas numpy matplotlib
-
-      - name: Run Trump Analysis
-        run: python srm_trump_engine.py
-
-      - name: Commit and Push Results
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add trump_srm_report.json trump_srm_chart.png
-          git commit -m "Update Trump SRM results" || exit 0
-          git push
+          pip install pandas numpy matplotlib
+
+      - name: Run SRM Trump validation
+        run: |
+          python srm_trump_engine.py
+
+      - name: Commit results
+        run: |
+          git config --global user.name "profserbangabriel-del"
+          git config --global user.email "actions@github.com"
+          git add SRM_trump_result.json SRM_trump_grafic.png SRM_trump_temporal.png || true
+          git diff --cached --quiet || git commit -m "Auto: SRM Trump validation results"
+          git push || true
