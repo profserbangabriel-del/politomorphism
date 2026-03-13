@@ -1,0 +1,26 @@
+{
+    "symbol": "Sunflower Movement",
+    "period": "2014 (main protests) + international tail",
+    "V": 0.75,
+    "A": 0.393,
+    "D": 0.7737,
+    "semantic_factor": 0.2128,
+    "N": 0.6,
+    "SRM": 0.0376,
+    "resonance_level": "LOW RESONANCE",
+    "countries": [
+        "Taiwan",
+        "United States",
+        "United Kingdom",
+        "Japan",
+        "Hong Kong",
+        "Australia",
+        "France",
+        "Germany",
+        "Canada",
+        "South Korea",
+        "Singapore",
+        "Netherlands"
+    ],
+    "note": "Resonance Paradox: high V and N, but strong penalty from high D"
+}
