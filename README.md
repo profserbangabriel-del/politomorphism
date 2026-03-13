@@ -15,15 +15,18 @@ divergent meaning configurations for distinct political communities.
 ---
 
 ## Models
-
 ### Symbolic Resonance Mapping (SRM)
-R(S, G) = A(G) · I(S, G) · C(G)
+This is the general formula as defined in the official preprint:
 
-R_total(S) = Σ R(S, G_i)
+$$SRM = V \cdot A \cdot e^{-\lambda D} \cdot N$$
 
-- A(G) ∈ [0,1] — Affiliation factor  
-- I(S,G) ∈ [−1,1] — Interpretation polarity  
-- C(G) ∈ [0,1] — Cultural centrality  
+- **$V$** — Visibility / Velocity: The speed and clarity of the symbolic transmission.
+- **$A$** — Affiliation / Amplitude: The intensity of the connection between the group and the symbol.
+- **$e^{-\lambda D}$** — Exponential Decay: Signal loss based on cultural distance ($D$) and decay constant ($\lambda$).
+- **$N$** — Network Density: The total size and connectivity of the target audience nodes.
+
+---
+
 
 ### Entropic Equilibrium Function (EEF)
 S(t) = −Σ p_i(t) · log(p_i(t))
@@ -31,25 +34,11 @@ S(t) = −Σ p_i(t) · log(p_i(t))
 dS/dt = Π(t) − Φ(t)
 
 ---
-### Propagation Strength Function (PSF)
-This formula quantifies the dynamics of resonance distribution across a network:
-
-$$P(S, N) = V \cdot A \cdot e^{-\lambda D} \cdot N$$
-
-- **$V$** — Visibility / Velocity: The speed and clarity of the symbolic transmission.
-- **$A$** — Amplitude: The initial intensity or "volume" of the symbol.
-- **$e^{-\lambda D}$** — Exponential Decay: Signal loss based on cultural distance ($D$) and decay constant ($\lambda$).
-- **$N$** — Network Density: The total size and connectivity of the target audience nodes.
-
----
 
 ### The Politomorphism Engine: How it Works
 The model operates as a multi-stage feedback loop:
-
-1. **Input (SRM):** Determines if a symbol has the "charge" to affect a specific group.
-2. **Transmission (PSF):** Calculates how far the message travels before fading.
-3. **Impact (EEF):** Measures if the system stays stable or becomes chaotic (entropy).
-
+1. **Input & Transmission (SRM):** Determines the initial resonance "charge" and calculates how far the message travels through the network before fading.
+2. **Systemic Impact (EEF):** Measures if the resulting social energy stays stable or leads to chaotic entropy.
 ---
 
 ## Live Demos
