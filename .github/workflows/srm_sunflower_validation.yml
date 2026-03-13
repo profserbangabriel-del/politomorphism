@@ -1,0 +1,49 @@
+name: SRM Validation - Sunflower Movement
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'srm_sunflower_engine.py'
+      - 'data_sunflower/**'
+  workflow_dispatch:  # Allows manual run from Actions tab
+
+jobs:
+  validate-sunflower:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Add any packages your engine needs (e.g. if using matplotlib, numpy, etc.)
+          pip install numpy matplotlib  # example - add more if needed
+
+      - name: Run SRM Engine for Sunflower
+        run: python srm_sunflower_engine.py
+
+      - name: Upload results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: srm-sunflower-results
+          path: |
+            SRM_sunflower_result.json
+            # Add if you generate a graph in the script:
+            # SRM_sunflower_grafic.png
+
+      # Optional: commit results back to repo automatically
+      - name: Commit results (if changed)
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add SRM_sunflower_result.json
+          git commit -m "Auto-update: SRM results for Sunflower Movement" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
