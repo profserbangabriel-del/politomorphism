@@ -21,7 +21,7 @@ except ImportError:
     print("[SKIP] matplotlib not installed — no charts generated")
     raise SystemExit(0)
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data_zelensky")
 RESULT_FILE = os.path.join(os.path.dirname(__file__), "SRM_zelensky_result.json")
 
 # Load result
