@@ -1,161 +1,148 @@
-# Politomorphism
+# Politomorphism — Social Resonance Model (SRM)
 
-**Author:** Serban Gabriel Florin  
-**Version:** 1.1 · 2026  
-**License:** CC-By Attribution 4.0 International  
-**DOI:** https://doi.org/10.17605/OSF.IO/YA9VQ
+**Serban Gabriel Florin** | Independent Researcher  
+ORCID: [0009-0000-2266-3356](https://orcid.org/0009-0000-2266-3356) | DOI: [10.17605/OSF.IO/HYDNZ](https://doi.org/10.17605/OSF.IO/HYDNZ)  
+GitHub: [profserbangabriel-del/politomorphism](https://github.com/profserbangabriel-del/politomorphism)
 
 ---
 
 ## What is Politomorphism?
 
-Politomorphism is an original theoretical framework for analyzing the diffusion and transformation of political symbols. A symbol is politomorphic to the degree that the same signifying form condenses divergent meaning configurations for distinct political communities.
+Politomorphism is a theoretical framework that treats political symbols as **morphogenetic agents** — entities that transform power structures through the process of symbolic diffusion. Its computational component, the **Social Resonance Model (SRM)**, provides a quantitative measure of this phenomenon.
+
+## SRM Formula
+
+**SRM = V × A × e^(−λD) × N** (λ = 2)
+
+| Variable | Name | Definition |
+|----------|------|-----------|
+| V | Viral Velocity | Rate of symbol diffusion (log-normalized escalation ratio) |
+| A | Affective Weight | Emotional intensity (VADER sentiment analysis) |
+| D | Semantic Drift | Meaning fragmentation across contexts (0=stable, 1=fully fragmented) |
+| N | Network Coverage | Proportion of days/sources where symbol is present in corpus |
+
+**Score interpretation:**
+- SRM ≥ 0.20 → HIGH RESONANCE
+- 0.07 ≤ SRM < 0.20 → MEDIUM RESONANCE
+- 0.02 ≤ SRM < 0.07 → LOW RESONANCE
+- SRM < 0.02 → MINIMAL RESONANCE
 
 ---
 
-## Models
+## Comparative Dataset — 5 Validated Symbols
 
-### Symbolic Resonance Mapping (SRM)
+| Symbol / Context | V | A | D | N | **SRM** | Interpretation |
+|-----------------|---|---|---|---|---------|----------------|
+| Sunflower Mvt (TW, 2014) | 0.680 | 0.420 | 0.7737 | 0.580 | 0.0352 | Low |
+| Călin Georgescu (RO, 2024) | 0.750 | 0.398 | 0.8813 | 0.600 | 0.0307 | Low |
+| Marcel Ciolacu (RO, 2025-26) | 0.720 | 0.420 | 0.8412 | 0.650 | 0.0365 | Low |
+| Donald Trump (US, 2015-16) | 0.958 | 0.580 | 0.7340 | 0.720 | 0.0922 | **Medium** |
+| **Zelensky (UA/EU/US, 2022-26)** | **0.873** | **0.640** | **0.680** | **0.781** | **0.1121** | **Medium** |
 
-This is the general formula as defined in the official preprint:
-
-**SRM = V · A · e^(−λD) · N**
-
-- **V** — Visibility / Velocity: The speed and clarity of the symbolic transmission.
-- **A** — Affiliation / Amplitude: The intensity of the connection between the group and the symbol.  
-  *In computational validations, this variable is operationalized through measurable proxies such as affective weight (sentiment analysis), but its theoretical meaning remains affiliation/amplitude.*
-- **e^(−λD)** — Exponential Decay: Signal loss based on cultural distance (*D*) and decay constant (*λ*).
-- **N** — Network Density: The total size and connectivity of the target audience nodes.
+> **Consistent pattern:** Semantic Drift (D) is the primary differentiating variable across all five cases. Lower D → higher SRM, regardless of visibility level.
 
 ---
 
-### Entropic Equilibrium Function (EEF)
+## Case Studies
 
-S(t) = −Σ p_i(t) · log(p_i(t))
+### Case Study 1 — Sunflower Movement (Taiwan, 2014)
 
-dS/dt = Π(t) − Φ(t)
-
----
-
-### The Politomorphism Engine: How It Works
-
-The model operates as a multi-stage feedback loop:
-
-1. **Input & Transmission (SRM):** Determines the initial resonance "charge" and calculates how far the message travels through the network before fading.
-2. **Systemic Impact (EEF):** Measures whether the resulting social energy remains stable or leads to chaotic entropy.
+| V | A | D | N | **SRM** | Interpretation |
+|---|---|---|---|---------|----------------|
+| 0.680 | 0.420 | 0.7737 | 0.580 | **0.0352** | LOW RESONANCE |
 
 ---
 
-## Live Demos
+### Case Study 2 — Călin Georgescu (Romania, Oct–Dec 2024)
 
-- [SRM Interactive Model](index.html)
-- [Landing Page](politomorphism_landing_ro.html)
+| V | A | D | N | **SRM** | Interpretation |
+|---|---|---|---|---------|----------------|
+| 0.750 | 0.398 | 0.8813 | 0.600 | **0.0307** | LOW RESONANCE |
 
----
-
-## Academic Citation
-
-**DOI** 10.5281/zenodo.18962821
-
-Serban Gabriel Florin (2026). *Politomorphism: Symbolic Resonance Mapping (SRM) and the Entropic Equilibrium Function (EEF).* OSF. https://doi.org/10.17605/OSF.IO/YA9VQ
-
-Serban, G. F. (2026). *Politomorphism Research Project: SRM Framework, Computational Validation, and Case Studies.* Zenodo. https://doi.org/10.5281/zenodo.18962821
+Results: [SRM_raport_final.json](SRM_raport_final.json) | Chart: [SRM_grafic_final.png](SRM_grafic_final.png)
 
 ---
 
-## Case Study 1: SRM Validation — Marcel Ciolacu
+### Case Study 3 — Marcel Ciolacu (Romania, Dec 2025 – Mar 2026)
+Data: Media Cloud Romania National + State & Local | 539 articles | 50 sources | 91 days
 
-**Period:** December 2025 – March 2026
+| V | A | D | N | **SRM** | Interpretation |
+|---|---|---|---|---------|----------------|
+| 0.720 | 0.420 | 0.8412 | 0.650 | **0.0365** | LOW RESONANCE |
 
-Raw data and semantic drift calculations for this case study can be found in the `/data_ciolacu` folder.
+**Key finding — The Resonance Paradox:** High visibility (V=0.72, N=0.65), low resonance due to extreme semantic drift (D=0.8412). Six competing semantic frames: opposition critic, former premier blamed for crisis, local administrator, PSD party leader, judicial target, electoral strategist.
 
-### Validation Results
+**New diagnostic category:** *Post-Executive Symbolic Trap* — the transition from prime minister to opposition generates maximum semantic fragmentation as a structural consequence.
 
-![SRM Ciolacu](data_ciolacu/SRM_grafic_ciolacu.png)
-
-| Variable | Name | Value |
-|----------|------|-------|
-| **V** | Viral Velocity | 0.73 |
-| **A** | Affiliation / Amplitude | 0.42 |
-| **D** | Semantic Drift | — |
-| **e^(−λD)** | Exponential Decay (λ=2) | 0.1858 |
-| **N** | Network Coverage | 0.65 |
-
-**SRM = V × A × e^(−λD) × N = 0.73 × 0.42 × 0.1858 × 0.65 = 0.0365 → LOW RESONANCE**
-
-[View the complete dataset here](data_ciolacu/)
+Paper: [SRM_Ciolacu_Validation.docx](SRM_Ciolacu_Validation.docx) | Data: [data_ciolacu/](data_ciolacu/)
 
 ---
 
-## Case Study 2: SRM Validation — Călin Georgescu
+### Case Study 4 — Donald Trump (USA, Feb 2015 – Nov 2016)
+Data: Media Cloud US National + State & Local | 640 daily observations
 
-**Period:** November – December 2024
+| V | A | D | N | **SRM** | Interpretation |
+|---|---|---|---|---------|----------------|
+| 0.958 | 0.580 | 0.7340 | 0.720 | **0.0922** | MEDIUM RESONANCE |
 
-### Validation Results
+**Key finding:** First confirmed case of Medium Resonance. V=0.958 — 82.3x escalation from pre-campaign baseline. D=0.734 — semantically coherent enough for successful electoral mobilization.
 
-![SRM Georgescu](SRM_grafic_final.png)
-
-| Variable | Name | Value |
-|----------|------|-------|
-| **V** | Viral Velocity | 0.75 |
-| **A** | Affiliation / Amplitude | 0.398 |
-| **D** | Semantic Drift | — |
-| **e^(−λD)** | Exponential Decay (λ=2) | 0.119 |
-| **N** | Network Coverage | 0.60 |
-
-**SRM = V × A × e^(−λD) × N = 0.75 × 0.398 × 0.119 × 0.60 = 0.0307 → LOW RESONANCE**
-
-[View raw data](SRM_raport_final.json)
+Results: [SRM_trump_result.json](SRM_trump_result.json) | Chart: [SRM_trump_grafic.png](SRM_trump_grafic.png)
 
 ---
 
-## Case Study 3: SRM Validation — Donald Trump
+### Case Study 5 — Volodymyr Zelensky (UA/EU/US, May 2022 – Feb 2026)
+Data: Media Cloud US National + Europe | 2,387 daily observations (baseline + analysis period)
 
-**Period:** February 2015 – November 2016
+| V | A | D | N | **SRM** | Interpretation |
+|---|---|---|---|---------|----------------|
+| 0.873 | 0.640 | 0.680 | 0.781 | **0.1121** | MEDIUM RESONANCE |
 
-### Validation Results
+**Key finding:** Highest SRM score in the current dataset. Escalation of **123.6x** in US media from pre-invasion baseline (May 2019 – Feb 2022). Peak event: **February 28 – March 4, 2025** (Zelensky–Trump meeting at the White House). D=0.680 — lowest in dataset, reflecting dominance of the "resistance leader" frame across Western media.
 
-![SRM Trump Temporal](SRM_trump_temporal.png)
-![SRM Trump](SRM_trump_grafic.png)
+**New diagnostic category:** *Sustained Wartime Medium-Resonance Symbol* — multi-year high visibility, cross-cultural presence, semantic coherence maintained through the dominance of a single primary frame.
 
-| Variable | Name | Value |
-|----------|------|-------|
-| **V** | Viral Velocity | 0.9580 |
-| **A** | Affiliation / Amplitude | 0.5800 |
-| **D** | Semantic Drift | 0.734 |
-| **e^(−λD)** | Exponential Decay (λ=2) | 0.2660 |
-| **N** | Network Coverage | 0.7200 |
-
-**SRM = V × A × e^(−λD) × N = 0.9580 × 0.5800 × 0.2660 × 0.7200 = 0.0922 → MEDIUM RESONANCE**
-
-[View raw data](SRM_trump_result.json)
+Paper: [SRM_Zelensky_Validation.docx](SRM_Zelensky_Validation.docx) | Results: [SRM_zelensky_result.json](SRM_zelensky_result.json) | Data: [data_zelensky/](data_zelensky/)
 
 ---
 
-## Case Study 4: SRM Validation — Sunflower Movement
+## Diagnostic Categories (SRM Typology)
 
-**Period:** March – April 2014 (validation run: March 2026)
+| Category | Symbol | Key Feature |
+|----------|--------|-------------|
+| Fragmented Diffusion Symbol | Georgescu | Extreme D (0.8813), ideological fragmentation |
+| Post-Executive Symbolic Trap | Ciolacu | High D (0.8412), institutional role transition |
+| High-Velocity Campaign Symbol | Trump | Highest V (0.958), event-driven peaks |
+| Sustained Wartime Medium-Resonance Symbol | Zelensky | Lowest D (0.680), wartime coherence |
 
-Raw data and semantic drift calculations for this case study can be found in the `/data_sunflower` folder.
+---
 
-### Validation Results
+## Repository Structure
 
-![SRM Sunflower Graph](SRM_sunflower_grafic.png)
+```
+politomorphism/
+├── .github/workflows/
+│   ├── srm_zelensky_validation.yml
+│   └── srm_sunflower_validation.yml
+├── data_zelensky/
+│   ├── counts_zelensky_first_period.csv
+│   ├── counts_zelensky_second_period.csv
+│   ├── counts_zelensky_usa.csv
+│   └── counts_zelensky_europe.csv
+├── data_ciolacu/
+├── data_sunflower/
+├── SRM_Zelensky_Validation.docx
+├── SRM_Ciolacu_Validation.docx
+├── SRM_zelensky_result.json
+├── SRM_trump_result.json
+├── SRM_raport_final.json
+└── index.html
+```
 
-| Variable | Name | Value |
-|----------|------|-------|
-| **V** | Viral Velocity | 0.750 |
-| **A** | Affiliation / Amplitude | 0.393 |
-| **D** | Semantic Drift | 0.7737 |
-| **e^(−λD)** | Exponential Decay (λ=2) | 0.2128 |
-| **N** | Network Coverage | 0.600 (12 countries) |
+---
 
-**SRM = V × A × e^(−λD) × N = 0.750 × 0.393 × 0.2128 × 0.600 = 0.0376 → LOW RESONANCE**
+## Reproducibility
 
-### The Resonance Paradox
-
-This case demonstrates the *resonance paradox*: a symbol with high viral velocity (V=0.75) and broad international coverage (N=0.60, across 12 countries) registers low effective political resonance due to high semantic drift (D=0.7737). The exponential penalty e^(−λD) compresses the semantic factor to only 21.28% of its potential value, meaning the symbol circulates with meanings so fragmented that coherent political mobilization becomes practically impossible.
-
-**Countries represented in corpus:** Taiwan, United States, United Kingdom, Japan, Hong Kong, Australia, France, Germany, Canada, South Korea, Singapore, Netherlands
-
-[View raw data](./data_sunflower) | [SRM Report](SRM_sunflower_result.json)
+All data, code, and results are open-source and publicly available.  
+Data source: [mediacloud.org](https://mediacloud.org)  
+License: CC BY 4.0
