@@ -329,6 +329,7 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
 <nav>
   <div class="logo">POLITО<span>MORPHISM</span></div>
   <ul class="nav-links">
+    <li><a href="#research">Research</a></li>
     <li><a href="#cases">Use Cases</a></li>
     <li><a href="#demo">Live Demo</a></li>
     <li><a href="#how">How It Works</a></li>
@@ -392,6 +393,174 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
       <div class="case-title">Follow the Symbol, Find the Story</div>
       <div class="case-desc">Detect when a symbol's meaning is being engineered — coordinated campaigns, astroturfing, narrative hijacking. Semantic drift tracking shows exactly when it changed.</div>
     </div>
+  </div>
+</section>
+
+<section class="section" id="research" style="background:var(--white);border-top:2px solid var(--ink);">
+  <div class="sec-header">
+    <div>
+      <div class="sec-tag">Validated Research</div>
+      <div class="sec-title">Ten Symbols.<br><em>One Framework.</em></div>
+    </div>
+    <div class="sec-sub">Every SRM score below is computed from real data — Media Cloud corpora, VADER sentiment analysis, and Google Trends λ calibration. No simulations.</div>
+  </div>
+
+  <!-- λ CALIBRATION BANNER -->
+  <div style="border:2px solid var(--ink);padding:32px 36px;margin-top:48px;background:var(--bg);">
+    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">March 2026 — Methodological Update</div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:14px;">λ Empirical Calibration: The Decay Parameter Is Not a Constant</div>
+    <p style="font-size:11px;color:var(--text-mid);line-height:1.9;max-width:780px;">Using Google Trends data for all 10 validated symbols, λ was computed empirically from the ratio of average to peak search intensity. Result: λ ranges from <strong>2.31</strong> (Orbán — institutionally durable) to <strong>65.33</strong> (Georgescu — flash viral) — a 28-fold variation. The SRM formula is unchanged; λ is now <em>measured</em>, not assumed.</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);margin-top:24px;">
+      <div style="padding:20px 18px;border-right:1px solid var(--border);">
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Institutionally Durable</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);">λ 2–5</div>
+        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Orbán · Putin · Zelensky</div>
+      </div>
+      <div style="padding:20px 18px;border-right:1px solid var(--border);">
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Campaign / Ascension</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);">λ 6–8</div>
+        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Trump · Ciolacu</div>
+      </div>
+      <div style="padding:20px 18px;border-right:1px solid var(--border);">
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Electorally Volatile</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);">λ 12–20</div>
+        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Macron · Simion · Mandela</div>
+      </div>
+      <div style="padding:20px 18px;">
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Flash Viral</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--red);">λ 50–70</div>
+        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Georgescu</div>
+      </div>
+    </div>
+    <div style="margin-top:18px;font-size:10px;color:var(--text-dim);">
+      Recommended default: <strong>λ=7</strong> (empirical median from fully validated cases: Trump + Ciolacu) · 
+      <a href="SRM_Lambda_Calibration_FULL.docx" style="color:var(--red);text-decoration:none;">Download full paper ↓</a> · 
+      <a href="srm_lambda_calibration.json" style="color:var(--red);text-decoration:none;">JSON data ↓</a>
+    </div>
+  </div>
+
+  <!-- COMPARATIVE TABLE -->
+  <div style="overflow-x:auto;margin-top:48px;">
+    <table style="width:100%;border-collapse:collapse;font-size:10px;">
+      <thead>
+        <tr style="background:var(--ink);color:#fff;">
+          <th style="padding:12px 14px;text-align:left;font-weight:500;letter-spacing:1px;">Symbol / Context</th>
+          <th style="padding:12px 10px;text-align:center;">V</th>
+          <th style="padding:12px 10px;text-align:center;">A</th>
+          <th style="padding:12px 10px;text-align:center;">D</th>
+          <th style="padding:12px 10px;text-align:center;">N</th>
+          <th style="padding:12px 10px;text-align:center;">SRM (λ=2)</th>
+          <th style="padding:12px 10px;text-align:center;">λ emp.</th>
+          <th style="padding:12px 14px;text-align:left;">Category</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">George Simion <span style="color:var(--text-dim);">(RO, 2024–26)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.279</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.099</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.812</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.996</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0054</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">12.41</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Fragmented Diffusion</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Viktor Orbán <span style="color:var(--text-dim);">(HU, 2022–26)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.168</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.236</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.798</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.812</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0065</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">2.31</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Longevity Saturation</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Nelson Mandela <span style="color:var(--text-dim);">(SA, 2013)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.311</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.246</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.742</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.510</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0088</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">19.66</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Legacy Resonance</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Vladimir Putin <span style="color:var(--text-dim);">(2022–26)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.217</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.259</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.847</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">1.000</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0103</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">4.90</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Pre-Saturated Contradicted</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Emmanuel Macron <span style="color:var(--text-dim);">(FR, 2017)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.507</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.168</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.810</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">1.000</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0169</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">12.53</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Rapid Emergence</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Călin Georgescu <span style="color:var(--text-dim);">(RO, 2024)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.750</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.398</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.881</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.600</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0307</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);color:var(--red);font-weight:500;">65.33</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Flash Viral</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Marcel Ciolacu <span style="color:var(--text-dim);">(RO, 2025–26)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.720</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.420</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.841</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.650</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0365</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">6.57</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Post-Executive Trap</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Sunflower Movement <span style="color:var(--text-dim);">(TW, 2014)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.680</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.420</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.774</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.580</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0376</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);color:var(--text-dim);">—</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Civic Mobilization</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);"><strong>Donald Trump</strong> <span style="color:var(--text-dim);">(US, 2015–16)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.958</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.580</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.734</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.720</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:700;color:var(--gold);">0.0922</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">7.01</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--gold);font-weight:500;">Medium — High-Velocity Campaign</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;"><strong>Zelensky</strong> <span style="color:var(--text-dim);">(UA, 2022–26)</span></td>
+          <td style="padding:10px;text-align:center;">0.873</td>
+          <td style="padding:10px;text-align:center;">0.640</td>
+          <td style="padding:10px;text-align:center;">0.680</td>
+          <td style="padding:10px;text-align:center;">0.781</td>
+          <td style="padding:10px;text-align:center;font-weight:700;color:var(--gold);">0.1121</td>
+          <td style="padding:10px;text-align:center;">5.11</td>
+          <td style="padding:10px 14px;color:var(--gold);font-weight:500;">Medium (λ=2) → Low (λ emp.)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:16px;font-size:9px;color:var(--text-dim);letter-spacing:0.5px;">
+    All SRM scores computed with λ=2 (standard). λ emp. = empirical decay constant from Google Trends (March 2026). 
+    Full calibration paper: <a href="SRM_Lambda_Calibration_FULL.docx" style="color:var(--red);text-decoration:none;">SRM_Lambda_Calibration_FULL.docx</a>
   </div>
 </section>
 
