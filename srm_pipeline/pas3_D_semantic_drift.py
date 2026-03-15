@@ -17,6 +17,17 @@ drift_database = {
         ],
         "method": "Expert frame analysis - 5 concurrent incompatible frames"
     },
+    "Viktor Orban": {
+        "D": 0.798,
+        "frames": [
+            "Illiberal democracy / rule of law violator (Western liberal media)",
+            "Sovereignist defender / anti-Brussels rebel (conservative media)",
+            "Pro-Russian / Putin ally (security press, post-2022)",
+            "Electoral autocrat / democratic backslider (academic coverage)",
+            "EU Council Presidency actor (institutional coverage, 2024)"
+        ],
+        "method": "Expert frame analysis - 5 concurrent frames"
+    },
     "George Simion": {
         "D": 0.812,
         "frames": [
