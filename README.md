@@ -185,6 +185,8 @@ VADER corpus: 4,070 English titles containing "mandela" | Total articles: 11,102
 - Dec 5, 2013 — ratio=0.05037 (breaking news of passing)
 - Jun 2013 — avg ratio=0.005329 (hospitalization coverage peak)
 
+![SRM Mandela Chart](data_mandela/SRM_Mandela_chart.png)
+
 Paper: [SRM_Mandela_Validation.docx](SRM_Mandela_Validation.docx) | Data: [data_mandela/](data_mandela/)
 
 ---
