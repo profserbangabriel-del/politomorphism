@@ -1,0 +1,13 @@
+{
+  "symbol": "Nelson Mandela",
+  "V": 0.3106,
+  "A": 0.2462,
+  "D": 0.742,
+  "semantic_factor": 0.2267,
+  "N": 0.51,
+  "SRM": 0.0088,
+  "interpretation": "LOW RESONANCE",
+  "formula": "SRM = 0.3106 x 0.2462 x 0.2267 x 0.5100",
+  "data_source": "New York Times Archive API",
+  "typology": "Legacy Resonance Symbol"
+}

@@ -71,6 +71,17 @@ drift_database = {
         ],
         "method": "Expert frame analysis"
     },
+    "Nelson Mandela": {
+        "D": 0.742,
+        "frames": [
+            "Liberation icon / anti-apartheid hero (dominant frame, universal across all media types)",
+            "Reconciliation symbol / Rainbow Nation architect (South African and international institutional media)",
+            "Aging elder / mortality narrative (health coverage 2010-2013, intensifying with hospitalizations)",
+            "Legacy assessor / post-apartheid critique (analytical media questioning economic legacy)",
+            "Global mourning anchor (December 2013, pan-media convergence on death and funeral)"
+        ],
+        "method": "Expert frame analysis - 5 frames, low fragmentation (near-universal positive consensus)"
+    },
     "Calin Georgescu": {
         "D": 0.881,
         "frames": [

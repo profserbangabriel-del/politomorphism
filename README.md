@@ -53,14 +53,18 @@ Maximum visibility, low resonance due to acute pre-saturation and geopolitical c
 ### 6. Longevity Saturation Symbol *(new — Case Study 8)*
 Chronic long-term media presence prevents symbolic emergence. Example: **Viktor Orbán (V=0.168, 15+ years baseline, SRM=0.0065)**.
 
+### 7. Legacy Resonance Symbol *(new — Case Study 9)*
+Acute death/memorial spike combined with near-universal semantic consensus suppresses SRM despite high V. Example: **Nelson Mandela (V=0.311, D=0.742, SRM=0.0088)**.
+
 ---
 
-## Comparative Dataset — 8 Validated Symbols
+## Comparative Dataset — 9 Validated Symbols
 
 | Symbol / Context | V | A | D | N | SRM | Category |
 |-----------------|---|---|---|---|-----|----------|
 | George Simion (RO, 2024–26) | 0.279 | 0.099* | 0.812 | 0.996 | 0.0054 | Low — Fragmented Diffusion |
-| **Viktor Orbán (HU, 2022–26)** | **0.168** | **0.236** | **0.798** | **0.812** | **0.0065** | **Low — Longevity Saturation** |
+| Viktor Orbán (HU, 2022–26) | 0.168 | 0.236 | 0.798 | 0.812 | 0.0065 | Low — Longevity Saturation |
+| **Nelson Mandela (SA, 2013)** | **0.311** | **0.246** | **0.742** | **0.510** | **0.0088** | **Low — Legacy Resonance** |
 | Vladimir Putin (2022–26) | 0.217 | 0.259 | 0.847 | 1.000 | 0.0103 | Low — Pre-Saturated Contradicted |
 | Călin Georgescu (RO, 2024) | 0.750 | 0.398 | 0.881 | 0.600 | 0.0307 | Low — Fragmented Diffusion |
 | Marcel Ciolacu (RO, 2025–26) | 0.720 | 0.420 | 0.841 | 0.650 | 0.0365 | Low — Post-Executive Trap |
@@ -162,6 +166,29 @@ Paper: [SRM_Orban_Validation.docx](SRM_Orban_Validation.docx) | Data: [data_orba
 
 ---
 
+### Case Study 9 — Nelson Mandela (South Africa, 2013)
+
+Data: Media Cloud US National + US State & Local | 1,096 daily observations  
+Baseline: Jan 1, 2010 – Jan 1, 2012 (731 obs.) | avg 3.63 articles/day | avg ratio 0.000639  
+Analysis: Jan 1, 2013 – Dec 31, 2013 (365 obs.) | avg 23.14 articles/day | avg ratio 0.002679  
+VADER corpus: 4,070 English titles containing "mandela" | Total articles: 11,102
+
+| V | A | D | N | SRM | Interpretation |
+|---|---|---|---|-----|----------------|
+| 0.311 | 0.246 | 0.742 | 0.510 | 0.0088 | LOW RESONANCE |
+
+**Legacy Paradox:** Mandela's death (December 5, 2013) generated the highest single-day ratio in the dataset (0.08618 on Dec 6) — yet annual SRM=0.0088 due to semantic coherence compression (e⁻ᵏᴰ=0.2267). Near-universal positive consensus (D=0.742, lowest after Zelensky) prevents discourse fragmentation. **Seventh typology identified: Legacy Resonance Symbol.**
+
+**Peak events:**
+- Dec 6, 2013 — ratio=0.08618 (death announced, 373 articles)
+- Dec 10, 2013 — ratio=0.05247 (Memorial at FNB Stadium, 100+ world leaders)
+- Dec 5, 2013 — ratio=0.05037 (breaking news of passing)
+- Jun 2013 — avg ratio=0.005329 (hospitalization coverage peak)
+
+Paper: [SRM_Mandela_Validation.docx](SRM_Mandela_Validation.docx) | Data: [data_mandela/](data_mandela/)
+
+---
+
 ## Repository Structure
 
 ```
@@ -173,6 +200,7 @@ politomorphism/
 │   ├── srm_simion_validation.yml
 │   └── srm_orban_validation.yml
 ├── srm_pipeline/
+│   ├── mandela_collect.py
 │   ├── pas2_A_sentiment.py
 │   ├── pas2_A_simion.py
 │   ├── pas2_A_orban.py
@@ -181,8 +209,14 @@ politomorphism/
 │   ├── pas4_N_simion.py
 │   ├── pas4_N_orban.py
 │   ├── pas5_SRM_final.py
+│   ├── pas5_SRM_mandela.py
 │   ├── pas5_SRM_simion.py
 │   └── pas5_SRM_orban.py
+├── data_mandela/
+│   ├── mandela_baseline.csv
+│   ├── mandela_analysis.csv
+│   ├── mandela_titles.csv
+│   └── mandela_counts_combined.csv
 ├── data_ciolacu/
 ├── data_sunflower/
 ├── data_zelensky/
