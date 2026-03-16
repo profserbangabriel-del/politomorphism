@@ -19,7 +19,9 @@ queries = [
     ("calin georgescu",           "2024-10-01 2025-03-01"),
     ("marcel ciolacu",            "2025-01-01 2026-03-01"),
     ("sunflower movement taiwan", "2014-03-01 2014-06-01"),
+    ("hugo chavez",               "2001-01-01 2002-12-31"),
 ]
+results = []
 
 results = []
 for term, timeframe in queries:
