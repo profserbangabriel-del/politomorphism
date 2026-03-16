@@ -285,3 +285,52 @@ All data, code, and results are open source and publicly available.
 Data source: [mediacloud.org](https://mediacloud.org) + [Google Trends](https://trends.google.com)  
 λ calibration: [scripts/get_trends.py](scripts/get_trends.py) | Output: [srm_lambda_calibration.json](srm_lambda_calibration.json)  
 License: CC BY 4.0
+
+---
+
+### Case Study 11 — Hugo Chávez (Venezuela, 2012–2013)
+
+Data: Media Cloud US National + Venezuela State & Local | 732 daily observations | 3,073 English titles  
+Baseline: Jan 1 – Oct 31, 2012 | Analysis: Nov 1, 2012 – Dec 31, 2013 | Acute Window: Mar 5–15, 2013  
+Google Trends: avg=3.0, peak=100, **λ empiric = 16.67** (Electorally Volatile)
+
+| Mode | V | A | D | N | SRM (λ=2) | Interpretation |
+|------|---|---|---|---|-----------|----------------|
+| SUSTAINED (Nov 2012–Dec 2013) | 0.186 | 0.290 | 0.720 | 0.941 | 0.0121 | LOW RESONANCE |
+| **ACUTE (Mar 5–15, 2013 — death)** | **0.689** | **0.358** | **0.380** | **1.000** | **0.1154** | **MEDIUM RESONANCE** |
+
+**Dual-Mode SRM — Key Finding:** SUSTAINED = 0.0121 (LOW) vs ACUTE = 0.1154 (MEDIUM) — a 9.5× amplification produced by Semantic Drift collapsing from D=0.720 to D=0.380 during the 11-day death window. HIGH RESONANCE (SRM > 0.20) is established as a theoretical ceiling — empirically unobserved in open media systems (requires D < 0.09).
+
+**Acute Amplification Factor (AAF) = 9.5** — new diagnostic metric introduced by this validation.  
+**Typology: Revolutionary Legacy Symbol** — 12th typological category in the Politomorphism framework.
+
+**Peak events:**
+- Oct 4, 2013 — ratio=0.09758 (978 articles) — Maduro succession crisis / Chávez anniversary
+- Nov 26, 2012 — ratio=0.07247 (827 articles) — Cancer surgery announcement + Maduro named successor
+- Mar 5, 2013 — ratio=0.04803 (583 articles) — Death announced
+- Mar 6, 2013 — ratio=0.03179 (385 articles) — Global funeral coverage
+
+![SRM Chávez Chart](data_chavez/SRM_chavez_chart.png)
+
+Paper: [SRM_Chavez_Validation.docx](SRM_Chavez_Validation.docx) | Data: [data_chavez/](data_chavez/)
+
+---
+
+## λ Calibration Update — Eleven Symbols (March 2026)
+
+Dataset median λ updated to **9.77** with Hugo Chávez included (revised from 7.0 with 10 symbols).
+
+| Symbol | λ empiric | Category |
+|--------|-----------|----------|
+| Viktor Orbán | 2.33 | Institutionally Durable |
+| Vladimir Putin | 5.00 | Institutionally Durable |
+| Zelensky | 5.22 | Institutionally Durable |
+| Marcel Ciolacu | 6.62 | Campaign / Ascension |
+| Donald Trump | 7.16 | Campaign / Ascension |
+| Emmanuel Macron | 12.38 | Electorally Volatile |
+| George Simion | 12.41 | Electorally Volatile |
+| Hugo Chávez | 16.67 | Electorally Volatile |
+| Nelson Mandela | 19.28 | Electorally Volatile |
+| Călin Georgescu | 67.14 | Flash Viral |
+
+**Recommended default λ for standard SRM computation: λ=10** (updated from λ=7).
