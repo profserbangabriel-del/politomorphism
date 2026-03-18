@@ -2,26 +2,34 @@ import pandas as pd
 import numpy as np
 from scipy.optimize import brentq
 
+# Load the CSV file
 df = pd.read_csv('chariel hebdo counts.csv', parse_dates=['date'])
+
+# Use the 'count' column
 counts = df['count'].values
 
+# Calculate average and peak
 avg_count = np.mean(counts)
 peak_count = np.max(counts)
-raport = avg_count / peak_count
+ratio = avg_count / peak_count
 
+# Calculate period in years
 start_date = df['date'].min()
 end_date = df['date'].max()
-T_ani = (end_date - start_date).days / 365.25
+T_years = (end_date - start_date).days / 365.25
 
-def functie(lam):
+# Function to solve for lambda
+def func(lam):
     if lam == 0:
-        return 1 - raport
-    return (1 - np.exp(-lam * T_ani)) / (lam * T_ani) - raport
+        return 1 - ratio
+    return (1 - np.exp(-lam * T_years)) / (lam * T_years) - ratio
 
-lambda_empiric = brentq(functie, 1e-6, 100)
+# Solve numerically for lambda
+lambda_empirical = brentq(func, 1e-6, 100)
 
-print(f"Perioada: {start_date.date()} – {end_date.date()} ({T_ani:.3f} ani)")
-print(f"Media mențiunilor: {avg_count:.2f}")
-print(f"Vârful mențiunilor: {peak_count}")
-print(f"Raport medie/vârf: {raport:.6f}")
-print(f"λ empiric = {lambda_empiric:.4f}")
+# Print results
+print(f"Period: {start_date.date()} – {end_date.date()} ({T_years:.3f} years)")
+print(f"Average mentions: {avg_count:.2f}")
+print(f"Peak mentions: {peak_count}")
+print(f"Average/Peak ratio: {ratio:.6f}")
+print(f"Empirical λ = {lambda_empirical:.4f}")
