@@ -24,8 +24,19 @@ def func(lam):
         return 1 - ratio
     return (1 - np.exp(-lam * T_years)) / (lam * T_years) - ratio
 
+# Find a bracket where f(a) and f(b) have opposite signs
+a = 1e-6          # lower bound (near zero)
+b = 100           # initial upper bound
+max_iter = 10     # safety to avoid infinite loop
+for _ in range(max_iter):
+    if func(a) * func(b) <= 0:
+        break
+    b *= 10        # increase upper bound
+else:
+    raise ValueError("Could not find a bracket with sign change. Check ratio or T.")
+
 # Solve numerically for lambda
-lambda_empirical = brentq(func, 1e-6, 100)
+lambda_empirical = brentq(func, a, b)
 
 # Print results
 print(f"Period: {start_date.date()} – {end_date.date()} ({T_years:.3f} years)")
