@@ -1,12 +1,13 @@
 """
 compute_D.py — Transparent D operationalization for SRM
 Politomorphism Research Project | Serban Gabriel Florin
-License: CC BY 4.0 | github.com/profserbangabriel-del/politomorphism
+License: CC BY 4.4 | github.com/profserbangabriel-del/politomorphism
 
 D = alpha * PE + (1 - alpha) * ICI
 
 PE  = Polysemy Entropy via LDA + Jensen-Shannon Divergence
 ICI = Intra-contextual Incoherence via sentence embeddings
+      Memory-safe: max 3000 titles sampled for large corpora
 """
 
 import numpy as np
@@ -23,7 +24,7 @@ _model = None
 def get_model():
     global _model
     if _model is None:
-        print("Loading sentence model (first run only)...")
+        print("Loading sentence model (first run only)...", flush=True)
         _model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
     return _model
 
@@ -34,17 +35,16 @@ def compute_PE(texts: list, n_topics: int = 10) -> float:
     Returns value in [0, 1].
     """
     if len(texts) < 5:
-        print(f"  WARNING: Only {len(texts)} texts — PE may be unreliable.")
+        print(f"  WARNING: Only {len(texts)} texts — PE may be unreliable.", flush=True)
 
     vec = TfidfVectorizer(
         max_features=5000,
-        min_df=1,      # min_df=1 for small corpora
+        min_df=1,
         max_df=0.95,
         ngram_range=(1, 2)
     )
     X = vec.fit_transform(texts)
 
-    # Adjust n_topics if corpus is very small
     n_topics = min(n_topics, len(texts) - 1, 10)
     n_topics = max(n_topics, 2)
 
@@ -64,13 +64,23 @@ def compute_PE(texts: list, n_topics: int = 10) -> float:
     return round(pe, 4)
 
 
-def compute_ICI(titles: list) -> float:
+def compute_ICI(titles: list, max_titles: int = 3000) -> float:
     """
     Intra-contextual Incoherence — framing divergence across outlets.
     Returns value in [0, 1].
+    Memory-safe: samples max 3000 titles to avoid OOM crash on large corpora.
+    Matrix at n=3000 is ~1.4GB float32 — safe for GitHub Actions (7GB RAM).
+    Matrix at n=70000 is ~37GB — guaranteed segfault.
     """
     if len(titles) < 2:
         return 0.0
+
+    # ── MEMORY SAFETY: sample if corpus too large ──────────────────────────
+    if len(titles) > max_titles:
+        rng = np.random.default_rng(42)
+        idx = rng.choice(len(titles), size=max_titles, replace=False)
+        titles = [titles[i] for i in sorted(idx)]
+        print(f"  ICI: sampled {max_titles} titles (memory safety)", flush=True)
 
     model = get_model()
     emb = model.encode(
@@ -79,9 +89,18 @@ def compute_ICI(titles: list) -> float:
         show_progress_bar=False,
         normalize_embeddings=True
     )
-    # Mean pairwise cosine similarity (dot product for L2-normalized vectors)
-    cos_sim = (emb @ emb.T).mean()
-    ici = float(1.0 - cos_sim)
+
+    # ── CHUNKED MATMUL: avoids single large allocation ─────────────────────
+    n = len(emb)
+    chunk = 500
+    sim_sum = 0.0
+    count = 0
+    for i in range(0, n, chunk):
+        block = emb[i:i + chunk] @ emb.T
+        sim_sum += float(block.sum())
+        count += block.size
+
+    ici = float(1.0 - sim_sum / count)
     return round(ici, 4)
 
 
@@ -97,52 +116,48 @@ def compute_D(
 
     Parameters
     ----------
-    texts    : list of str — article bodies (or first paragraphs)
-    titles   : list of str — article titles (used for ICI)
-    alpha    : float — weight of PE (1-alpha = weight of ICI). Default 0.5
-    bootstrap_n : int — number of bootstrap samples for CI
-    n_topics : int — number of LDA topics. Default 10
+    texts       : list of str — article bodies or titles
+    titles      : list of str — article titles (used for ICI)
+    alpha       : float — weight of PE (1-alpha = weight of ICI). Default 0.5
+    bootstrap_n : int   — bootstrap samples for CI. Default 500
+    n_topics    : int   — LDA topics. Default 10
 
     Returns
     -------
-    dict with keys:
-        PE, ICI, D, alpha,
-        D_std, D_ci_low, D_ci_high,
-        n_docs, bootstrap_n
+    dict: PE, ICI, D, alpha, D_std, D_ci_low, D_ci_high, n_docs, bootstrap_n
     """
-    print(f"  Computing PE on {len(texts)} texts...")
+    print(f"  Computing PE on {len(texts)} texts...", flush=True)
     PE = compute_PE(texts, n_topics=n_topics)
 
-    print(f"  Computing ICI on {len(titles)} titles...")
+    print(f"  Computing ICI on {len(titles)} titles...", flush=True)
     ICI = compute_ICI(titles)
 
     D = round(alpha * PE + (1 - alpha) * ICI, 4)
-    print(f"  PE={PE}  ICI={ICI}  D={D}")
+    print(f"  PE={PE}  ICI={ICI}  D={D}", flush=True)
 
-    # Bootstrap confidence interval
-    print(f"  Bootstrap CI ({bootstrap_n} samples)...")
+    print(f"  Bootstrap CI ({bootstrap_n} samples)...", flush=True)
     boot = []
     for i in range(bootstrap_n):
         idx = resample(range(len(texts)), random_state=i)
-        t_b = [texts[j] for j in idx]
+        t_b  = [texts[j]  for j in idx]
         ti_b = [titles[j] for j in idx]
-        pe_b = compute_PE(t_b, n_topics=n_topics)
+        pe_b  = compute_PE(t_b, n_topics=n_topics)
         ici_b = compute_ICI(ti_b)
         boot.append(alpha * pe_b + (1 - alpha) * ici_b)
 
-    D_std = float(np.std(boot))
+    D_std     = float(np.std(boot))
     D_ci_low  = round(max(0.0, D - 1.96 * D_std), 4)
     D_ci_high = round(min(1.0, D + 1.96 * D_std), 4)
 
     return {
-        "PE":         PE,
-        "ICI":        ICI,
-        "D":          D,
-        "alpha":      alpha,
-        "D_std":      round(D_std, 4),
-        "D_ci_low":   D_ci_low,
-        "D_ci_high":  D_ci_high,
-        "n_docs":     len(texts),
+        "PE":          PE,
+        "ICI":         ICI,
+        "D":           D,
+        "alpha":       alpha,
+        "D_std":       round(D_std, 4),
+        "D_ci_low":    D_ci_low,
+        "D_ci_high":   D_ci_high,
+        "n_docs":      len(texts),
         "bootstrap_n": bootstrap_n
     }
 
@@ -150,16 +165,6 @@ def compute_D(
 def propagate_to_srm(V, A, N, lam, result: dict) -> dict:
     """
     Propagate D uncertainty to SRM confidence interval.
-
-    Parameters
-    ----------
-    V, A, N : float — SRM variables
-    lam     : float — lambda (empirical or default)
-    result  : dict — output of compute_D()
-
-    Returns
-    -------
-    dict with SRM_point, SRM_low, SRM_high, SRM_interval_pct
     """
     D      = result["D"]
     D_low  = result["D_ci_low"]
@@ -175,22 +180,20 @@ def propagate_to_srm(V, A, N, lam, result: dict) -> dict:
         interval_pct = None
 
     return {
-        "SRM_point":       SRM_point,
-        "SRM_low":         SRM_low,
-        "SRM_high":        SRM_high,
+        "SRM_point":        SRM_point,
+        "SRM_low":          SRM_low,
+        "SRM_high":         SRM_high,
         "SRM_interval_pct": interval_pct,
-        "lambda_used":     lam
+        "lambda_used":      lam
     }
 
 
 def load_texts_from_csv(csv_path: str,
-                         text_col: str = "title",
-                         body_col: str = None) -> tuple:
+                        text_col: str = "title",
+                        body_col: str = None) -> tuple:
     """
     Load titles and texts from a Media Cloud CSV export.
-
-    Returns (texts, titles) where texts = bodies if body_col provided,
-    else texts = titles (acceptable fallback for PE).
+    Returns (texts, titles).
     """
     import csv
     titles = []
@@ -204,7 +207,7 @@ def load_texts_from_csv(csv_path: str,
                 if body_col and row.get(body_col, "").strip():
                     texts.append(row[body_col].strip())
                 else:
-                    texts.append(t)  # fallback: use title as text
+                    texts.append(t)
     return texts, titles
 
 
@@ -214,20 +217,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Compute D (Semantic Drift) for SRM pipeline"
     )
-    parser.add_argument("--csv",      required=True,  help="Path to Media Cloud CSV")
-    parser.add_argument("--symbol",   required=True,  help="Symbol name (for output)")
-    parser.add_argument("--V",        type=float,     help="Viral Velocity (optional, for SRM propagation)")
-    parser.add_argument("--A",        type=float,     help="Affective Weight (optional)")
-    parser.add_argument("--N",        type=float,     help="Network Coverage (optional)")
-    parser.add_argument("--lam",      type=float, default=7.0, help="Lambda (default=7)")
-    parser.add_argument("--alpha",    type=float, default=0.5, help="PE weight (default=0.5)")
-    parser.add_argument("--bootstrap",type=int,   default=500, help="Bootstrap samples (default=500)")
-    parser.add_argument("--out",      default=None,   help="Output JSON path (optional)")
+    parser.add_argument("--csv",       required=True,            help="Path to Media Cloud CSV")
+    parser.add_argument("--symbol",    required=True,            help="Symbol name (for output)")
+    parser.add_argument("--V",         type=float, default=None, help="Viral Velocity (optional)")
+    parser.add_argument("--A",         type=float, default=None, help="Affective Weight (optional)")
+    parser.add_argument("--N",         type=float, default=None, help="Network Coverage (optional)")
+    parser.add_argument("--lam",       type=float, default=7.0,  help="Lambda (default=7)")
+    parser.add_argument("--alpha",     type=float, default=0.5,  help="PE weight (default=0.5)")
+    parser.add_argument("--bootstrap", type=int,   default=500,  help="Bootstrap samples (default=500)")
+    parser.add_argument("--out",       default=None,             help="Output JSON path (optional)")
     args = parser.parse_args()
 
-    print(f"\n=== compute_D.py — {args.symbol} ===")
+    print(f"\n=== compute_D.py — {args.symbol} ===", flush=True)
     texts, titles = load_texts_from_csv(args.csv)
-    print(f"Loaded {len(texts)} articles from {args.csv}")
+    print(f"Loaded {len(texts)} articles from {args.csv}", flush=True)
 
     result = compute_D(
         texts=texts,
@@ -239,18 +242,19 @@ if __name__ == "__main__":
     print(f"\n--- Results for {args.symbol} ---")
     print(f"  PE  = {result['PE']}")
     print(f"  ICI = {result['ICI']}")
-    print(f"  D   = {result['D']}  (α={result['alpha']})")
-    print(f"  95% CI: [{result['D_ci_low']}, {result['D_ci_high']}]  ±{result['D_std']}")
+    print(f"  D   = {result['D']}  (alpha={result['alpha']})")
+    print(f"  95% CI: [{result['D_ci_low']}, {result['D_ci_high']}]  std={result['D_std']}")
 
     output = {"symbol": args.symbol, "D_result": result}
 
     if args.V and args.A and args.N:
         srm = propagate_to_srm(args.V, args.A, args.N, args.lam, result)
         output["SRM"] = srm
-        print(f"\n  SRM({args.lam}) = {srm['SRM_point']}")
+        print(f"\n  SRM(lambda={args.lam}) = {srm['SRM_point']}")
         print(f"  SRM interval: [{srm['SRM_low']}, {srm['SRM_high']}]  (±{srm['SRM_interval_pct']}%)")
 
-    out_path = args.out or f"D_result_{args.symbol.replace(' ','_')}.json"
+    out_path = args.out or f"D_result_{args.symbol.replace(' ', '_')}.json"
+    os.makedirs(os.path.dirname(out_path) if os.path.dirname(out_path) else ".", exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
-    print(f"\nSaved to {out_path}")
+    print(f"\nSaved to {out_path}", flush=True)
