@@ -10,7 +10,7 @@ on:
       csv_path:
         description: 'Path to Media Cloud CSV (relative to repo root)'
         required: true
-        default: 'TRUMP+DATA.csv'
+        default: 'TRUMP-DATA.csv'
       V:
         description: 'Viral Velocity'
         required: false
