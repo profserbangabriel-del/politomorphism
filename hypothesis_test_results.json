@@ -1,0 +1,22 @@
+{
+  "note": "Replace estimated PE/ICI with compute_D.py output for definitive results",
+  "H1": {
+    "hypothesis": "H1: Flash Viral symbols are ICI-dominant (ICI > PE)",
+    "flash_cases": [
+      "Călin Georgescu",
+      "Charlie Hebdo"
+    ],
+    "flash_PE_values": [
+      0.65,
+      0.58
+    ],
+    "flash_ICI_values": [
+      0.97,
+      0.94
+    ],
+    "flash_ICI_PE_ratio": 1.5565,
+    "nonflash_ICI_PE_ratio": 1.1353,
+    "all_flash_ICI_dominant": true,
+    "mannwhitney_stat": 22.0,
+    "mannwhitney_p": 0.0128,
+    "supported": 

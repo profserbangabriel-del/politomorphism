@@ -1,0 +1,89 @@
+{
+  "note": "Estimated values — replace PE_est/ICI_est with compute_D.py output",
+  "global_calibration": {
+    "alpha_optimal": 0.351,
+    "RMSE_at_alpha_opt": 0.0117,
+    "MAE_at_alpha_opt": 0.0103,
+    "RMSE_at_alpha_05": 0.0233,
+    "MAE_at_alpha_05": 0.013,
+    "pearson_r": 0.9961,
+    "pearson_p": 0.0,
+    "spearman_r": 0.979,
+    "spearman_p": 0.0,
+    "verdict": "Consider updating to alpha=0.351"
+  },
+  "typology_calibration": {
+    "Civic Mobilization": {
+      "n": 1,
+      "note": "Insufficient cases for calibration (n<2)"
+    },
+    "Flash Viral": {
+      "n": 1,
+      "note": "Insufficient cases for calibration (n<2)"
+    },
+    "Electorally Volatile": {
+      "n": 5,
+      "cases": [
+        "George Simion",
+        "Nelson Mandela",
+        "Emmanuel Macron",
+        "Hugo Chávez (sust.)",
+        "Hugo Chávez (acute)"
+      ],
+      "alpha_optimal": 0.378,
+      "RMSE": 0.0073,
+      "PE_mean": 0.632,
+      "ICI_mean": 0.732,
+      "D_legacy_mean": 0.6928,
+      "interpretation": "Balanced: PE and ICI contribute equally"
+    },
+    "Institutionally Durable": {
+      "n": 3,
+      "cases": [
+        "Volodymyr Zelensky",
+        "Vladimir Putin",
+        "Viktor Orbán"
+      ],
+      "alpha_optimal": 0.4526,
+      "RMSE": 0.0039,
+      "PE_mean": 0.74,
+      "ICI_mean": 0.8,
+      "D_legacy_mean": 0.775,
+      "interpretation": "Balanced: PE and ICI contribute equally"
+    },
+    "Campaign/Ascension": {
+      "n": 2,
+      "cases": [
+        "Marcel Ciolacu",
+        "Donald Trump"
+      ],
+      "alpha_optimal": 0.419,
+      "RMSE": 0.0055,
+      "PE_mean": 0.765,
+      "ICI_mean": 0.795,
+      "D_legacy_mean": 0.7875,
+      "interpretation": "Balanced: PE and ICI contribute equally"
+    }
+  },
+  "per_case_decomposition": [
+    {
+      "symbol": "Sunflower Movement",
+      "typology": "Civic Mobilization",
+      "D_legacy": 0.774,
+      "PE_est": 0.72,
+      "ICI_est": 0.83,
+      "D_new": 0.775,
+      "delta": 0.001,
+      "dominant": "ICI",
+      "H1_support": false
+    },
+    {
+      "symbol": "Călin Georgescu",
+      "typology": "Flash Viral",
+      "D_legacy": 0.881,
+      "PE_est": 0.65,
+      "ICI_est": 0.97,
+      "D_new": 0.81,
+      "delta": -0.071,
+      "dominant": "ICI",
+      "H1_support": 
