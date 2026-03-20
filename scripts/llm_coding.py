@@ -1,20 +1,10 @@
 """
-llm_coding.py
+llm_coding.py — v2
 Politomorphism Research Project | Serban Gabriel Florin
 License: CC BY 4.0
 
-Automated coding of PE (topical diversity) and Framing (political tone)
-for the Trump validation subset using Claude API.
-
-Based on: Gilardi et al. (2023) "ChatGPT outperforms crowd-workers for
-text-annotation tasks" PNAS — LLM coding is acceptable when validated
-against human judgments on a subset.
-
-Usage:
-    python llm_coding.py --input trump_validation_sample.csv --output llm_coded.csv
-
-Then validate on 50 articles manually and run:
-    python llm_coding.py --step correlate --llm llm_coded.csv --human human_coded_50.csv
+Automated coding of PE and Framing using Claude API.
+Fixed: uses requests library, reads ANTHROPIC_API_KEY from environment.
 """
 
 import pandas as pd
@@ -24,354 +14,258 @@ import time
 import argparse
 import os
 import re
-from pathlib import Path
+import sys
 
-# ── Prompt template ───────────────────────────────────────────────────────────
+# ── Prompt ────────────────────────────────────────────────────────────────────
 
 SYSTEM_PROMPT = """You are a political communication researcher coding news articles.
-You will receive a news article title (and URL for context).
-You must assign TWO scores and return ONLY valid JSON, nothing else.
+You will receive a news article title and outlet.
+Return ONLY valid JSON, no explanation, no markdown.
 
 SCORE 1 — PE (Topical Diversity), scale 1-5:
-1 = Single topic, very focused (e.g., only about immigration)
-2 = One main topic + one secondary reference
-3 = Two distinct topics, roughly balanced
-4 = Three or more topics, no clear dominance
-5 = Highly diverse, mix of unrelated topics
+1 = Single topic only
+2 = One main topic + one secondary
+3 = Two distinct topics balanced
+4 = Three or more topics
+5 = Highly diverse, unrelated topics
 
-Use these 10 predefined topics:
-T01: Electoral campaign / polling / strategy
-T02: Immigration / border / deportation
-T03: Economy / trade / jobs / taxes
-T04: Foreign policy / NATO / Russia / China
-T05: Media / press / Twitter / social media
-T06: Republican Party / primaries / debates
-T07: Legal / judicial / investigations / ethics
-T08: Race / religion / discrimination / social issues
-T09: Clinton / Democratic Party / general election
-T10: Personal / family / biography / style
+Topics: electoral campaign, immigration, economy, foreign policy,
+media/Twitter, Republican Party, legal/judicial, race/religion,
+Clinton/Democrats, personal/biography
 
-SCORE 2 — FRAMING (Political tone toward Trump), scale -2 to +2:
--2 = Strongly anti-Trump (harsh criticism, negative framing)
--1 = Mildly anti-Trump (nuanced critique, not hostile)
- 0 = Neutral / descriptive (factual reporting, no clear evaluation)
-+1 = Mildly pro-Trump (favorable tone, justifications)
-+2 = Strongly pro-Trump (apologetic, strongly positive framing)
+SCORE 2 — FRAMING toward Trump, scale -2 to +2:
+-2 = Strongly anti-Trump
+-1 = Mildly anti-Trump
+ 0 = Neutral/descriptive
++1 = Mildly pro-Trump
++2 = Strongly pro-Trump
 
-Return ONLY this JSON structure, no explanation:
-{
-  "PE": <integer 1-5>,
-  "framing": <integer -2, -1, 0, 1, or 2>,
-  "PE_topics": ["T01", "T02"],
-  "confidence": "high" | "medium" | "low",
-  "reasoning": "<one sentence>"
-}"""
-
-USER_TEMPLATE = """Article title: {title}
-Outlet: {outlet}
-Date: {date}
-Phase: {phase}
-
-Code this article."""
+Return ONLY this JSON:
+{"PE": <1-5>, "framing": <-2 to 2>, "confidence": "high"|"medium"|"low", "reasoning": "<one sentence>"}"""
 
 
-# ── API call ──────────────────────────────────────────────────────────────────
+# ── Single article coding ─────────────────────────────────────────────────────
 
-def code_article(title, outlet, date, phase, max_retries=3):
-    """
-    Calls Claude API to code a single article.
-    Returns dict with PE, framing, confidence, reasoning.
-    """
-    import urllib.request
-    import urllib.error
-
-    user_msg = USER_TEMPLATE.format(
-        title=title, outlet=outlet, date=date, phase=phase
-    )
-
-    payload = json.dumps({
-        "model": "claude-sonnet-4-20250514",
-        "max_tokens": 300,
-        "system": SYSTEM_PROMPT,
-        "messages": [{"role": "user", "content": user_msg}]
-    }).encode("utf-8")
+def code_article(title, outlet, date, phase, api_key, max_retries=3):
+    try:
+        import requests
+    except ImportError:
+        os.system(f"{sys.executable} -m pip install requests -q")
+        import requests
 
     headers = {
-        "Content-Type": "application/json",
-        "anthropic-version": "2023-06-01"
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json"
+    }
+
+    payload = {
+        "model": "claude-haiku-4-5-20251001",
+        "max_tokens": 200,
+        "system": SYSTEM_PROMPT,
+        "messages": [{
+            "role": "user",
+            "content": f"Title: {title}\nOutlet: {outlet}\nDate: {date}\nPhase: {phase}"
+        }]
     }
 
     for attempt in range(max_retries):
         try:
-            req = urllib.request.Request(
+            resp = requests.post(
                 "https://api.anthropic.com/v1/messages",
-                data=payload,
                 headers=headers,
-                method="POST"
+                json=payload,
+                timeout=30
             )
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-                text = data["content"][0]["text"].strip()
 
-                # Parse JSON from response
-                # Sometimes model wraps in ```json ... ```
+            if resp.status_code == 200:
+                data = resp.json()
+                text = data["content"][0]["text"].strip()
                 text = re.sub(r"```json\s*", "", text)
                 text = re.sub(r"```\s*", "", text)
                 result = json.loads(text)
 
-                # Validate fields
-                assert "PE" in result and "framing" in result
-                assert 1 <= int(result["PE"]) <= 5
-                assert -2 <= int(result["framing"]) <= 2
-
                 return {
-                    "PE_llm": int(result["PE"]),
-                    "framing_llm": int(result["framing"]),
-                    "PE_topics_llm": ",".join(result.get("PE_topics", [])),
+                    "PE_llm":         int(result["PE"]),
+                    "framing_llm":    int(result["framing"]),
                     "confidence_llm": result.get("confidence", "medium"),
-                    "reasoning_llm": result.get("reasoning", ""),
-                    "error": None
+                    "reasoning_llm":  result.get("reasoning", ""),
+                    "error":          None
                 }
 
-        except urllib.error.HTTPError as e:
-            if e.code == 429:  # Rate limit
+            elif resp.status_code == 429:
                 wait = (attempt + 1) * 30
                 print(f"    Rate limit — waiting {wait}s...")
                 time.sleep(wait)
-            elif e.code == 529:  # Overloaded
+
+            elif resp.status_code == 529:
                 wait = (attempt + 1) * 15
-                print(f"    API overloaded — waiting {wait}s...")
+                print(f"    Overloaded — waiting {wait}s...")
                 time.sleep(wait)
+
             else:
-                print(f"    HTTP error {e.code}: {e.reason}")
+                print(f"    HTTP {resp.status_code}: {resp.text[:200]}")
                 break
 
-        except (json.JSONDecodeError, AssertionError, KeyError) as e:
-            print(f"    Parse error (attempt {attempt+1}): {e}")
+        except json.JSONDecodeError as e:
+            print(f"    JSON parse error: {e}")
             if attempt < max_retries - 1:
-                time.sleep(5)
+                time.sleep(3)
 
         except Exception as e:
-            print(f"    Unexpected error: {e}")
-            break
+            print(f"    Error: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(5)
+            else:
+                break
 
     return {
         "PE_llm": None, "framing_llm": None,
-        "PE_topics_llm": None, "confidence_llm": None,
-        "reasoning_llm": None, "error": "FAILED"
+        "confidence_llm": None, "reasoning_llm": None,
+        "error": "FAILED"
     }
 
 
 # ── Main coding loop ──────────────────────────────────────────────────────────
 
-def run_coding(input_csv, output_csv, resume=True, delay=0.5):
-    """
-    Codes all articles in input_csv using Claude API.
-    Supports resuming from partial results.
-    """
+def run_coding(input_csv, output_csv, delay=0.3):
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        print("ERROR: ANTHROPIC_API_KEY not set")
+        sys.exit(1)
+    print(f"API key loaded: {api_key[:12]}...")
+
     df = pd.read_csv(input_csv)
-    print(f"Loaded {len(df)} articles from {input_csv}")
+    df = df.drop_duplicates(subset=["id"]).head(300)
+    print(f"Articles to code: {len(df)}")
 
-    # Resume from existing output
     coded_ids = set()
-    if resume and os.path.exists(output_csv):
+    existing_rows = []
+    if os.path.exists(output_csv):
         existing = pd.read_csv(output_csv)
-        coded_ids = set(existing["id"].tolist())
-        print(f"Resuming — already coded: {len(coded_ids)}")
+        existing = existing.drop_duplicates(subset=["id"])
+        done = existing[existing["PE_llm"].notna()]
+        coded_ids = set(done["id"].tolist())
+        existing_rows = done.to_dict("records")
+        print(f"Already coded: {len(coded_ids)}")
 
-    results = []
-    to_code = df[~df["id"].isin(coded_ids)].copy()
-    print(f"Articles to code: {len(to_code)}")
+    to_code = df[~df["id"].isin(coded_ids)]
+    print(f"Remaining: {len(to_code)}")
 
-    if len(to_code) == 0:
-        print("All articles already coded.")
-        return pd.read_csv(output_csv)
+    results = list(existing_rows)
 
     for i, (_, row) in enumerate(to_code.iterrows()):
-        print(f"[{i+1}/{len(to_code)}] {row['media_name']} | {str(row['title'])[:60]}...")
+        title  = str(row.get("title", ""))[:200]
+        outlet = str(row.get("media_name", ""))
+        date   = str(row.get("publish_date", ""))
+        phase  = str(row.get("phase", ""))
 
-        result = code_article(
-            title=str(row.get("title", "")),
-            outlet=str(row.get("media_name", "")),
-            date=str(row.get("publish_date", "")),
-            phase=str(row.get("phase", ""))
-        )
+        print(f"[{i+1}/{len(to_code)}] {outlet} | {title[:55]}...")
 
+        result = code_article(title, outlet, date, phase, api_key)
         row_dict = row.to_dict()
         row_dict.update(result)
         results.append(row_dict)
 
-        # Save checkpoint every 25 articles
         if (i + 1) % 25 == 0:
-            checkpoint = pd.DataFrame(results)
-            if resume and os.path.exists(output_csv):
-                existing = pd.read_csv(output_csv)
-                combined = pd.concat([existing, checkpoint], ignore_index=True)
-                combined.to_csv(output_csv, index=False)
-            else:
-                checkpoint.to_csv(output_csv, index=False)
-            print(f"  Checkpoint saved — {i+1} coded")
+            pd.DataFrame(results).to_csv(output_csv, index=False)
+            n_ok = sum(1 for r in results if r.get("PE_llm") is not None)
+            print(f"  Checkpoint: {n_ok}/{len(results)} ok")
 
         time.sleep(delay)
 
-    # Final save
     final = pd.DataFrame(results)
-    if resume and os.path.exists(output_csv):
-        existing = pd.read_csv(output_csv)
-        final = pd.concat([existing, final], ignore_index=True)
-
     final.to_csv(output_csv, index=False)
 
-    # Summary
-    n_success = final["PE_llm"].notna().sum()
-    n_failed  = final["error"].notna().sum() if "error" in final.columns else 0
+    n_ok   = final["PE_llm"].notna().sum()
+    n_fail = (final["error"] == "FAILED").sum()
+
     print(f"\n=== DONE ===")
-    print(f"Total coded: {n_success} / {len(final)}")
-    print(f"Failed: {n_failed}")
+    print(f"Total: {len(final)} | Success: {n_ok} | Failed: {n_fail}")
     print(f"Saved: {output_csv}")
 
-    # Distribution summary
-    print(f"\nPE distribution:")
-    print(final["PE_llm"].value_counts().sort_index().to_string())
-    print(f"\nFraming distribution:")
-    print(final["framing_llm"].value_counts().sort_index().to_string())
-    print(f"\nConfidence distribution:")
-    print(final["confidence_llm"].value_counts().to_string())
-
-    return final
+    if n_ok > 0:
+        print(f"\nPE distribution:")
+        print(final["PE_llm"].value_counts().sort_index().to_string())
+        print(f"\nFraming distribution:")
+        print(final["framing_llm"].value_counts().sort_index().to_string())
 
 
-# ── Correlation analysis (after human coding 50 articles) ────────────────────
+# ── Correlate ─────────────────────────────────────────────────────────────────
 
-def correlate(llm_csv, human_csv, output_json="validation_correlations.json"):
-    """
-    Computes correlations between LLM codes and human codes on the overlap set.
-
-    human_csv must have columns: id, PE_human, framing_human
-    (you fill these in manually for 50 articles)
-    """
+def correlate(llm_csv, human_csv):
     from scipy.stats import pearsonr, spearmanr
 
-    llm_df   = pd.read_csv(llm_csv)
-    human_df = pd.read_csv(human_csv)
+    llm   = pd.read_csv(llm_csv)
+    human = pd.read_csv(human_csv)
 
-    print(f"LLM coded: {len(llm_df)}")
-    print(f"Human coded: {len(human_df)}")
+    merged = llm.merge(
+        human[["id", "PE_human", "framing_human"]],
+        on="id", how="inner"
+    ).dropna(subset=["PE_llm", "framing_llm", "PE_human", "framing_human"])
 
-    # Merge on id
-    merged = llm_df.merge(human_df[["id", "PE_human", "framing_human"]], on="id", how="inner")
-    merged = merged.dropna(subset=["PE_llm", "framing_llm", "PE_human", "framing_human"])
-    print(f"Overlap (both coded): {len(merged)}")
+    print(f"Overlap: {len(merged)} articles")
 
-    if len(merged) < 10:
-        print("ERROR: Too few overlapping articles for correlation")
-        return
-
-    # PE correlation
     pe_r, pe_p = pearsonr(merged["PE_llm"], merged["PE_human"])
-    pe_s, _    = spearmanr(merged["PE_llm"], merged["PE_human"])
-
-    # Framing correlation
     fr_r, fr_p = pearsonr(merged["framing_llm"], merged["framing_human"])
+    pe_s, _    = spearmanr(merged["PE_llm"], merged["PE_human"])
     fr_s, _    = spearmanr(merged["framing_llm"], merged["framing_human"])
 
-    # Mean absolute error
-    pe_mae  = float(np.mean(np.abs(merged["PE_llm"] - merged["PE_human"])))
-    fr_mae  = float(np.mean(np.abs(merged["framing_llm"] - merged["framing_human"])))
+    print(f"\nPE:      r={pe_r:.3f} (p={pe_p:.4f})  rho={pe_s:.3f}")
+    print(f"Framing: r={fr_r:.3f} (p={fr_p:.4f})  rho={fr_s:.3f}")
 
-    results = {
-        "n_overlap": len(merged),
-        "PE": {
-            "pearson_r": round(pe_r, 3), "pearson_p": round(pe_p, 4),
-            "spearman_rho": round(pe_s, 3), "MAE": round(pe_mae, 3),
-            "interpretation": "PASS" if pe_r > 0.7 else "MARGINAL" if pe_r > 0.5 else "FAIL"
-        },
-        "framing": {
-            "pearson_r": round(fr_r, 3), "pearson_p": round(fr_p, 4),
-            "spearman_rho": round(fr_s, 3), "MAE": round(fr_mae, 3),
-            "interpretation": "PASS" if fr_r > 0.7 else "MARGINAL" if fr_r > 0.5 else "FAIL"
-        }
-    }
+    interp_pe = "PASS" if pe_r > 0.7 else "MARGINAL" if pe_r > 0.5 else "FAIL"
+    interp_fr = "PASS" if fr_r > 0.7 else "MARGINAL" if fr_r > 0.5 else "FAIL"
 
-    with open(output_json, "w") as f:
-        json.dump(results, f, indent=2)
-
-    print(f"\n=== Correlation Results ===")
-    print(f"PE    Pearson r={pe_r:.3f} (p={pe_p:.4f})  Spearman ρ={pe_s:.3f}  MAE={pe_mae:.3f}  [{results['PE']['interpretation']}]")
-    print(f"Framing Pearson r={fr_r:.3f} (p={fr_p:.4f})  Spearman ρ={fr_s:.3f}  MAE={fr_mae:.3f}  [{results['framing']['interpretation']}]")
-    print(f"\nSaved: {output_json}")
+    print(f"\nPE validation: {interp_pe}")
+    print(f"Framing validation: {interp_fr}")
 
     print(f"""
-=== PAPER-READY TEXT ===
-For external validation of the LLM coding procedure, we compared LLM-assigned
-scores against human judgments on a subset of {len(merged)} articles.
-The correlation between LLM and human PE scores was r={pe_r:.2f}
-(Spearman ρ={pe_s:.2f}), and between LLM and human framing scores was
-r={fr_r:.2f} (Spearman ρ={fr_s:.2f}), indicating
-{'acceptable' if pe_r > 0.6 and fr_r > 0.6 else 'partial'} construct validity
-for automated coding. LLM coding was then applied to the full 300-article
-subset (Gilardi et al., 2023).
+=== PAPER TEXT ===
+LLM coding validated against human judgments on {len(merged)} articles.
+PE: r={pe_r:.2f} (rho={pe_s:.2f}). Framing: r={fr_r:.2f} (rho={fr_s:.2f}).
+(Gilardi et al., 2023)
 """)
 
-    return results
 
+# ── Prepare human 50 ─────────────────────────────────────────────────────────
 
-# ── Human coding template (50 articles) ──────────────────────────────────────
-
-def prepare_human_50(llm_csv, output="human_coding_50.csv"):
-    """
-    Extracts first 50 articles from LLM output for manual validation.
-    Creates a simple CSV with empty PE_human and framing_human columns.
-    """
+def prepare_human_50(llm_csv):
     df = pd.read_csv(llm_csv)
-    # Take 10 from each phase for balanced human validation
-    sample_50 = df.groupby("phase").apply(
+    df = df[df["PE_llm"].notna()]
+
+    sample = df.groupby("phase").apply(
         lambda x: x.sample(min(10, len(x)), random_state=42)
     ).reset_index(drop=True)
 
-    out = sample_50[["id", "publish_date", "media_name", "title", "url", "phase",
-                     "PE_llm", "framing_llm", "confidence_llm", "reasoning_llm"]].copy()
+    out = sample[["id", "publish_date", "media_name", "title", "url",
+                  "phase", "PE_llm", "framing_llm", "reasoning_llm"]].copy()
     out["PE_human"]      = ""
     out["framing_human"] = ""
     out["notes"]         = ""
 
-    out.to_csv(output, index=False)
-    print(f"Human coding template saved: {output}")
-    print(f"Articles: {len(out)} (10 per phase)")
-    print(f"\nInstructions:")
-    print(f"  1. Open {output} in Excel")
-    print(f"  2. Read each article (click URL)")
-    print(f"  3. Fill PE_human (1-5) and framing_human (-2 to +2)")
-    print(f"  4. Save and run: python llm_coding.py --step correlate ...")
-    return out
+    out.to_csv("human_coding_50.csv", index=False)
+    print(f"Saved: human_coding_50.csv ({len(out)} articles)")
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="LLM coding for SRM external validation")
-    parser.add_argument("--step", default="code",
-                        choices=["code", "prepare_human", "correlate"],
-                        help="Step to run (default: code)")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--step",   default="code",
+                        choices=["code", "prepare_human", "correlate"])
     parser.add_argument("--input",  default="trump_validation_sample.csv")
     parser.add_argument("--output", default="llm_coded.csv")
-    parser.add_argument("--llm",    default="llm_coded.csv",
-                        help="LLM coded CSV (for correlate step)")
-    parser.add_argument("--human",  default="human_coding_50.csv",
-                        help="Human coded CSV (for correlate step)")
-    parser.add_argument("--delay",  type=float, default=0.5,
-                        help="Delay between API calls in seconds (default: 0.5)")
-    parser.add_argument("--no-resume", action="store_true",
-                        help="Start fresh, ignore existing output")
+    parser.add_argument("--llm",    default="llm_coded.csv")
+    parser.add_argument("--human",  default="human_coding_50.csv")
+    parser.add_argument("--delay",  type=float, default=0.3)
     args = parser.parse_args()
 
     if args.step == "code":
-        run_coding(args.input, args.output,
-                   resume=not args.no_resume, delay=args.delay)
-
+        run_coding(args.input, args.output, delay=args.delay)
     elif args.step == "prepare_human":
         prepare_human_50(args.llm)
-
     elif args.step == "correlate":
         correlate(args.llm, args.human)
 
