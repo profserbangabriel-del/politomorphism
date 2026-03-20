@@ -2,6 +2,7 @@
 llm_coding_groq.py — drop-in replacement for llm_coding.py
 Politomorphism Research Project | Serban Gabriel Florin
 Uses Groq API (free) instead of Anthropic API.
+Input: TRUMP-DATA.csv (root of repo)
 """
 
 import pandas as pd
@@ -15,11 +16,25 @@ import sys
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "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")
 MODEL        = "llama-3.3-70b-versatile"
-INPUT_CSV    = "trump_validation_sample.csv"
-OUTPUT_CSV   = "llm_coded.csv"
-DELAY        = 2.2
+INPUT_CSV    = "../TRUMP-DATA.csv"   # rădăcina repo-ului, un nivel deasupra scripts/
+OUTPUT_CSV   = "../llm_coded.csv"
+DELAY        = 2.2                   # secunde între cereri (Groq free tier ~30 req/min)
 
-# ── Prompt (identic cu originalul) ────────────────────────────────────────────
+# ── Derivă faza din dată ──────────────────────────────────────────────────────
+
+def get_phase(date_str):
+    try:
+        from datetime import datetime
+        d = datetime.strptime(str(date_str)[:10], "%Y-%m-%d")
+        if d < datetime(2015, 9, 1):   return "Phase1_Announcement"
+        elif d < datetime(2016, 2, 1): return "Phase2_Primary_Early"
+        elif d < datetime(2016, 6, 1): return "Phase3_Primary_Late"
+        elif d < datetime(2016, 9, 1): return "Phase4_Convention"
+        else:                          return "Phase5_General"
+    except:
+        return "Unknown"
+
+# ── Prompt ────────────────────────────────────────────────────────────────────
 
 SYSTEM_PROMPT = """You are a political communication researcher coding news articles.
 You will receive a news article title and outlet.
@@ -119,7 +134,7 @@ def code_article(title, outlet, date, phase, max_retries=3):
         "error": "FAILED"
     }
 
-# ── Main coding loop ──────────────────────────────────────────────────────────
+# ── Main ──────────────────────────────────────────────────────────────────────
 
 def run_coding():
     if not GROQ_API_KEY:
@@ -150,13 +165,14 @@ def run_coding():
         title  = str(row.get("title", ""))[:200]
         outlet = str(row.get("media_name", ""))
         date   = str(row.get("publish_date", ""))
-        phase  = str(row.get("phase", ""))
+        phase  = get_phase(date)
 
         print(f"[{i+1}/{len(to_code)}] {outlet} | {title[:55]}...")
 
         result = code_article(title, outlet, date, phase)
         row_dict = row.to_dict()
         row_dict.update(result)
+        row_dict["phase"] = phase
         results.append(row_dict)
 
         if (i + 1) % 25 == 0:
