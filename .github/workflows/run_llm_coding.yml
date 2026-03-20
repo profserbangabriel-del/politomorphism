@@ -1,0 +1,30 @@
+name: LLM Topic Coding (Groq)
+
+on:
+  workflow_dispatch:  # rulare manuală cu un click
+
+jobs:
+  code-articles:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install groq
+
+      - name: Run LLM coding script
+        working-directory: scripts
+        run: python llm_coding_groq.py
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: llm-coded-results
+          path: scripts/llm_coded.csv
