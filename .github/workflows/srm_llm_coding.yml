@@ -19,6 +19,8 @@ jobs:
         run: pip install pandas
 
       - name: Run LLM coding
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python scripts/llm_coding.py \
             --input trump_validation_sample.csv \
