@@ -1,0 +1,98 @@
+name: SRM – D Alpha Calibration
+
+on:
+  workflow_dispatch:
+    inputs:
+      bootstrap_n:
+        description: 'Bootstrap iterations (500 = publishable CI, 20 = quick test)'
+        required: false
+        default: '500'
+      symbols:
+        description: 'Symbols to run (comma-separated: georgescu,ciolacu,trump,sunflower or "all")'
+        required: false
+        default: 'all'
+
+  push:
+    paths:
+      - 'scripts/compute_D_alpha_calibration.py'
+      - 'data/**/articles.csv'
+      - '.github/workflows/srm_alpha_calibration.yml'
+
+jobs:
+  alpha-calibration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install \
+            scikit-learn>=1.3 \
+            sentence-transformers>=2.2 \
+            scipy>=1.11 \
+            pandas>=2.0 \
+            numpy>=1.24
+
+      - name: Cache sentence-transformers model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/torch/sentence_transformers
+          key: st-model-multilingual-MiniLM-L12-v2-v1
+
+      - name: Verify data files exist
+        run: |
+          echo "=== Checking data files ==="
+          for symbol in georgescu ciolacu trump sunflower; do
+            path="data/${symbol}/articles.csv"
+            if [ -f "$path" ]; then
+              count=$(tail -n +2 "$path" | wc -l)
+              echo "  ✓ ${path}  (${count} rows)"
+            else
+              echo "  ⚠  ${path} MISSING — symbol will be skipped"
+            fi
+          done
+
+      - name: Run α calibration pipeline
+        env:
+          BOOTSTRAP_N: ${{ github.event.inputs.bootstrap_n || '500' }}
+        run: |
+          echo "Bootstrap iterations: $BOOTSTRAP_N"
+          python scripts/compute_D_alpha_calibration.py
+
+      - name: Display results summary
+        run: |
+          echo "=== JSON output ==="
+          cat results/D_alpha_calibration.json | python -m json.tool | head -80
+          echo ""
+          echo "=== Markdown report ==="
+          cat results/D_alpha_calibration.md
+
+      - name: Upload results as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: D-alpha-calibration-results-${{ github.run_number }}
+          path: |
+            results/D_alpha_calibration.json
+            results/D_alpha_calibration.md
+          retention-days: 90
+
+      - name: Commit results to repository
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions"
+          git add results/D_alpha_calibration.json results/D_alpha_calibration.md
+          git diff --staged --quiet || git commit -m \
+            "results: D alpha calibration run #${{ github.run_number }} [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
