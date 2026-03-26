@@ -9,7 +9,6 @@ Dacă un fișier lipsește, folosește estimările structurale ca fallback.
 
 import numpy as np
 import json
-import os
 import glob
 from scipy.optimize import minimize_scalar
 from scipy.stats import pearsonr, spearmanr
@@ -39,24 +38,50 @@ FALLBACK_BY_NAME = {c[0]: c for c in CASES_FALLBACK}
 def load_real_values():
     """
     Scanează toate D_result_*.json din directorul curent.
-    Returnează un dict: {symbol_name: {"PE": float, "ICI": float, "D": float}}
+    FIX: citește din data["D_result"] (nested), nu de la rădăcină.
+    FIX: curăță ghilimelele extra din symbol (bug vechi workflow).
     """
     real = {}
     for path in glob.glob("D_result_*.json"):
         try:
             with open(path, encoding="utf-8") as f:
                 data = json.load(f)
-            # compute_D.py salvează: {"symbol": ..., "PE": ..., "ICI": ..., "D": ...}
+
             symbol = data.get("symbol") or data.get("name")
-            pe  = data.get("PE")  or data.get("pe")
-            ici = data.get("ICI") or data.get("ici")
-            d   = data.get("D")   or data.get("D_new") or data.get("d")
+
+            # FIX: valorile sunt în data["D_result"], nu la rădăcină
+            inner = data.get("D_result", data)
+
+            pe  = inner.get("PE")  or inner.get("pe")
+            ici = inner.get("ICI") or inner.get("ici")
+            d   = inner.get("D")   or inner.get("D_new") or inner.get("d")
+
+            # FIX: curăță ghilimelele extra din symbol (bug vechi workflow)
+            if symbol:
+                symbol = symbol.strip().strip('"')
+
             if symbol and pe is not None and ici is not None:
-                real[symbol] = {"PE": float(pe), "ICI": float(ici), "D": float(d) if d else None}
-                print(f"  ✓ Loaded real values for '{symbol}' from {path}")
+                real[symbol] = {
+                    "PE":   float(pe),
+                    "ICI":  float(ici),
+                    "D":    float(d) if d is not None else None,
+                    "_norm": symbol.lower().strip()
+                }
+                print(f"  ✓ {symbol}: PE={pe}, ICI={ici}, D={d}  [{path}]")
         except Exception as e:
             print(f"  ⚠ Could not read {path}: {e}")
     return real
+
+
+def find_real(real: dict, name: str):
+    """Match exact, apoi normalizat — robust față de variații de majuscule."""
+    if name in real:
+        return real[name]
+    norm = name.lower().strip()
+    for v in real.values():
+        if v.get("_norm") == norm:
+            return v
+    return None
 
 
 def build_dataset():
@@ -71,9 +96,11 @@ def build_dataset():
 
     for c in CASES_FALLBACK:
         name, d_legacy, pe_est, ici_est, lam, typ = c
-        if name in real:
-            pe  = real[name]["PE"]
-            ici = real[name]["ICI"]
+
+        match = find_real(real, name)
+        if match:
+            pe  = match["PE"]
+            ici = match["ICI"]
             src = "compute_D.py (real)"
         else:
             pe  = pe_est
@@ -88,10 +115,10 @@ def build_dataset():
         types.append(typ)
         sources[name] = src
 
-    # Adaugă simboluri noi din JSON care nu sunt în CASES_FALLBACK
+    # Simboluri noi din JSON care nu sunt în CASES_FALLBACK
     for sym, vals in real.items():
         if sym not in FALLBACK_BY_NAME:
-            print(f"  ℹ New symbol '{sym}' found in JSON but not in CASES_FALLBACK — skipped from calibration")
+            print(f"  ℹ '{sym}' găsit în JSON dar nu în CASES_FALLBACK — omis din calibrare")
 
     return (names,
             np.array(d_leg),
@@ -102,10 +129,11 @@ def build_dataset():
             sources)
 
 
-# ── CALIBRATION FUNCTIONS ────────────────────────────────────────────────────
+# ── CALIBRATION FUNCTIONS ─────────────────────────────────────────────────────
 
 def D_new(alpha, PE, ICI):
     return alpha * PE + (1 - alpha) * ICI
+
 
 def calibrate_global(NAMES, D_legacy, PE_est, ICI_est):
     def rmse(alpha):
@@ -113,7 +141,7 @@ def calibrate_global(NAMES, D_legacy, PE_est, ICI_est):
     def mae(alpha):
         return float(np.mean(np.abs(D_new(alpha, PE_est, ICI_est) - D_legacy)))
 
-    result   = minimize_scalar(rmse, bounds=(0.0, 1.0), method="bounded")
+    result    = minimize_scalar(rmse, bounds=(0.0, 1.0), method="bounded")
     alpha_opt = round(result.x, 4)
 
     pred_opt = D_new(alpha_opt, PE_est, ICI_est)
@@ -134,6 +162,7 @@ def calibrate_global(NAMES, D_legacy, PE_est, ICI_est):
                    else f"Consider updating to alpha={alpha_opt}"
     }
 
+
 def calibrate_by_typology(NAMES, D_legacy, PE_est, ICI_est, TYPES):
     results = {}
     for typ in set(TYPES):
@@ -141,39 +170,47 @@ def calibrate_by_typology(NAMES, D_legacy, PE_est, ICI_est, TYPES):
         if len(idx) < 2:
             results[typ] = {"n": len(idx), "note": "Insufficient cases (n<2)"}
             continue
-        PE_t, ICI_t, D_t = PE_est[idx], ICI_est[idx], D_legacy[idx]
+        PE_t  = PE_est[idx]
+        ICI_t = ICI_est[idx]
+        D_t   = D_legacy[idx]
+
         def rmse_t(alpha):
             return float(np.sqrt(np.mean((D_new(alpha, PE_t, ICI_t) - D_t) ** 2)))
+
         res     = minimize_scalar(rmse_t, bounds=(0.0, 1.0), method="bounded")
         alpha_t = round(res.x, 4)
         interp  = ("ICI-dominant" if alpha_t < 0.35 else
                    "PE-dominant"  if alpha_t > 0.65 else "Balanced")
         results[typ] = {
-            "n": len(idx), "cases": [NAMES[i] for i in idx],
-            "alpha_optimal": alpha_t, "RMSE": round(res.fun, 4),
-            "PE_mean":  round(float(PE_t.mean()), 4),
-            "ICI_mean": round(float(ICI_t.mean()), 4),
+            "n":             len(idx),
+            "cases":         [NAMES[i] for i in idx],
+            "alpha_optimal": alpha_t,
+            "RMSE":          round(res.fun, 4),
+            "PE_mean":       round(float(PE_t.mean()), 4),
+            "ICI_mean":      round(float(ICI_t.mean()), 4),
             "D_legacy_mean": round(float(D_t.mean()), 4),
             "interpretation": interp
         }
     return results
+
 
 def per_case_decomposition(NAMES, D_legacy, PE_est, ICI_est, TYPES, sources, alpha=0.5):
     rows = []
     for i, name in enumerate(NAMES):
         d = round(D_new(alpha, PE_est[i], ICI_est[i]), 4)
         rows.append({
-            "symbol":     name,
-            "typology":   TYPES[i],
-            "D_legacy":   D_legacy[i],
-            "PE":         PE_est[i],
-            "ICI":        ICI_est[i],
-            "D_new":      d,
-            "delta":      round(d - D_legacy[i], 4),
-            "dominant":   "PE" if PE_est[i] > ICI_est[i] else "ICI",
+            "symbol":      name,
+            "typology":    TYPES[i],
+            "D_legacy":    D_legacy[i],
+            "PE":          PE_est[i],
+            "ICI":         ICI_est[i],
+            "D_new":       d,
+            "delta":       round(d - D_legacy[i], 4),
+            "dominant":    "PE" if PE_est[i] > ICI_est[i] else "ICI",
             "data_source": sources.get(name, "unknown"),
         })
     return rows
+
 
 def test_H1(NAMES, PE_est, ICI_est, TYPES):
     flash     = [i for i, t in enumerate(TYPES) if t == "Flash Viral"]
@@ -181,13 +218,14 @@ def test_H1(NAMES, PE_est, ICI_est, TYPES):
     f_ratio   = np.mean([ICI_est[i] / PE_est[i] for i in flash])
     nf_ratio  = np.mean([ICI_est[i] / PE_est[i] for i in non_flash])
     return {
-        "hypothesis": "H1: Flash Viral symbols are ICI-dominant (ICI > PE)",
+        "hypothesis":            "H1: Flash Viral symbols are ICI-dominant (ICI > PE)",
         "flash_viral_cases":     [NAMES[i] for i in flash],
         "flash_ICI_mean":        round(float(np.mean([ICI_est[i] for i in flash])), 4),
         "flash_PE_mean":         round(float(np.mean([PE_est[i] for i in flash])), 4),
         "flash_ICI_PE_ratio":    round(float(f_ratio), 4),
         "nonflash_ICI_PE_ratio": round(float(nf_ratio), 4),
-        "supported": bool(f_ratio > nf_ratio and all(ICI_est[i] > PE_est[i] for i in flash)),
+        "supported": bool(f_ratio > nf_ratio and
+                          all(ICI_est[i] > PE_est[i] for i in flash)),
     }
 
 
@@ -201,8 +239,8 @@ if __name__ == "__main__":
     real_count = sum(1 for s in sources.values() if "real" in s)
     print(f"\nDate reale disponibile: {real_count}/{len(NAMES)} simboluri")
     if real_count < len(NAMES):
-        print(f"Fallback estimat pentru: "
-              f"{[n for n, s in sources.items() if 'fallback' in s]}\n")
+        fallback_list = [n for n, s in sources.items() if "fallback" in s]
+        print(f"Fallback estimat pentru: {fallback_list}\n")
 
     print("--- Global alpha calibration ---")
     global_result = calibrate_global(NAMES, D_legacy, PE_est, ICI_est)
@@ -219,7 +257,7 @@ if __name__ == "__main__":
     print("\n--- Per-case decomposition (alpha=0.5) ---")
     cases = per_case_decomposition(NAMES, D_legacy, PE_est, ICI_est, TYPES, sources)
     print(f"  {'Symbol':<30} {'D_leg':>6} {'PE':>6} {'ICI':>6} {'D_new':>6} {'Δ':>6} {'Src':>5}")
-    print("  " + "-"*75)
+    print("  " + "-" * 75)
     for c in cases:
         src_tag = "REAL" if "real" in c["data_source"] else "est."
         print(f"  {c['symbol']:<30} {c['D_legacy']:>6.3f} {c['PE']:>6.3f} "
