@@ -1,5 +1,20 @@
 {
-  "note": "Estimated values — replace PE_est/ICI_est with compute_D.py output",
+  "data_sources": {
+    "Sunflower Movement": "structural estimate (fallback)",
+    "Călin Georgescu": "structural estimate (fallback)",
+    "Marcel Ciolacu": "structural estimate (fallback)",
+    "Donald Trump": "structural estimate (fallback)",
+    "Volodymyr Zelensky": "structural estimate (fallback)",
+    "Vladimir Putin": "structural estimate (fallback)",
+    "George Simion": "structural estimate (fallback)",
+    "Viktor Orbán": "structural estimate (fallback)",
+    "Nelson Mandela": "structural estimate (fallback)",
+    "Emmanuel Macron": "structural estimate (fallback)",
+    "Hugo Chávez (sust.)": "structural estimate (fallback)",
+    "Hugo Chávez (acute)": "structural estimate (fallback)"
+  },
+  "real_values_count": 0,
+  "total_cases": 12,
   "global_calibration": {
     "alpha_optimal": 0.351,
     "RMSE_at_alpha_opt": 0.0117,
@@ -15,11 +30,7 @@
   "typology_calibration": {
     "Civic Mobilization": {
       "n": 1,
-      "note": "Insufficient cases for calibration (n<2)"
-    },
-    "Flash Viral": {
-      "n": 1,
-      "note": "Insufficient cases for calibration (n<2)"
+      "note": "Insufficient cases (n<2)"
     },
     "Electorally Volatile": {
       "n": 5,
@@ -35,7 +46,7 @@
       "PE_mean": 0.632,
       "ICI_mean": 0.732,
       "D_legacy_mean": 0.6928,
-      "interpretation": "Balanced: PE and ICI contribute equally"
+      "interpretation": "Balanced"
     },
     "Institutionally Durable": {
       "n": 3,
@@ -49,7 +60,7 @@
       "PE_mean": 0.74,
       "ICI_mean": 0.8,
       "D_legacy_mean": 0.775,
-      "interpretation": "Balanced: PE and ICI contribute equally"
+      "interpretation": "Balanced"
     },
     "Campaign/Ascension": {
       "n": 2,
@@ -62,7 +73,11 @@
       "PE_mean": 0.765,
       "ICI_mean": 0.795,
       "D_legacy_mean": 0.7875,
-      "interpretation": "Balanced: PE and ICI contribute equally"
+      "interpretation": "Balanced"
+    },
+    "Flash Viral": {
+      "n": 1,
+      "note": "Insufficient cases (n<2)"
     }
   },
   "per_case_decomposition": [
@@ -70,20 +85,144 @@
       "symbol": "Sunflower Movement",
       "typology": "Civic Mobilization",
       "D_legacy": 0.774,
-      "PE_est": 0.72,
-      "ICI_est": 0.83,
+      "PE": 0.72,
+      "ICI": 0.83,
       "D_new": 0.775,
       "delta": 0.001,
       "dominant": "ICI",
-      "H1_support": false
+      "data_source": "structural estimate (fallback)"
     },
     {
       "symbol": "Călin Georgescu",
       "typology": "Flash Viral",
       "D_legacy": 0.881,
-      "PE_est": 0.65,
-      "ICI_est": 0.97,
+      "PE": 0.65,
+      "ICI": 0.97,
       "D_new": 0.81,
       "delta": -0.071,
       "dominant": "ICI",
-      "H1_support": 
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "Marcel Ciolacu",
+      "typology": "Campaign/Ascension",
+      "D_legacy": 0.841,
+      "PE": 0.78,
+      "ICI": 0.88,
+      "D_new": 0.83,
+      "delta": -0.011,
+      "dominant": "ICI",
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "Donald Trump",
+      "typology": "Campaign/Ascension",
+      "D_legacy": 0.734,
+      "PE": 0.75,
+      "ICI": 0.71,
+      "D_new": 0.73,
+      "delta": -0.004,
+      "dominant": "PE",
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "Volodymyr Zelensky",
+      "typology": "Institutionally Durable",
+      "D_legacy": 0.68,
+      "PE": 0.6,
+      "ICI": 0.74,
+      "D_new": 0.67,
+      "delta": -0.01,
+      "dominant": "ICI",
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "Vladimir Putin",
+      "typology": "Institutionally Durable",
+      "D_legacy": 0.847,
+      "PE": 0.8,
+      "ICI": 0.89,
+      "D_new": 0.845,
+      "delta": -0.002,
+      "dominant": "ICI",
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "George Simion",
+      "typology": "Electorally Volatile",
+      "D_legacy": 0.812,
+      "PE": 0.7,
+      "ICI": 0.86,
+      "D_new": 0.78,
+      "delta": -0.032,
+      "dominant": "ICI",
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "Viktor Orbán",
+      "typology": "Institutionally Durable",
+      "D_legacy": 0.798,
+      "PE": 0.82,
+      "ICI": 0.77,
+      "D_new": 0.795,
+      "delta": -0.003,
+      "dominant": "PE",
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "Nelson Mandela",
+      "typology": "Electorally Volatile",
+      "D_legacy": 0.742,
+      "PE": 0.68,
+      "ICI": 0.79,
+      "D_new": 0.735,
+      "delta": -0.007,
+      "dominant": "ICI",
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "Emmanuel Macron",
+      "typology": "Electorally Volatile",
+      "D_legacy": 0.81,
+      "PE": 0.77,
+      "ICI": 0.84,
+      "D_new": 0.805,
+      "delta": -0.005,
+      "dominant": "ICI",
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "Hugo Chávez (sust.)",
+      "typology": "Electorally Volatile",
+      "D_legacy": 0.72,
+      "PE": 0.71,
+      "ICI": 0.73,
+      "D_new": 0.72,
+      "delta": 0.0,
+      "dominant": "ICI",
+      "data_source": "structural estimate (fallback)"
+    },
+    {
+      "symbol": "Hugo Chávez (acute)",
+      "typology": "Electorally Volatile",
+      "D_legacy": 0.38,
+      "PE": 0.3,
+      "ICI": 0.44,
+      "D_new": 0.37,
+      "delta": -0.01,
+      "dominant": "ICI",
+      "data_source": "structural estimate (fallback)"
+    }
+  ],
+  "H1_test": {
+    "hypothesis": "H1: Flash Viral symbols are ICI-dominant (ICI > PE)",
+    "flash_viral_cases": [
+      "Călin Georgescu"
+    ],
+    "flash_ICI_mean": 0.97,
+    "flash_PE_mean": 0.65,
+    "flash_ICI_PE_ratio": 1.4923,
+    "nonflash_ICI_PE_ratio": 1.1353,
+    "supported": true
+  }
+}
