@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRM PE/ICI Correlation Map — Politomorphism Research Project</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f7f6f3; --bg3: #f0efe9;
+    --text: #1a1a18; --text2: #5f5e5a; --text3: #888780;
+    --border: rgba(0,0,0,0.15); --border2: rgba(0,0,0,0.25);
+    --info-bg: #e6f1fb; --info-text: #185fa5; --info-border: rgba(24,95,165,0.3);
+    --danger-bg: #fcebeb; --danger-text: #a32d2d;
+    --warning-bg: #faeeda; --warning-text: #854f0b;
+    --success-bg: #eaf3de; --success-text: #3b6d11;
+    --radius: 8px; --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a; --bg2: #242422; --bg3: #2c2c2a;
+      --text: #e8e6de; --text2: #9c9a92; --text3: #6b6a64;
+      --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+      --info-bg: #0c2840; --info-text: #85b7eb; --info-border: rgba(133,183,235,0.25);
+      --danger-bg: #2a1010; --danger-text: #f09595;
+      --warning-bg: #2a1c08; --warning-text: #fac775;
+      --success-bg: #142210; --success-text: #97c459;
+    }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg3); color: var(--text);
+    line-height: 1.6; padding: 24px 16px; min-height: 100vh;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  .header { margin-bottom: 24px; }
+  .header h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+  .header p  { font-size: 13px; color: var(--text2); }
+  .header a  { color: var(--info-text); text-decoration: none; }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; }
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-btn {
+    border: 0.5px solid var(--border2); border-radius: var(--radius);
+    padding: 5px 12px; font-size: 12px; cursor: pointer;
+    background: transparent; color: var(--text2); transition: all 0.12s;
+    font-family: inherit;
+  }
+  .filter-btn.active { background: var(--info-bg); color: var(--info-text); border-color: var(--info-border); }
+  .filter-btn:hover:not(.active) { background: var(--bg2); }
+  .chart-wrap { position: relative; }
+  .tooltip {
+    position: absolute; background: var(--bg);
+    border: 0.5px solid var(--border2); border-radius: var(--radius);
+    padding: 12px 16px; font-size: 13px; pointer-events: none;
+    opacity: 0; transition: opacity 0.12s; min-width: 240px;
+    z-index: 10; max-width: 280px;
+  }
+  .tooltip.visible { opacity: 1; }
+  .tt-title { font-weight: 500; font-size: 14px; margin-bottom: 8px; }
+  .tt-country { font-weight: 400; color: var(--text2); font-size: 12px; }
+  .tt-row { display: flex; justify-content: space-between; gap: 16px; color: var(--text2); font-size: 12px; margin: 3px 0; }
+  .tt-row span:last-child { color: var(--text); font-weight: 500; }
+  .tt-finding { margin-top: 10px; font-size: 11px; color: var(--text2); line-height: 1.5; border-top: 0.5px solid var(--border); padding-top: 8px; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .stat { background: var(--bg2); border-radius: var(--radius); padding: 10px 16px; flex: 1; min-width: 100px; }
+  .stat-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+  .stat-value { font-size: 18px; font-weight: 500; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; font-size: 12px; color: var(--text2); }
+  .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+  .findings { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .finding-card { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; font-size: 12px; line-height: 1.5; }
+  .finding-card .sym { font-weight: 500; font-size: 13px; margin-bottom: 4px; }
+  .finding-card .ctx { color: var(--text2); font-size: 11px; margin-bottom: 6px; }
+  .badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 4px; margin-right: 4px; font-weight: 500; }
+  .footer { margin-top: 24px; font-size: 12px; color: var(--text3); text-align: center; }
+  .footer a { color: var(--info-text); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>SRM PE/ICI Correlation Map</h1>
+    <p>Polysemy Entropy vs. Intra-contextual Incoherence across 13 validated political symbols &middot;
+      <a href="https://github.com/profserbangabriel-del/politomorphism" target="_blank">Politomorphism Research Project</a> &middot;
+      Serban Gabriel Florin &middot; March 2026</p>
+  </div>
+
+  <div class="card">
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterType('all',this)">All symbols</button>
+      <button class="filter-btn" onclick="filterType('campaign',this)">Campaign</button>
+      <button class="filter-btn" onclick="filterType('wartime',this)">Wartime</button>
+      <button class="filter-btn" onclick="filterType('flash',this)">Flash Viral</button>
+      <button class="filter-btn" onclick="filterType('legacy',this)">Legacy</button>
+      <button class="filter-btn" onclick="filterType('civic',this)">Civic</button>
+      <button class="filter-btn" onclick="filterType('volatile',this)">Volatile</button>
+      <button class="filter-btn" onclick="filterType('institutional',this)">Institutional</button>
+    </div>
+
+    <div class="chart-wrap">
+      <svg id="scatter" width="100%" viewBox="0 0 860 520" style="display:block;">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <!-- zones filled by JS -->
+        <g id="zones"></g>
+        <!-- diagonal ICI=PE -->
+        <line id="diagline" x1="0" y1="0" x2="0" y2="0" stroke-width="0.8" stroke-dasharray="5 4" opacity="0.5"/>
+        <text id="diaglabel" x="0" y="0" font-size="11" text-anchor="middle"></text>
+        <!-- axes -->
+        <line id="xaxis" x1="0" y1="0" x2="0" y2="0" stroke-width="0.8"/>
+        <line id="yaxis" x1="0" y1="0" x2="0" y2="0" stroke-width="0.8"/>
+        <g id="xticks"></g>
+        <g id="yticks"></g>
+        <text id="xlabel" x="0" y="0" text-anchor="middle" font-size="13"></text>
+        <text id="ylabel" x="0" y="0" text-anchor="middle" font-size="13"></text>
+        <g id="corrline"></g>
+        <g id="symbols"></g>
+      </svg>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <div class="legend">
+      <span><span class="legend-dot" style="background:#D85A30"></span>Campaign/Ascension</span>
+      <span><span class="legend-dot" style="background:#D4537E"></span>Wartime</span>
+      <span><span class="legend-dot" style="background:#7F77DD"></span>Flash Viral</span>
+      <span><span class="legend-dot" style="background:#1D9E75"></span>Legacy post-mortem</span>
+      <span><span class="legend-dot" style="background:#378ADD"></span>Civic mobilization</span>
+      <span><span class="legend-dot" style="background:#BA7517"></span>Electorally Volatile</span>
+      <span><span class="legend-dot" style="background:#888780"></span>Institutionally Durable</span>
+      <span style="margin-left:8px;color:var(--text3);">Circle size = corpus size (log scale)</span>
+    </div>
+
+    <div class="stats" id="statsbar"></div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:15px;font-weight:500;margin-bottom:14px;">Key findings per symbol</h2>
+    <div class="findings" id="findings"></div>
+  </div>
+
+  <div class="footer">
+    <p>Data: Media Cloud (mediacloud.org) &middot; Pipeline: github.com/profserbangabriel-del/politomorphism &middot;
+      ORCID: 0009-0000-2266-3356 &middot; DOI: 10.17605/OSF.IO/HYDNZ &middot; CC BY 4.0</p>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  {id:"trump",    label:"Trump",         country:"USA 2016",  pe:0.5423,ici:0.8351,d:0.6887,srm:0.0922,type:"campaign",    n:69997, finding:"Highest ICI-dominance (+0.293). Domestic electoral polarization. ICI ceiling co-occupant."},
+  {id:"mandela",  label:"Mandela",       country:"ZA 2013",   pe:0.5639,ici:0.8362,d:0.7001,srm:0.0088,type:"legacy",      n:4000,  finding:"Highest absolute ICI (0.836). Legacy Contestation ICI — hagiographic vs. critical reassessment frames, affectively compatible but semantically incompatible."},
+  {id:"putin",    label:"Putin",         country:"RU 2022",   pe:0.5662,ici:0.8335,d:0.6999,srm:0.0103,type:"wartime",     n:2000,  finding:"ICI ≈ Trump (0.834). Wartime aggressor moral-political amplification. Antagonistic Pair with Zelensky on identical Feb–Jun 2022 corpus."},
+  {id:"sunflower",label:"Sunflower Mvt", country:"TW 2014",   pe:0.6248,ici:0.7894,d:0.7071,srm:0.0376,type:"civic",       n:585,   finding:"Highest D_new (0.707). Cross-cultural civic mobilization: domestic consensus frames collide with internationally divergent geopolitical frames."},
+  {id:"charlie",  label:"Charlie Hebdo", country:"FR 2015",   pe:0.5920,ici:0.7295,d:0.6607,srm:0.0,   type:"flash",       n:2000,  finding:"Flash Viral rank 1 (ICI=0.730, ICI−PE=+0.138). λ=104.66 — SRM≈0 regardless of D. Convergence-then-contestation mechanism."},
+  {id:"chavez",   label:"Chávez",        country:"VE 2013",   pe:0.5938,ici:0.7202,d:0.6570,srm:0.0121,type:"volatile",    n:2000,  finding:"Structured Revolutionary ICI (+0.126). Lower than Mandela (same year) — pre-sorted ideological frames. Dual-Mode SRM: D_acute=0.380 at death event."},
+  {id:"ciolacu",  label:"Ciolacu",       country:"RO 2026",   pe:0.6217,ici:0.7446,d:0.6832,srm:0.0365,type:"campaign",   n:1330,  finding:"Post-executive Campaign. ICI−PE (+0.123) ≈ Macron (+0.121). Romanian Triad PE convergence confirmed."},
+  {id:"macron",   label:"Macron",        country:"FR 2017",   pe:0.5934,ici:0.7143,d:0.6539,srm:0.0169,type:"campaign",   n:2000,  finding:"Rapid Emergence Paradox: V=0.507 (3rd highest) but SRM stays Low. Contradictory frame coexistence — anti-establishment vs. Rothschild banker."},
+  {id:"georgescu",label:"Georgescu",     country:"RO 2024",   pe:0.5949,ici:0.7004,d:0.6477,srm:0.0307,type:"flash",      n:2000,  finding:"Flash Viral rank 2 (ICI=0.700, ICI−PE=+0.106). Largest D discrepancy (−26.5%). λ-dominance at λ=65.33."},
+  {id:"simion",   label:"Simion",        country:"RO 2024",   pe:0.5980,ici:0.6849,d:0.6414,srm:0.0054,type:"volatile",   n:2000,  finding:"Affective Deficit: A=0.099 is the binding SRM constraint, not D. Romanian Triad. λ=12.41."},
+  {id:"zelensky", label:"Zelensky",      country:"UA 2022",   pe:0.6040,ici:0.6604,d:0.6322,srm:0.1121,type:"wartime",    n:2000,  finding:"Wartime Defender. H3 revised: Putin ICI amplification on same corpus, not Zelensky suppression. Highest SRM in dataset (0.1121)."},
+  {id:"orban",    label:"Orbán",         country:"HU 2022",   pe:0.6038,ici:0.6046,d:0.6042,srm:0.0065,type:"institutional",n:2000, finding:"ICI−PE≈0 — perfectly balanced. Institutionally Durable signature. Longevity Paradox: V=0.168, lowest in dataset."},
+];
+
+const COLORS = {campaign:"#D85A30",wartime:"#D4537E",flash:"#7F77DD",
+  legacy:"#1D9E75",civic:"#378ADD",volatile:"#BA7517",institutional:"#888780"};
+const TYPE_LABEL = {campaign:"Campaign",wartime:"Wartime",flash:"Flash Viral",
+  legacy:"Legacy",civic:"Civic",volatile:"Volatile",institutional:"Institutional"};
+
+const VB_W=860, VB_H=520;
+const PX0=80, PX1=820, PY0=30, PY1=450;
+const PEmin=0.52,PEmax=0.645,ICImin=0.58,ICImax=0.875;
+
+function sx(pe)  { return PX0+(pe-PEmin)/(PEmax-PEmin)*(PX1-PX0); }
+function sy(ici) { return PY1-(ici-ICImin)/(ICImax-ICImin)*(PY1-PY0); }
+function logR(n) { return Math.max(8,Math.min(18,4+Math.log10(n)*3.2)); }
+
+function isDark() { return matchMedia('(prefers-color-scheme: dark)').matches; }
+function tv(lv,dv) { return isDark()?dv:lv; }
+
+const svg = document.getElementById('scatter');
+
+function initAxes() {
+  // zones
+  const zg = document.getElementById('zones');
+  const zones = [
+    {y1:ICImax,y2:0.775,fill:tv('#fcebeb','#2a1010'),label:'ICI ceiling zone (>0.775)',tc:tv('#a32d2d','#f09595')},
+    {y1:0.775,y2:0.655,fill:tv('#faeeda','#2a1c08'),label:'Moderate ICI (0.655–0.775)',tc:tv('#854f0b','#fac775')},
+    {y1:0.655,y2:ICImin,fill:tv('#eaf3de','#142210'),label:'Near-balanced ICI (<0.655)',tc:tv('#3b6d11','#97c459')},
+  ];
+  zg.innerHTML = zones.map(z=>{
+    const y1=sy(Math.min(z.y1,ICImax)), y2=sy(Math.max(z.y2,ICImin));
+    return `<rect x="${PX0}" y="${y1}" width="${PX1-PX0}" height="${y2-y1}" rx="4" fill="${z.fill}" opacity="0.22"/>
+    <text x="${PX0+10}" y="${y1+18}" font-size="11" fill="${z.tc}">${z.label}</text>`;
+  }).join('');
+
+  // diagonal ICI=PE
+  const dl = document.getElementById('diagline');
+  const x1=sx(Math.max(PEmin,ICImin)), x2=sx(Math.min(PEmax,ICImax));
+  const y1=sy(Math.max(PEmin,ICImin)), y2=sy(Math.min(PEmax,ICImax));
+  dl.setAttribute('x1',x1); dl.setAttribute('y1',y1);
+  dl.setAttribute('x2',x2); dl.setAttribute('y2',y2);
+  dl.setAttribute('stroke',tv('rgba(0,0,0,0.25)','rgba(255,255,255,0.2)'));
+  const dlb = document.getElementById('diaglabel');
+  dlb.setAttribute('x',(x1+x2)/2+20); dlb.setAttribute('y',(y1+y2)/2-12);
+  dlb.setAttribute('fill',tv('#888780','#6b6a64')); dlb.textContent='ICI = PE';
+
+  // axes
+  const tc = tv('#1a1a18','#e8e6de'), bc=tv('rgba(0,0,0,0.25)','rgba(255,255,255,0.22)');
+  document.getElementById('xaxis').setAttribute('x1',PX0); document.getElementById('xaxis').setAttribute('y1',PY1);
+  document.getElementById('xaxis').setAttribute('x2',PX1); document.getElementById('xaxis').setAttribute('y2',PY1);
+  document.getElementById('xaxis').setAttribute('stroke',bc);
+  document.getElementById('yaxis').setAttribute('x1',PX0); document.getElementById('yaxis').setAttribute('y1',PY0);
+  document.getElementById('yaxis').setAttribute('x2',PX0); document.getElementById('yaxis').setAttribute('y2',PY1);
+  document.getElementById('yaxis').setAttribute('stroke',bc);
+
+  // x ticks
+  const xt=document.getElementById('xticks');
+  xt.innerHTML='';
+  [0.52,0.54,0.56,0.58,0.60,0.62,0.64].forEach(v=>{
+    const x=sx(v);
+    xt.innerHTML+=`<line x1="${x}" y1="${PY1}" x2="${x}" y2="${PY1+5}" stroke="${bc}" stroke-width="0.8"/>
+    <text x="${x}" y="${PY1+18}" text-anchor="middle" font-size="11" fill="${tv('#5f5e5a','#9c9a92')}">${v.toFixed(2)}</text>`;
+  });
+  const xl=document.getElementById('xlabel');
+  xl.setAttribute('x',(PX0+PX1)/2); xl.setAttribute('y',PY1+38);
+  xl.setAttribute('fill',tv('#5f5e5a','#9c9a92')); xl.textContent='PE — Polysemy Entropy (topical breadth)';
+
+  // y ticks
+  const yt=document.getElementById('yticks');
+  yt.innerHTML='';
+  [0.60,0.65,0.70,0.75,0.80,0.85].forEach(v=>{
+    const y=sy(v);
+    yt.innerHTML+=`<line x1="${PX0-5}" y1="${y}" x2="${PX0}" y2="${y}" stroke="${bc}" stroke-width="0.8"/>
+    <text x="${PX0-10}" y="${y+4}" text-anchor="end" font-size="11" fill="${tv('#5f5e5a','#9c9a92')}">${v.toFixed(2)}</text>`;
+  });
+  const yl=document.getElementById('ylabel');
+  yl.setAttribute('x',20); yl.setAttribute('y',(PY0+PY1)/2);
+  yl.setAttribute('fill',tv('#5f5e5a','#9c9a92'));
+  yl.setAttribute('transform',`rotate(-90,20,${(PY0+PY1)/2})`);
+  yl.textContent='ICI — Framing Contestation';
+}
+
+function drawRegression(filtered) {
+  const n=filtered.length;
+  const cl=document.getElementById('corrline');
+  if(n<3){cl.innerHTML='';return;}
+  const mx=filtered.reduce((s,d)=>s+d.pe,0)/n;
+  const my=filtered.reduce((s,d)=>s+d.ici,0)/n;
+  let num=0,denX=0,denY=0;
+  filtered.forEach(d=>{num+=(d.pe-mx)*(d.ici-my);denX+=(d.pe-mx)**2;denY+=(d.ici-my)**2;});
+  const slope=num/denX, intercept=my-slope*mx;
+  const r=(num/Math.sqrt(denX*denY));
+  const x1v=PEmin, x2v=PEmax;
+  const y1v=slope*x1v+intercept, y2v=slope*x2v+intercept;
+  cl.innerHTML=`<line x1="${sx(x1v)}" y1="${sy(y1v)}" x2="${sx(x2v)}" y2="${sy(y2v)}"
+    stroke="#185fa5" stroke-width="1.5" stroke-dasharray="6 3" opacity="0.6"/>
+    <rect x="${(sx(x1v)+sx(x2v))/2-28}" y="${(sy(y1v)+sy(y2v))/2-20}" width="56" height="18" rx="4" fill="${tv('#e6f1fb','#0c2840')}"/>
+    <text x="${(sx(x1v)+sx(x2v))/2}" y="${(sy(y1v)+sy(y2v))/2-8}" text-anchor="middle" font-size="12"
+      fill="${tv('#185fa5','#85b7eb')}" font-weight="500">r = ${r.toFixed(3)}</text>`;
+
+  // stats
+  const iciR=(Math.max(...filtered.map(d=>d.ici))-Math.min(...filtered.map(d=>d.ici))).toFixed(3);
+  const peR=(Math.max(...filtered.map(d=>d.pe))-Math.min(...filtered.map(d=>d.pe))).toFixed(3);
+  const ratio=(parseFloat(iciR)/parseFloat(peR)).toFixed(1);
+  const meanD=(filtered.reduce((s,d)=>s+(d.ici-d.pe),0)/n).toFixed(3);
+  document.getElementById('statsbar').innerHTML=[
+    ['ICI range',iciR],['PE range',peR],['ICI/PE ratio',ratio+'×'],
+    ['Mean ICI−PE','+'+meanD],['Pearson r',r.toFixed(3)],['Symbols',n]
+  ].map(([l,v])=>`<div class="stat"><div class="stat-label">${l}</div><div class="stat-value">${v}</div></div>`).join('');
+}
+
+function drawSymbols(filtered) {
+  const g=document.getElementById('symbols'); g.innerHTML='';
+  const tooltip=document.getElementById('tooltip');
+  const tc=tv('#1a1a18','#e8e6de'), tc2=tv('#5f5e5a','#9c9a92');
+
+  filtered.forEach(d=>{
+    const cx=sx(d.pe), cy=sy(d.ici), rr=logR(d.n), col=COLORS[d.type];
+    const peEqY=sy(d.pe);
+    // vertical connector to diagonal
+    g.innerHTML+=`<line x1="${cx}" y1="${Math.min(cy,peEqY)}" x2="${cx}" y2="${Math.max(cy,peEqY)}"
+      stroke="${col}" stroke-width="1" stroke-dasharray="3 2" opacity="0.4"/>`;
+    // circle
+    g.innerHTML+=`<circle id="dot-${d.id}" cx="${cx}" cy="${cy}" r="${rr}"
+      fill="${col}" fill-opacity="0.8" stroke="${col}" stroke-width="1.5"
+      style="cursor:pointer;transition:r 0.1s" data-id="${d.id}"/>`;
+    // label
+    const side = d.pe > 0.595 ? -1 : 1;
+    const lx = cx + side*(rr+5);
+    const anchor = side>0 ? 'start' : 'end';
+    g.innerHTML+=`<text x="${lx}" y="${cy-rr-4}" text-anchor="${anchor}" font-size="11"
+      fill="${tc}" style="pointer-events:none;font-weight:500">${d.label}</text>`;
+  });
+
+  // hover events
+  filtered.forEach(d=>{
+    const el=document.getElementById('dot-'+d.id);
+    if(!el)return;
+    el.addEventListener('mouseenter',()=>{
+      el.setAttribute('r',parseFloat(el.getAttribute('r'))+3);
+      tooltip.className='tooltip visible';
+      tooltip.innerHTML=`<div class="tt-title">${d.label} <span class="tt-country">${d.country}</span></div>
+        <div class="tt-row"><span>PE</span><span>${d.pe}</span></div>
+        <div class="tt-row"><span>ICI</span><span>${d.ici}</span></div>
+        <div class="tt-row"><span>D_new</span><span>${d.d}</span></div>
+        <div class="tt-row"><span>ICI−PE</span><span>+${(d.ici-d.pe).toFixed(3)}</span></div>
+        <div class="tt-row"><span>SRM</span><span>${d.srm}</span></div>
+        <div class="tt-row"><span>Typology</span><span>${TYPE_LABEL[d.type]}</span></div>
+        <div class="tt-finding">${d.finding}</div>`;
+    });
+    el.addEventListener('mouseleave',()=>{
+      el.setAttribute('r',logR(d.n));
+      tooltip.className='tooltip';
+    });
+    el.addEventListener('mousemove',e=>{
+      const rect=document.getElementById('scatter').getBoundingClientRect();
+      let left=e.clientX-rect.left+16, top=e.clientY-rect.top-10;
+      if(left>rect.width-260) left=e.clientX-rect.left-260;
+      tooltip.style.left=left+'px'; tooltip.style.top=top+'px';
+    });
+  });
+  drawRegression(filtered);
+}
+
+function filterType(type,btn) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered=type==='all'?DATA:DATA.filter(d=>d.type===type);
+  drawSymbols(filtered);
+  DATA.forEach(d=>{
+    const el=document.getElementById('dot-'+d.id);
+    if(el) el.style.opacity=(type==='all'||d.type===type)?'1':'0.1';
+  });
+}
+
+// Findings cards
+function drawFindings() {
+  document.getElementById('findings').innerHTML=DATA.map(d=>`
+    <div class="finding-card">
+      <div class="sym">${d.label}
+        <span class="badge" style="background:${COLORS[d.type]}22;color:${COLORS[d.type]};border:0.5px solid ${COLORS[d.type]}44">${TYPE_LABEL[d.type]}</span>
+      </div>
+      <div class="ctx">${d.country} &middot; PE=${d.pe} &middot; ICI=${d.ici} &middot; ICI−PE=+${(d.ici-d.pe).toFixed(3)}</div>
+      <div>${d.finding}</div>
+    </div>`).join('');
+}
+
+initAxes();
+drawSymbols(DATA);
+drawFindings();
+</script>
+</body>
+</html>

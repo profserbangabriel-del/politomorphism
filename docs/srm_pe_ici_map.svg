@@ -1,0 +1,151 @@
+<svg width="860" height="560" viewBox="0 0 860 560" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+  <rect width="860" height="560" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="80" y="26" font-size="14" font-weight="500" fill="#1a1a18">SRM PE/ICI Correlation Map — 13 Validated Political Symbols</text>
+
+  <!-- Zone backgrounds -->
+  <rect x="80" y="38" width="740" height="118" rx="4" fill="#fcebeb" opacity="0.35"/>
+  <text x="92" y="56" font-size="10" fill="#a32d2d">ICI ceiling zone (&gt;0.775)</text>
+  <rect x="80" y="156" width="740" height="118" rx="4" fill="#faeeda" opacity="0.35"/>
+  <text x="92" y="174" font-size="10" fill="#854f0b">Moderate ICI (0.655–0.775)</text>
+  <rect x="80" y="274" width="740" height="148" rx="4" fill="#eaf3de" opacity="0.35"/>
+  <text x="92" y="292" font-size="10" fill="#3b6d11">Near-balanced ICI (&lt;0.655)</text>
+
+  <!-- Diagonal ICI=PE -->
+  <line x1="200" y1="422" x2="740" y2="38" stroke="#888780" stroke-width="0.8" stroke-dasharray="5 4"/>
+  <text x="680" y="56" font-size="10" fill="#888780" text-anchor="middle">ICI = PE</text>
+
+  <!-- Axes -->
+  <line x1="80" y1="422" x2="820" y2="422" stroke="#888780" stroke-width="0.8"/>
+  <line x1="80" y1="38" x2="80" y2="422" stroke="#888780" stroke-width="0.8"/>
+
+  <!-- X ticks -->
+  <line x1="80" y1="422" x2="80" y2="427" stroke="#888780" stroke-width="0.8"/>
+  <text x="80" y="440" text-anchor="middle" font-size="10" fill="#5f5e5a">0.52</text>
+  <line x1="208" y1="422" x2="208" y2="427" stroke="#888780" stroke-width="0.8"/>
+  <text x="208" y="440" text-anchor="middle" font-size="10" fill="#5f5e5a">0.54</text>
+  <line x1="336" y1="422" x2="336" y2="427" stroke="#888780" stroke-width="0.8"/>
+  <text x="336" y="440" text-anchor="middle" font-size="10" fill="#5f5e5a">0.56</text>
+  <line x1="464" y1="422" x2="464" y2="427" stroke="#888780" stroke-width="0.8"/>
+  <text x="464" y="440" text-anchor="middle" font-size="10" fill="#5f5e5a">0.58</text>
+  <line x1="592" y1="422" x2="592" y2="427" stroke="#888780" stroke-width="0.8"/>
+  <text x="592" y="440" text-anchor="middle" font-size="10" fill="#5f5e5a">0.60</text>
+  <line x1="720" y1="422" x2="720" y2="427" stroke="#888780" stroke-width="0.8"/>
+  <text x="720" y="440" text-anchor="middle" font-size="10" fill="#5f5e5a">0.62</text>
+  <text x="450" y="462" text-anchor="middle" font-size="12" fill="#5f5e5a">PE — Polysemy Entropy (topical breadth)</text>
+
+  <!-- Y ticks -->
+  <line x1="75" y1="386" x2="80" y2="386" stroke="#888780" stroke-width="0.8"/>
+  <text x="70" y="390" text-anchor="end" font-size="10" fill="#5f5e5a">0.60</text>
+  <line x1="75" y1="318" x2="80" y2="318" stroke="#888780" stroke-width="0.8"/>
+  <text x="70" y="322" text-anchor="end" font-size="10" fill="#5f5e5a">0.65</text>
+  <line x1="75" y1="249" x2="80" y2="249" stroke="#888780" stroke-width="0.8"/>
+  <text x="70" y="253" text-anchor="end" font-size="10" fill="#5f5e5a">0.70</text>
+  <line x1="75" y1="181" x2="80" y2="181" stroke="#888780" stroke-width="0.8"/>
+  <text x="70" y="185" text-anchor="end" font-size="10" fill="#5f5e5a">0.75</text>
+  <line x1="75" y1="112" x2="80" y2="112" stroke="#888780" stroke-width="0.8"/>
+  <text x="70" y="116" text-anchor="end" font-size="10" fill="#5f5e5a">0.80</text>
+  <line x1="75" y1="44" x2="80" y2="44" stroke="#888780" stroke-width="0.8"/>
+  <text x="70" y="48" text-anchor="end" font-size="10" fill="#5f5e5a">0.85</text>
+  <text x="24" y="230" text-anchor="middle" font-size="12" fill="#5f5e5a" transform="rotate(-90,24,230)">ICI — Framing Contestation</text>
+
+  <!-- Regression line (r≈0.55 from data) -->
+  <line x1="100" y1="310" x2="780" y2="180" stroke="#185fa5" stroke-width="1.5" stroke-dasharray="6 3" opacity="0.55"/>
+  <rect x="390" y="228" width="58" height="18" rx="4" fill="#e6f1fb"/>
+  <text x="419" y="241" text-anchor="middle" font-size="11" fill="#185fa5" font-weight="500">r = 0.553</text>
+
+  <!-- ICI−PE connector lines (dashed vertical from point to diagonal) -->
+  <!-- Trump -->
+  <line x1="158" y1="79" x2="158" y2="368" stroke="#D85A30" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Mandela -->
+  <line x1="222" y1="78" x2="222" y2="326" stroke="#1D9E75" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Putin -->
+  <line x1="237" y1="81" x2="237" y2="313" stroke="#D4537E" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Sunflower -->
+  <line x1="558" y1="117" x2="558" y2="172" stroke="#378ADD" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Charlie Hebdo -->
+  <line x1="335" y1="178" x2="335" y2="331" stroke="#7F77DD" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Chavez -->
+  <line x1="348" y1="190" x2="348" y2="343" stroke="#BA7517" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Ciolacu -->
+  <line x1="524" y1="157" x2="524" y2="187" stroke="#D85A30" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Macron -->
+  <line x1="332" y1="196" x2="332" y2="334" stroke="#D85A30" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Georgescu -->
+  <line x1="349" y1="226" x2="349" y2="341" stroke="#7F77DD" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Simion -->
+  <line x1="387" y1="245" x2="387" y2="317" stroke="#BA7517" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Zelensky -->
+  <line x1="592" y1="285" x2="592" y2="264" stroke="#D4537E" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+  <!-- Orbán -->
+  <line x1="590" y1="419" x2="590" y2="270" stroke="#888780" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.4"/>
+
+  <!-- Data points with colors matching typology -->
+  <!-- Trump (PE=0.542, ICI=0.835) → sx≈158, sy≈79  large n=69997 → r=18 -->
+  <circle cx="158" cy="79" r="18" fill="#D85A30" fill-opacity="0.82" stroke="#D85A30" stroke-width="1.5"/>
+  <text x="180" y="66" font-size="10" fill="#1a1a18" font-weight="500">Trump</text>
+
+  <!-- Mandela (PE=0.564, ICI=0.836) → sx≈222, sy≈78  n=4000 → r=14 -->
+  <circle cx="222" cy="78" r="14" fill="#1D9E75" fill-opacity="0.82" stroke="#1D9E75" stroke-width="1.5"/>
+  <text x="204" y="62" font-size="10" fill="#1a1a18" font-weight="500" text-anchor="end">Mandela</text>
+
+  <!-- Putin (PE=0.566, ICI=0.834) → sx≈237, sy≈81  n=2000 → r=12 -->
+  <circle cx="270" cy="84" r="12" fill="#D4537E" fill-opacity="0.82" stroke="#D4537E" stroke-width="1.5"/>
+  <text x="285" y="74" font-size="10" fill="#1a1a18" font-weight="500">Putin</text>
+
+  <!-- Sunflower (PE=0.625, ICI=0.789) → sx≈558, sy≈117 n=585 → r=9 -->
+  <circle cx="558" cy="117" r="9" fill="#378ADD" fill-opacity="0.82" stroke="#378ADD" stroke-width="1.5"/>
+  <text x="570" y="108" font-size="10" fill="#1a1a18" font-weight="500">Sunflower</text>
+
+  <!-- Charlie Hebdo (PE=0.592, ICI=0.730) → sx≈335, sy≈178 n=2000 → r=12 -->
+  <circle cx="335" cy="178" r="12" fill="#7F77DD" fill-opacity="0.82" stroke="#7F77DD" stroke-width="1.5"/>
+  <text x="350" y="170" font-size="10" fill="#1a1a18" font-weight="500">Charlie Hebdo</text>
+
+  <!-- Chávez (PE=0.594, ICI=0.720) → sx≈348, sy≈190 n=2000 → r=12 -->
+  <circle cx="348" cy="205" r="12" fill="#BA7517" fill-opacity="0.82" stroke="#BA7517" stroke-width="1.5"/>
+  <text x="330" y="222" font-size="10" fill="#1a1a18" font-weight="500" text-anchor="end">Chávez</text>
+
+  <!-- Ciolacu (PE=0.622, ICI=0.745) → sx≈524, sy≈157 n=1330 → r=11 -->
+  <circle cx="524" cy="157" r="11" fill="#D85A30" fill-opacity="0.82" stroke="#D85A30" stroke-width="1.5"/>
+  <text x="537" y="149" font-size="10" fill="#1a1a18" font-weight="500">Ciolacu</text>
+
+  <!-- Macron (PE=0.593, ICI=0.714) → sx≈342, sy≈196 n=2000 → r=12 -->
+  <circle cx="295" cy="196" r="12" fill="#D85A30" fill-opacity="0.82" stroke="#D85A30" stroke-width="1.5"/>
+  <text x="280" y="188" font-size="10" fill="#1a1a18" font-weight="500" text-anchor="end">Macron</text>
+
+  <!-- Georgescu (PE=0.595, ICI=0.700) → sx≈349, sy≈226 n=2000 → r=12 -->
+  <circle cx="390" cy="226" r="12" fill="#7F77DD" fill-opacity="0.82" stroke="#7F77DD" stroke-width="1.5"/>
+  <text x="405" y="218" font-size="10" fill="#1a1a18" font-weight="500">Georgescu</text>
+
+  <!-- Simion (PE=0.598, ICI=0.685) → sx≈387, sy≈245 n=2000 → r=12 -->
+  <circle cx="387" cy="258" r="12" fill="#BA7517" fill-opacity="0.82" stroke="#BA7517" stroke-width="1.5"/>
+  <text x="370" y="276" font-size="10" fill="#1a1a18" font-weight="500" text-anchor="end">Simion</text>
+
+  <!-- Zelensky (PE=0.604, ICI=0.660) → sx≈592, sy≈285 n=2000 → r=12 -->
+  <circle cx="612" cy="285" r="12" fill="#D4537E" fill-opacity="0.82" stroke="#D4537E" stroke-width="1.5"/>
+  <text x="627" y="277" font-size="10" fill="#1a1a18" font-weight="500">Zelensky</text>
+
+  <!-- Orbán (PE=0.604, ICI=0.605) → sx≈590, sy≈419 n=2000 → r=12 -->
+  <circle cx="590" cy="406" r="12" fill="#888780" fill-opacity="0.82" stroke="#888780" stroke-width="1.5"/>
+  <text x="605" y="398" font-size="10" fill="#1a1a18" font-weight="500">Orbán</text>
+
+  <!-- Legend -->
+  <rect x="80" y="478" width="760" height="62" rx="6" fill="#f7f6f3"/>
+  <circle cx="100" cy="498" r="5" fill="#D85A30"/>
+  <text x="110" y="502" font-size="10" fill="#5f5e5a">Campaign</text>
+  <circle cx="175" cy="498" r="5" fill="#D4537E"/>
+  <text x="185" y="502" font-size="10" fill="#5f5e5a">Wartime</text>
+  <circle cx="240" cy="498" r="5" fill="#7F77DD"/>
+  <text x="250" y="502" font-size="10" fill="#5f5e5a">Flash Viral</text>
+  <circle cx="320" cy="498" r="5" fill="#1D9E75"/>
+  <text x="330" y="502" font-size="10" fill="#5f5e5a">Legacy</text>
+  <circle cx="380" cy="498" r="5" fill="#378ADD"/>
+  <text x="390" y="502" font-size="10" fill="#5f5e5a">Civic</text>
+  <circle cx="430" cy="498" r="5" fill="#BA7517"/>
+  <text x="440" y="502" font-size="10" fill="#5f5e5a">Volatile</text>
+  <circle cx="490" cy="498" r="5" fill="#888780"/>
+  <text x="500" y="502" font-size="10" fill="#5f5e5a">Institutional</text>
+  <text x="100" y="528" font-size="10" fill="#5f5e5a">Key findings: ICI range (0.231) is 2.81× PE range (0.083) · ICI ceiling ~0.83–0.84 (Trump, Mandela, Putin) · α_optimal=0.351 · Mean D_legacy bias: −15.6%</text>
+  <text x="100" y="542" font-size="10" fill="#5f5e5a">Source: Media Cloud · Pipeline: github.com/profserbangabriel-del/politomorphism · ORCID: 0009-0000-2266-3356 · DOI: 10.17605/OSF.IO/HYDNZ · CC BY 4.0</text>
+</svg>
