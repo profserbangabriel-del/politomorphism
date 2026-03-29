@@ -7,44 +7,27 @@
     "Volodymyr Zelensky": "structural estimate (fallback)",
     "Vladimir Putin": "structural estimate (fallback)",
     "George Simion": "structural estimate (fallback)",
-    "Viktor Orbán": "structural estimate (fallback)",
+    "Viktor Orbán": "compute_D.py (real)",
     "Nelson Mandela": "structural estimate (fallback)",
     "Emmanuel Macron": "structural estimate (fallback)",
     "Hugo Chávez (sust.)": "structural estimate (fallback)",
     "Hugo Chávez (acute)": "structural estimate (fallback)"
   },
-  "real_values_count": 4,
+  "real_values_count": 5,
   "total_cases": 12,
   "global_calibration": {
-    "alpha_optimal": 0.1663,
-    "RMSE_at_alpha_opt": 0.0715,
-    "MAE_at_alpha_opt": 0.0481,
-    "RMSE_at_alpha_05": 0.0852,
-    "MAE_at_alpha_05": 0.0477,
-    "pearson_r": 0.8268,
-    "pearson_p": 0.0009,
-    "spearman_r": 0.3706,
-    "spearman_p": 0.2356,
-    "verdict": "Consider updating to alpha=0.1663"
+    "alpha_optimal": 0.1614,
+    "RMSE_at_alpha_opt": 0.0906,
+    "MAE_at_alpha_opt": 0.0628,
+    "RMSE_at_alpha_05": 0.102,
+    "MAE_at_alpha_05": 0.0636,
+    "pearson_r": 0.7411,
+    "pearson_p": 0.0058,
+    "spearman_r": 0.3427,
+    "spearman_p": 0.2756,
+    "verdict": "Consider updating to alpha=0.1614"
   },
   "typology_calibration": {
-    "Flash Viral": {
-      "n": 1,
-      "note": "Insufficient cases (n<2)"
-    },
-    "Campaign/Ascension": {
-      "n": 2,
-      "cases": [
-        "Marcel Ciolacu",
-        "Donald Trump"
-      ],
-      "alpha_optimal": 0.1761,
-      "RMSE": 0.0905,
-      "PE_mean": 0.582,
-      "ICI_mean": 0.7898,
-      "D_legacy_mean": 0.7875,
-      "interpretation": "ICI-dominant"
-    },
     "Institutionally Durable": {
       "n": 3,
       "cases": [
@@ -52,14 +35,18 @@
         "Vladimir Putin",
         "Viktor Orbán"
       ],
-      "alpha_optimal": 0.4526,
-      "RMSE": 0.0039,
-      "PE_mean": 0.74,
-      "ICI_mean": 0.8,
+      "alpha_optimal": 0.4374,
+      "RMSE": 0.1119,
+      "PE_mean": 0.6679,
+      "ICI_mean": 0.7449,
       "D_legacy_mean": 0.775,
       "interpretation": "Balanced"
     },
     "Civic Mobilization": {
+      "n": 1,
+      "note": "Insufficient cases (n<2)"
+    },
+    "Flash Viral": {
       "n": 1,
       "note": "Insufficient cases (n<2)"
     },
@@ -78,6 +65,19 @@
       "ICI_mean": 0.732,
       "D_legacy_mean": 0.6928,
       "interpretation": "Balanced"
+    },
+    "Campaign/Ascension": {
+      "n": 2,
+      "cases": [
+        "Marcel Ciolacu",
+        "Donald Trump"
+      ],
+      "alpha_optimal": 0.1761,
+      "RMSE": 0.0905,
+      "PE_mean": 0.582,
+      "ICI_mean": 0.7898,
+      "D_legacy_mean": 0.7875,
+      "interpretation": "ICI-dominant"
     }
   },
   "per_case_decomposition": [
@@ -162,12 +162,12 @@
       "symbol": "Viktor Orbán",
       "typology": "Institutionally Durable",
       "D_legacy": 0.798,
-      "PE": 0.82,
-      "ICI": 0.77,
-      "D_new": 0.795,
-      "delta": -0.003,
-      "dominant": "PE",
-      "data_source": "structural estimate (fallback)"
+      "PE": 0.6038,
+      "ICI": 0.6046,
+      "D_new": 0.6042,
+      "delta": -0.1938,
+      "dominant": "ICI",
+      "data_source": "compute_D.py (real)"
     },
     {
       "symbol": "Nelson Mandela",
@@ -222,7 +222,7 @@
     "flash_ICI_mean": 0.7004,
     "flash_PE_mean": 0.5949,
     "flash_ICI_PE_ratio": 1.1773,
-    "nonflash_ICI_PE_ratio": 1.2056,
+    "nonflash_ICI_PE_ratio": 1.2113,
     "supported": false
   }
 }
