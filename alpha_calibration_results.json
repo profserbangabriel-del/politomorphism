@@ -9,25 +9,43 @@
     "George Simion": "compute_D.py (real)",
     "Viktor Orbán": "compute_D.py (real)",
     "Nelson Mandela": "compute_D.py (real)",
-    "Emmanuel Macron": "structural estimate (fallback)",
+    "Emmanuel Macron": "compute_D.py (real)",
     "Hugo Chávez (sust.)": "structural estimate (fallback)",
     "Hugo Chávez (acute)": "structural estimate (fallback)"
   },
-  "real_values_count": 9,
+  "real_values_count": 10,
   "total_cases": 12,
   "global_calibration": {
-    "alpha_optimal": 0.0677,
-    "RMSE_at_alpha_opt": 0.0994,
-    "MAE_at_alpha_opt": 0.0766,
-    "RMSE_at_alpha_05": 0.1219,
-    "MAE_at_alpha_05": 0.0933,
-    "pearson_r": 0.698,
-    "pearson_p": 0.0116,
-    "spearman_r": 0.3007,
-    "spearman_p": 0.3423,
-    "verdict": "Consider updating to alpha=0.0677"
+    "alpha_optimal": 0.0243,
+    "RMSE_at_alpha_opt": 0.1033,
+    "MAE_at_alpha_opt": 0.0837,
+    "RMSE_at_alpha_05": 0.13,
+    "MAE_at_alpha_05": 0.1059,
+    "pearson_r": 0.676,
+    "pearson_p": 0.0158,
+    "spearman_r": 0.1888,
+    "spearman_p": 0.5567,
+    "verdict": "Consider updating to alpha=0.0243"
   },
   "typology_calibration": {
+    "Institutionally Durable": {
+      "n": 3,
+      "cases": [
+        "Volodymyr Zelensky",
+        "Vladimir Putin",
+        "Viktor Orbán"
+      ],
+      "alpha_optimal": 0.0,
+      "RMSE": 0.1125,
+      "PE_mean": 0.5913,
+      "ICI_mean": 0.6995,
+      "D_legacy_mean": 0.775,
+      "interpretation": "ICI-dominant"
+    },
+    "Civic Mobilization": {
+      "n": 1,
+      "note": "Insufficient cases (n<2)"
+    },
     "Electorally Volatile": {
       "n": 5,
       "cases": [
@@ -37,10 +55,10 @@
         "Hugo Chávez (sust.)",
         "Hugo Chávez (acute)"
       ],
-      "alpha_optimal": 0.2374,
-      "RMSE": 0.0687,
-      "PE_mean": 0.5884,
-      "ICI_mean": 0.7062,
+      "alpha_optimal": 0.1,
+      "RMSE": 0.0857,
+      "PE_mean": 0.5531,
+      "ICI_mean": 0.6811,
       "D_legacy_mean": 0.6928,
       "interpretation": "ICI-dominant"
     },
@@ -60,24 +78,6 @@
       "ICI_mean": 0.7898,
       "D_legacy_mean": 0.7875,
       "interpretation": "ICI-dominant"
-    },
-    "Institutionally Durable": {
-      "n": 3,
-      "cases": [
-        "Volodymyr Zelensky",
-        "Vladimir Putin",
-        "Viktor Orbán"
-      ],
-      "alpha_optimal": 0.0,
-      "RMSE": 0.1125,
-      "PE_mean": 0.5913,
-      "ICI_mean": 0.6995,
-      "D_legacy_mean": 0.775,
-      "interpretation": "ICI-dominant"
-    },
-    "Civic Mobilization": {
-      "n": 1,
-      "note": "Insufficient cases (n<2)"
     }
   },
   "per_case_decomposition": [
@@ -184,12 +184,12 @@
       "symbol": "Emmanuel Macron",
       "typology": "Electorally Volatile",
       "D_legacy": 0.81,
-      "PE": 0.77,
-      "ICI": 0.84,
-      "D_new": 0.805,
-      "delta": -0.005,
+      "PE": 0.5934,
+      "ICI": 0.7143,
+      "D_new": 0.6538,
+      "delta": -0.1562,
       "dominant": "ICI",
-      "data_source": "structural estimate (fallback)"
+      "data_source": "compute_D.py (real)"
     },
     {
       "symbol": "Hugo Chávez (sust.)",
@@ -222,7 +222,7 @@
     "flash_ICI_mean": 0.7004,
     "flash_PE_mean": 0.5949,
     "flash_ICI_PE_ratio": 1.1773,
-    "nonflash_ICI_PE_ratio": 1.2529,
+    "nonflash_ICI_PE_ratio": 1.2631,
     "supported": false
   }
 }
