@@ -2,16 +2,16 @@
 
 **Serban Gabriel Florin** | Independent Researcher  
 ORCID: [0009-0000-2266-3356](https://orcid.org/0009-0000-2266-3356) | DOI: [10.17605/OSF.IO/HYDNZ](https://doi.org/10.17605/OSF.IO/HYDNZ)  
-GitHub: [profserbangabriel-del/politomorphism](https://github.com/profserbangabriel-del/politomorphism)  
+GitHub: [profserbangabriel-del/Politomorphism](https://github.com/profserbangabriel-del/Politomorphism)  
 License: CC BY 4.0
 
 ---
 
 ## PE/ICI Correlation Map — 13 Validated Symbols
 
-[![SRM PE/ICI Correlation Map](docs/srm_pe_ici_map.svg)](https://profserbangabriel-del.github.io/politomorphism/srm_pe_ici_map_interactive.html)
+[![SRM PE/ICI Correlation Map](docs/srm_pe_ici_map.svg)](https://profserbangabriel-del.github.io/Politomorphism/srm_pe_ici_map_interactive.html)
 
-> **Interactive version:** [srm_pe_ici_map_interactive.html](https://profserbangabriel-del.github.io/politomorphism/srm_pe_ici_map_interactive.html) — hover over any symbol for full PE/ICI values and key findings. Filter by typology.  
+> **Interactive version:** [srm_pe_ici_map_interactive.html](https://profserbangabriel-del.github.io/Politomorphism/srm_pe_ici_map_interactive.html) — hover over any symbol for full PE/ICI values and key findings. Filter by typology.  
 > **Key finding:** ICI range (0.231) is **2.81× larger** than PE range (0.083). Framing contestation, not topical breadth, drives cross-symbol D variation.
 
 ---
@@ -37,7 +37,6 @@ Politomorphism is a theoretical framework that treats political symbols as **mor
 ---
 
 ## How to Read the SRM Score
-
 ```
 0.00 ────────────── 0.07 ──────────────── 0.20 ──────── 1.00
  LOW RESONANCE          MEDIUM RESONANCE    HIGH RESONANCE
@@ -54,7 +53,6 @@ Politomorphism is a theoretical framework that treats political symbols as **mor
 ### How λ is determined
 
 Before any SRM computation, extract Google Trends data for the analysis period and solve numerically:
-
 ```
 avg / peak = (1 − e^(−λT)) / (λT)
 ```
@@ -385,11 +383,10 @@ All papers available at DOI: [10.17605/OSF.IO/HYDNZ](https://doi.org/10.17605/OS
 ---
 
 ## Repository Structure
-
 ```
 politomorphism/
 ├── .github/workflows/
-│   ├── srm_compute_D.yml              ← PE/ICI pipeline (Jobs #10–#24)
+│   ├── srm_compute_D.yml
 │   ├── srm_ciolacu_validation.yml
 │   ├── srm_zelensky_validation.yml
 │   ├── srm_putin_validation.yml
@@ -397,30 +394,15 @@ politomorphism/
 │   ├── srm_orban_validation.yml
 │   └── fetch_trends.yml
 ├── scripts/
-│   ├── get_trends.py                  ← λ calibration (Step 0)
-│   ├── compute_D.py                   ← D = α·PE + (1−α)·ICI
-│   ├── calibrate_alpha.py             ← α_optimal = 0.351
-│   ├── test_hypotheses.py             ← H1/H2/H3 tests
+│   ├── get_trends.py
+│   ├── compute_D.py
+│   ├── calibrate_alpha.py
+│   ├── test_hypotheses.py
 │   └── srm_pipeline/
-│       ├── pas2_A_sentiment.py
-│       ├── pas3_D_semantic_drift.py
-│       ├── pas4_N_gdelt.py
-│       └── pas5_SRM_final.py
 ├── docs/
-│   ├── srm_pe_ici_map.svg             ← Static correlation map (README)
-│   └── srm_pe_ici_map_interactive.html ← Interactive visualization
+│   ├── srm_pe_ici_map.svg
+│   └── srm_pe_ici_map_interactive.html
 ├── results/
-│   └── D_result_*.json                ← Per-symbol pipeline outputs
-├── data_chavez/
-├── data_ciolacu/
-├── data_macron/
-├── data_mandela/
-├── data_orban/
-├── data_putin/
-├── data_simion/
-├── data_sunflower/
-├── data_zelensky/
-├── srm_lambda_calibration.json
 └── README.md
 ```
 
@@ -428,38 +410,31 @@ politomorphism/
 
 ## Reproducibility
 
-All data, code, and results are open source.
-
-- **Data sources:** [mediacloud.org](https://mediacloud.org) + [Google Trends](https://trends.google.com) (pytrends)
+- **Data:** [mediacloud.org](https://mediacloud.org) + [Google Trends](https://trends.google.com)
 - **λ calibration:** `scipy.optimize.brentq`, Python 3.11, GitHub Actions ubuntu-latest
-- **Sentiment analysis:** VADER (`vaderSentiment 3.3.2`) for English; DistilBERT for Romanian
-- **D computation:** `scripts/compute_D.py` — LDA (scikit-learn K=10 seed=42), sentence-transformers (`paraphrase-multilingual-MiniLM-L12-v2`)
-- **Alpha calibration:** `scripts/calibrate_alpha.py` — α_optimal=0.351, 12 real-value entries
-- **Bootstrap CI for D:** n=20 (speed); publication requires n≥200
-- **GitHub Actions:** workflows trigger on `workflow_dispatch`
+- **Sentiment:** VADER (`vaderSentiment 3.3.2`) English; DistilBERT Romanian
+- **D computation:** LDA (scikit-learn K=10 seed=42) + `paraphrase-multilingual-MiniLM-L12-v2`
+- **Alpha calibration:** α_optimal=0.351, 12 real-value entries
+- **Bootstrap:** n=20 (speed); publication requires n≥200
 
 ---
 
 ## Preregistration
 
-OSF Preregistration: [10.17605/OSF.IO/HYDNZ](https://doi.org/10.17605/OSF.IO/HYDNZ)  
+OSF: [10.17605/OSF.IO/HYDNZ](https://doi.org/10.17605/OSF.IO/HYDNZ)  
 Zenodo: [10.5281/zenodo.18962821](https://doi.org/10.5281/zenodo.18962821)
 
 ---
 
 ## Citation
-
 ```bibtex
 @misc{serban2026politomorphism,
-  author       = {Serban, Gabriel Florin},
-  title        = {Politomorphism: Social Resonance Model —
-                  PE/ICI Decomposition across 13 Validated Political Symbols},
-  year         = {2026},
-  month        = {March},
-  doi          = {10.17605/OSF.IO/HYDNZ},
-  orcid        = {0009-0000-2266-3356},
-  url          = {https://github.com/profserbangabriel-del/politomorphism},
-  license      = {CC BY 4.0}
+  author  = {Serban, Gabriel Florin},
+  title   = {Politomorphism: Social Resonance Model — PE/ICI Decomposition across 13 Validated Political Symbols},
+  year    = {2026},
+  doi     = {10.17605/OSF.IO/HYDNZ},
+  url     = {https://github.com/profserbangabriel-del/Politomorphism},
+  license = {CC BY 4.0}
 }
 ```
 
