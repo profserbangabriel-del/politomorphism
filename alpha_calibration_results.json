@@ -16,16 +16,16 @@
   "real_values_count": 12,
   "total_cases": 12,
   "global_calibration": {
-    "alpha_optimal": 0.1241,
-    "RMSE_at_alpha_opt": 0.1399,
-    "MAE_at_alpha_opt": 0.1076,
-    "RMSE_at_alpha_05": 0.1537,
-    "MAE_at_alpha_05": 0.1334,
-    "pearson_r": 0.0536,
-    "pearson_p": 0.8687,
-    "spearman_r": 0.0,
-    "spearman_p": 1.0,
-    "verdict": "Consider updating to alpha=0.1241"
+    "alpha_optimal": 0.1731,
+    "RMSE_at_alpha_opt": 0.1443,
+    "MAE_at_alpha_opt": 0.1108,
+    "RMSE_at_alpha_05": 0.1548,
+    "MAE_at_alpha_05": 0.1341,
+    "pearson_r": -0.0383,
+    "pearson_p": 0.906,
+    "spearman_r": -0.007,
+    "spearman_p": 0.9828,
+    "verdict": "Consider updating to alpha=0.1731"
   },
   "typology_calibration": {
     "Institutionally Durable": {
@@ -42,30 +42,6 @@
       "D_legacy_mean": 0.775,
       "interpretation": "ICI-dominant"
     },
-    "Electorally Volatile": {
-      "n": 5,
-      "cases": [
-        "George Simion",
-        "Nelson Mandela",
-        "Emmanuel Macron",
-        "Hugo Chávez (sust.)",
-        "Hugo Chávez (acute)"
-      ],
-      "alpha_optimal": 0.3591,
-      "RMSE": 0.1633,
-      "PE_mean": 0.5886,
-      "ICI_mean": 0.7352,
-      "D_legacy_mean": 0.6928,
-      "interpretation": "Balanced"
-    },
-    "Civic Mobilization": {
-      "n": 1,
-      "note": "Insufficient cases (n<2)"
-    },
-    "Flash Viral": {
-      "n": 1,
-      "note": "Insufficient cases (n<2)"
-    },
     "Campaign/Ascension": {
       "n": 2,
       "cases": [
@@ -78,6 +54,30 @@
       "ICI_mean": 0.7898,
       "D_legacy_mean": 0.7875,
       "interpretation": "ICI-dominant"
+    },
+    "Civic Mobilization": {
+      "n": 1,
+      "note": "Insufficient cases (n<2)"
+    },
+    "Flash Viral": {
+      "n": 1,
+      "note": "Insufficient cases (n<2)"
+    },
+    "Electorally Volatile": {
+      "n": 5,
+      "cases": [
+        "George Simion",
+        "Nelson Mandela",
+        "Emmanuel Macron",
+        "Hugo Chávez (sust.)",
+        "Hugo Chávez (acute)"
+      ],
+      "alpha_optimal": 0.4623,
+      "RMSE": 0.1674,
+      "PE_mean": 0.586,
+      "ICI_mean": 0.7409,
+      "D_legacy_mean": 0.6928,
+      "interpretation": "Balanced"
     }
   },
   "per_case_decomposition": [
@@ -206,10 +206,10 @@
       "symbol": "Hugo Chávez (acute)",
       "typology": "Electorally Volatile",
       "D_legacy": 0.38,
-      "PE": 0.5938,
-      "ICI": 0.7202,
-      "D_new": 0.657,
-      "delta": 0.277,
+      "PE": 0.5809,
+      "ICI": 0.7487,
+      "D_new": 0.6648,
+      "delta": 0.2848,
       "dominant": "ICI",
       "data_source": "compute_D.py (real)"
     }
@@ -222,7 +222,7 @@
     "flash_ICI_mean": 0.7004,
     "flash_PE_mean": 0.5949,
     "flash_ICI_PE_ratio": 1.1773,
-    "nonflash_ICI_PE_ratio": 1.2569,
+    "nonflash_ICI_PE_ratio": 1.2638,
     "supported": false
   }
 }
