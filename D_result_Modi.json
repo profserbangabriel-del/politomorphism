@@ -1,0 +1,14 @@
+{
+  "symbol": "Modi",
+  "D_result": {
+    "PE": 0.576,
+    "ICI": 0.9151,
+    "D": 0.7455,
+    "alpha": 0.5,
+    "D_std": 0.0013,
+    "D_ci_low": 0.7429,
+    "D_ci_high": 0.7481,
+    "n_docs": 3000,
+    "bootstrap_n": 20
+  }
+}
