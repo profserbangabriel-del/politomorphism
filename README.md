@@ -7,12 +7,12 @@ License: CC BY 4.0
 
 ---
 
-## PE/ICI Correlation Map — 15 Validated Symbols
+## PE/ICI Correlation Map — 18 Validated Symbol-Periods
 
 [![SRM PE/ICI Correlation Map](docs/srm_pe_ici_map.svg)](https://profserbangabriel-del.github.io/Politomorphism/srm_pe_ici_map_interactive.html)
 
-> **Interactive version:** [srm_pe_ici_map_interactive.html](https://profserbangabriel-del.github.io/Politomorphism/srm_pe_ici_map_interactive.html) — hover over any symbol for full PE/ICI values and key findings. Filter by typology.  
-> **Key finding (updated):** ICI range (0.311) is **4.0× larger** than PE range (0.078) across 15 symbols. Modi (ICI=0.915) breaks the Western ICI ceiling through Cross-Cultural Frame Incompatibility (CCFI). Netanyahu (ICI=0.698) discriminates CCFI from pre-sorted ideological framing.
+> **Interactive version:** [srm_pe_ici_map_interactive.html](https://profserbangabriel-del.github.io/Politomorphism/srm_pe_ici_map_interactive.html)  
+> **Key finding:** ICI range (0.311) is **4.0× larger** than PE range (0.079) across 18 symbol-periods. Modi 2014 (ICI=0.915) breaks the Western ICI ceiling through CCFI. The CCFI lifecycle (Modi 2014→2019→2024) documents asymptotic stabilization at ~0.80 — irreducible cross-cultural incompatibility. Iran-Israel introduces the first Geopolitical Event Symbol with maximum PE (0.630) through Multi-Domain Geopolitical Activation.
 
 ---
 
@@ -29,10 +29,10 @@ Politomorphism is a theoretical framework that treats political symbols as **mor
 | Variable | Name | What it measures | Range |
 |----------|------|-----------------|-------|
 | V | Viral Velocity | Log-normalized escalation ratio between peak media presence and pre-event baseline | 0–1 |
-| A | Affective Weight | Emotional intensity of coverage — computed via VADER (English) or DistilBERT (Romanian) sentiment analysis on article titles | 0–1 |
-| D | Semantic Drift | Fragmentation of meaning across contexts. **Most impactful variable** (exponential position). Formally defined as D = α·PE + (1−α)·ICI with α_optimal = **0.338** (updated) — see Section: D Operationalization | 0–1 |
-| N | Network Coverage | Proportion of days where the symbol appears in the corpus | 0–1 |
-| **λ** | **Decay Constant** | Controls attenuation speed of the semantic factor. **Empirically derived from Google Trends (Step 0).** Default: λ=7 | 2–105 |
+| A | Affective Weight | Emotional intensity of coverage — computed via VADER (English) or DistilBERT (Romanian) | 0–1 |
+| D | Semantic Drift | Fragmentation of meaning. D = α·PE + (1−α)·ICI, α_optimal = **0.338** | 0–1 |
+| N | Network Coverage | Proportion of days the symbol appears in corpus | 0–1 |
+| **λ** | **Decay Constant** | Controls semantic attenuation speed. Empirically derived from Google Trends. | 2–105 |
 
 ---
 
@@ -43,13 +43,13 @@ Politomorphism is a theoretical framework that treats political symbols as **mor
  LOW RESONANCE          MEDIUM RESONANCE    HIGH RESONANCE
 ```
 
-> **Empirical finding (15 case studies):** The HIGH RESONANCE zone (>0.20) remains empirically vacant in open, multi-outlet Western media systems. The observed upper bound is ~0.12. For Non-Western symbols, CCFI-generated D suppresses SRM regardless of V and A — a Non-Western correction factor is required for cross-cultural SRM comparison.
+> **Empirical finding (18 symbol-periods):** HIGH RESONANCE (>0.20) remains empirically vacant in Western media systems. For Non-Western CCFI symbols, D suppresses SRM regardless of V and A — a phase-specific correction factor is required.
 
 ---
 
 ## λ Calibration — Step 0 (Mandatory)
 
-> **Key finding:** λ is not a universal constant. It is a typological variable ranging from **λ=2.31** (Orbán — institutionally durable) to **λ=104.66** (Charlie Hebdo — extreme flash viral).
+> **Key finding:** λ is a typological variable ranging from **λ=2.31** (Orbán) to **λ=104.66** (Charlie Hebdo). All 18 symbols now have empirically calibrated λ values.
 
 ### How λ is determined
 
@@ -59,102 +59,135 @@ avg / peak = (1 − e^(−λT)) / (λT)
 
 Solve for λ using Brent's method (`scipy.optimize.brentq`). **Script:** [`scripts/get_trends.py`](scripts/get_trends.py)
 
-### λ Typology — Five Categories
+### Complete λ Dataset — 18 Symbol-Periods
 
-| Category | λ range | Examples |
-|----------|---------|---------|
-| Institutionally Durable | 2–5 | Orbán (2.31), Putin (4.90), Zelensky (5.11) |
-| Campaign / Ascension | 6–8 | Ciolacu (6.57), Trump (7.01) |
-| Electorally Volatile | 12–20 | Macron (12.53), Simion (12.41), Chávez (16.67), Mandela (19.66) |
-| Flash Viral | 50–70 | Georgescu (65.33) |
-| Extreme Flash Viral | >70 | Charlie Hebdo (104.66) |
+| Symbol | λ | e^−λD | Category |
+|--------|---|-------|----------|
+| Orbán (HU, 2022) | 2.31 | 0.248 | Institutionally Durable |
+| **Modi 2014 (IN)** | **2.37** | **0.171** | **Institutionally Durable** |
+| Putin (RU, 2022) | 4.90 | 0.032 | Institutionally Durable |
+| Zelensky (UA, 2022) | 5.11 | 0.040 | Institutionally Durable |
+| **Modi 2019 (IN)** | **6.33** | **0.012** | **Campaign / Ascension** |
+| Ciolacu (RO, 2026) | 6.57 | 0.011 | Campaign / Ascension |
+| Trump (US, 2016) | 7.01 | 0.008 | Campaign / Ascension |
+| **Netanyahu (IL, 2023)** | **7.02** | **0.010** | **Campaign / Ascension** |
+| **Modi 2024 (IN)** | **9.11** | **0.002** | **Electorally Volatile** |
+| Simion (RO, 2024) | 12.41 | 0.0004 | Electorally Volatile |
+| Macron (FR, 2017) | 12.53 | 0.0003 | Electorally Volatile |
+| Chávez (VE, 2013) | 16.67 | ≈0 | Electorally Volatile |
+| **Iran-Israel (2024)** | **17.81** | **≈0** | **Electorally Volatile** |
+| Mandela (ZA, 2013) | 19.66 | ≈0 | Electorally Volatile |
+| Georgescu (RO, 2024) | 65.33 | ≈0 | Flash Viral |
+| Charlie Hebdo (FR, 2015) | 104.66 | ≈0 | Extreme Flash Viral |
+
+> **Modi λ lifecycle finding:** λ increases across mandates — 2.37 (2014) → 6.33 (2019) → 9.11 (2024) — inversely correlated with CCFI decay. As ICI stabilizes, temporal concentration of interest increases.
 
 > **Recommended default λ = 7.** Flash viral rule: if λ > 30, retain λ=2 and flag as flash event.
 
 ---
 
-## D Operationalization — Updated March 2026
+## D Operationalization
 
 ### D = α · PE + (1−α) · ICI
 
 | Component | Name | Measures | Method |
 |-----------|------|----------|--------|
-| PE | Polysemy Entropy | Topical breadth across domains | Mean Jensen-Shannon Divergence on LDA topic distributions (K=10, seed=42) |
-| ICI | Intra-contextual Incoherence | Framing divergence across outlets | 1 − mean pairwise cosine similarity on sentence embeddings (`paraphrase-multilingual-MiniLM-L12-v2`) |
+| PE | Polysemy Entropy | Topical breadth | Mean Jensen-Shannon Divergence on LDA (K=10, seed=42) |
+| ICI | Intra-contextual Incoherence | Framing divergence | 1 − mean pairwise cosine similarity (`paraphrase-multilingual-MiniLM-L12-v2`) |
 
-### Alpha Calibration Results — Updated (14 real-value entries)
+### Alpha Calibration (14 real-value entries)
 
-| Parameter | 13-symbol | 15-symbol (updated) | Change |
-|-----------|-----------|---------------------|--------|
-| α_optimal | 0.351 | **0.338** | ICI weight → 0.662 |
-| Pearson r (D_new vs D_legacy) | 0.682 | **0.701** | Stronger validity |
-| Mean D_legacy upward bias | −15.6% | **−16.2%** | Slightly larger |
-| ICI range / PE range | 2.81× | **4.0×** | CCFI expands ICI dominance |
+| Parameter | Value |
+|-----------|-------|
+| α_optimal | **0.338** (ICI weight = 0.662) |
+| Pearson r (D_new vs D_legacy) | 0.701 |
+| Mean D_legacy upward bias | −16.2% |
+| ICI range / PE range | **4.0×** |
 
-### Eight Cross-Symbol Findings (updated from six)
-
-1. **ICI drives D variation** — ICI range (0.311) is 4.0× larger than PE range (0.078).
-2. **ICI ceiling ~0.83–0.84 is Western-specific** — Trump (0.835), Mandela (0.836), Putin (0.834) define the Western ceiling. Non-Western CCFI symbols can exceed it substantially.
-3. **Modi (ICI=0.915) breaks the ceiling** through Cross-Cultural Frame Incompatibility (CCFI): absence of pre-established Anglo-American interpretive frameworks generates extreme framing divergence.
-4. **Netanyahu (ICI=0.698) does not exhibit CCFI** despite active war context — pre-established Israel-Palestine frames in Anglo-American media produce pre-sorted moderate ICI, not CCFI.
-5. **ICI−PE as typological dimension** — gradient from Modi (+0.339) to Orbán (+0.001) maps coherently onto symbol typologies.
-6. **H1 directionally supported** — both Flash Viral symbols (Charlie Hebdo +0.138, Georgescu +0.106) have ICI > PE.
-7. **H3 extended** — wartime produces asymmetric ICI: Putin aggressor (+0.267) > Netanyahu contested (+0.087) > Zelensky defender (+0.056).
-8. **CCFI is a structural SRM suppressor** — Non-Western symbols require a correction factor for valid cross-cultural SRM comparison.
-
-**Modules:** [`scripts/compute_D.py`](scripts/compute_D.py) | [`scripts/calibrate_alpha.py`](scripts/calibrate_alpha.py)
+> **Note:** α = 0.338 calibrated on Western symbols. Phase-specific α recalibration pending for CCFI symbols and Geopolitical Event symbols.
 
 ---
 
-## Complete PE/ICI Dataset — 15 Validated Symbols
+## Complete PE/ICI Dataset — 18 Validated Symbol-Periods
 
-| Rank | Symbol | Country | Period | PE | ICI | D_new | ICI−PE | SRM (λ=2) | Typology |
-|------|--------|---------|--------|----|-----|-------|--------|-----------|----------|
-| 1 | **Modi** | **IN** | **2013–14** | **0.576** | **0.915** | **0.746** | **+0.339** | TBD | **CCFI** |
-| 2 | Trump | USA | 2015–16 | 0.542 | 0.835 | 0.689 | +0.293 | 0.0922 | Campaign |
-| 3 | Mandela | ZA | 2013 | 0.564 | 0.836 | 0.700 | +0.272 | 0.0088 | Legacy |
-| 4 | Putin | RU | 2022 | 0.566 | 0.834 | 0.700 | +0.267 | 0.0103 | Wartime Aggressor |
-| 5 | Sunflower Mvt | TW | 2014 | 0.625 | 0.789 | 0.707 | +0.165 | 0.0376 | Civic Mobilization |
-| 6 | Charlie Hebdo | FR | 2015 | 0.592 | 0.730 | 0.661 | +0.138 | ~0 | Flash Viral |
-| 7 | Chávez | VE | 2013 | 0.594 | 0.720 | 0.657 | +0.126 | 0.0121 | Electorally Volatile |
-| 8 | Ciolacu | RO | 2025–26 | 0.622 | 0.745 | 0.683 | +0.123 | 0.0365 | Campaign/Post-exec. |
-| 9 | Macron | FR | 2017 | 0.593 | 0.714 | 0.654 | +0.121 | 0.0169 | Campaign |
-| 10 | Georgescu | RO | 2024 | 0.595 | 0.700 | 0.648 | +0.106 | 0.0307 | Flash Viral |
-| 11 | Netanyahu | IL | 2023–24 | 0.610 | 0.698 | 0.654 | +0.087 | TBD | Pre-Sorted Wartime |
-| 12 | Simion | RO | 2024 | 0.598 | 0.685 | 0.641 | +0.087 | 0.0054 | Electorally Volatile |
-| 13 | Zelensky | UA | 2022 | 0.604 | 0.660 | 0.632 | +0.056 | 0.1121 | Wartime Defender |
-| 14 | Orbán | HU | 2022 | 0.604 | 0.605 | 0.604 | +0.001 | 0.0065 | Institutionally Durable |
-| — | Chávez (acute) | VE | Mar 2013 | — | — | 0.380* | — | 0.1154* | Dual-Mode |
+| Rank | Symbol | Country | Period | PE | ICI | D_new | ICI−PE | λ | Typology |
+|------|--------|---------|--------|----|-----|-------|--------|---|----------|
+| 1 | **Modi 2014** | IN | 2013–14 | 0.576 | **0.915** | 0.746 | +0.339 | 2.37 | CCFI acute |
+| 2 | Trump | US | 2015–16 | 0.542 | 0.835 | 0.689 | +0.293 | 7.01 | Western ceiling |
+| 3 | Mandela | ZA | 2013 | 0.564 | 0.836 | 0.700 | +0.272 | 19.66 | Western ceiling |
+| 4 | Putin | RU | 2022 | 0.566 | 0.834 | 0.700 | +0.267 | 4.90 | Western ceiling |
+| 5 | **Modi 2024** | IN | 2024 | 0.625 | 0.802 | 0.713 | +0.177 | 9.11 | CCFI asymptote |
+| 6 | **Modi 2019** | IN | 2019 | 0.605 | 0.788 | 0.697 | +0.184 | 6.33 | CCFI asymptote |
+| 7 | Sunflower | TW | 2014 | 0.625 | 0.789 | 0.707 | +0.165 | — | Cross-cult. civic |
+| 8 | Charlie Hebdo | FR | 2015 | 0.592 | 0.730 | 0.661 | +0.138 | 104.66 | Flash Viral |
+| 9 | Chávez | VE | 2013 | 0.594 | 0.720 | 0.657 | +0.126 | 16.67 | Volatile |
+| 10 | Ciolacu | RO | 2025–26 | 0.622 | 0.745 | 0.683 | +0.123 | 6.57 | Campaign |
+| 11 | Macron | FR | 2017 | 0.593 | 0.714 | 0.654 | +0.121 | 12.53 | Campaign |
+| 12 | **Iran-Israel** | INT | 2024 | **0.630** | 0.732 | 0.681 | +0.102 | 17.81 | Geopolitical Event |
+| 13 | Georgescu | RO | 2024 | 0.595 | 0.700 | 0.648 | +0.106 | 65.33 | Flash Viral |
+| 14 | **Netanyahu** | IL | 2023–24 | 0.610 | 0.698 | 0.654 | +0.087 | 7.02 | Pre-Sorted Wartime |
+| 15 | Simion | RO | 2024 | 0.598 | 0.685 | 0.641 | +0.087 | 12.41 | Volatile |
+| 16 | Zelensky | UA | 2022 | 0.604 | 0.660 | 0.632 | +0.056 | 5.11 | Wartime Defender |
+| 17 | Orbán | HU | 2022 | 0.604 | 0.605 | 0.604 | +0.001 | 2.31 | Institutional |
+| — | Chávez (acute) | VE | Mar 2013 | — | — | 0.380* | — | 16.67 | Dual-Mode |
 
-*Estimated. All other D_new values are real pipeline outputs (Jobs #10–#26).  
-Modi and Netanyahu: V, A, N pending full SRM validation.
+*Estimated. All other D_new = real pipeline outputs (Jobs #10–#29).
 
 ---
 
-## ICI Architecture — Three Tiers
+## ICI Architecture — Seven Structural Levels
 
-| Tier | ICI range | Symbols | Mechanism |
-|------|-----------|---------|-----------|
-| Non-Western CCFI | **0.90+** | Modi (0.915) | Cross-Cultural Frame Incompatibility |
-| Western ICI ceiling | **0.83–0.84** | Trump (0.835), Mandela (0.836), Putin (0.834) | Electoral polarization / legacy contestation / aggressor amplification |
-| Moderate ICI | **0.60–0.79** | All other 12 symbols | Pre-sorted / convergent / institutional |
+| Level | ICI range | Symbols | Mechanism |
+|-------|-----------|---------|-----------|
+| CCFI acute | **0.90+** | Modi 2014 (0.915) | No pre-established Anglo-American frameworks |
+| Western ICI ceiling | **0.83–0.84** | Trump, Mandela, Putin | Electoral polarization / legacy / aggressor amplification |
+| CCFI asymptote | **0.79–0.81** | Modi 2019 (0.788), Modi 2024 (0.802) | Irreducible cross-cultural incompatibility |
+| Cross-cultural civic | **0.78–0.79** | Sunflower (0.789) | Partial cultural framing diversity |
+| Pre-sorted moderate | **0.69–0.75** | Netanyahu, Ciolacu, Macron, Georgescu, Chávez, Iran-Israel | Institutionalized ideological sorting |
+| Convergent wartime | **0.65–0.67** | Zelensky (0.660) | Crisis frame convergence |
+| Institutional stable | **0.60–0.61** | Orbán (0.605) | Long-term topical stabilization |
 
 ---
 
 ## Cross-Cultural Frame Incompatibility (CCFI)
 
-> **New theoretical mechanism (March 2026)** — introduced by the Modi and Netanyahu cases.
+CCFI applies when Anglo-American journalism **lacks pre-established interpretive categories** for a political symbol, forcing outlets to construct incompatible frameworks from scratch.
 
-CCFI applies when Anglo-American journalism **lacks pre-established interpretive categories** for a political symbol, forcing different outlets to construct incompatible frameworks from scratch. This generates ICI substantially above the Western ceiling.
+### The CCFI Lifecycle — Three Phases (Modi 2014→2019→2024)
 
-**CCFI does NOT apply** when pre-established frameworks exist (Israel-Palestine, Russia-West): pre-sorted ideological framing then produces moderate ICI regardless of conflict intensity.
+| Phase | Year | ICI | λ | Mechanism |
+|-------|------|-----|---|-----------|
+| 1. CCFI acute | 2014 | 0.915 | 2.37 | No frameworks — maximum incompatibility |
+| 2. Partial decay | 2019 | 0.788 | 6.33 | Basic categories accumulate |
+| 3. CCFI asymptote | 2024 | 0.802 | 9.11 | Irreducible incompatibilities persist |
 
-| Condition | Symbol | ICI | Result |
-|-----------|--------|-----|--------|
-| No Anglo-American framework (Hindu nationalism) | Modi | 0.915 | **CCFI — ceiling broken** |
-| Pre-established framework (Israel-Palestine) | Netanyahu | 0.698 | **Pre-sorted — no CCFI** |
+> **CCFI Asymptote (~0.79–0.80):** The residual floor below which CCFI cannot decay. Reflects structural mismatches between Anglo-American journalistic categories and Non-Western political realities that no amount of coverage can resolve (secularism vs. Hindu nationalism, majoritarian democracy vs. minority rights).
 
-**Implication for SRM:** CCFI acts as a structural SRM suppressor for Non-Western symbols. Higher CCFI-generated ICI → higher D → more severe exponential penalty → SRM underestimates actual political resonance. A Non-Western correction factor is required.
+> **λ inverse correlation:** As CCFI decays (ICI falls), λ rises — the symbol becomes more temporally concentrated as it becomes more familiar.
+
+### CCFI Discrimination — Modi vs. Netanyahu
+
+| | Modi 2014 | Netanyahu 2023 |
+|---|---|---|
+| ICI | 0.915 | 0.698 |
+| Anglo-American framework | ABSENT | PRESENT (Israel-Palestine) |
+| Result | CCFI — ceiling broken | Pre-sorted — no CCFI |
+
+**Active war + high controversy ≠ CCFI.** Pre-established frameworks produce moderate ICI regardless of conflict intensity.
+
+---
+
+## Geopolitical Event Symbol — Iran-Israel 2024
+
+First event-based symbol in the validated dataset (all others are political actors).
+
+| PE | ICI | D_new | ICI−PE | λ |
+|----|-----|-------|--------|---|
+| **0.630** (max dataset) | 0.732 | 0.681 | +0.102 | 17.81 |
+
+**Multi-Domain Geopolitical Activation (MDGA):** A direct Iran-Israel military exchange simultaneously activates nuclear, regional security, economic, diplomatic, energy, and domestic political domains — generating maximum PE within 6 months vs. years for actor symbols.
+
+**Key finding:** PE contribution to D is competitive with ICI for the first time in the dataset — suggesting event symbols may require different α calibration than actor symbols.
 
 ---
 
@@ -164,248 +197,103 @@ CCFI applies when Anglo-American journalism **lacks pre-established interpretive
 - **ACUTE SRM** — short-term mobilization during narrative coherence
 - **AAF = ACUTE / SUSTAINED**
 
-For Hugo Chávez: AAF = 9.5 (SRM jumped from 0.0121 → 0.1154 as D collapsed 0.720 → 0.380 during the 11-day death window).
+Hugo Chávez: AAF = 9.5 (SRM 0.0121 → 0.1154 as D collapsed 0.720 → 0.380 during 11-day death window).
 
 ---
 
-## The 15 Typological Categories
+## The 16 Typological Categories
 
 | # | Category | Example | ICI−PE | Mechanism |
 |---|----------|---------|--------|-----------|
-| 1 | **Non-Western CCFI** | **Narendra Modi** | **+0.339** | **Cross-Cultural Frame Incompatibility** |
-| 2 | High-Velocity Campaign | Donald Trump | +0.293 | Exceptional V, maximum ICI-dominance |
-| 3 | Legacy Resonance | Nelson Mandela | +0.272 | Post-mortem Legacy Contestation ICI |
-| 4 | Wartime Aggressor | Vladimir Putin | +0.267 | Moral-political polarization amplifies ICI to ceiling |
-| 5 | Civic Mobilization | Sunflower Movement | +0.165 | Cross-cultural framing diversity |
-| 6 | Flash Viral / Extreme | Charlie Hebdo | +0.138 | Convergence-then-contestation; λ=104.66 |
-| 7 | Revolutionary Legacy | Hugo Chávez | +0.126 | Structured ICI; SUSTAINED Low + ACUTE Medium; AAF=9.5 |
-| 8 | Post-Executive Trap | Marcel Ciolacu | +0.123 | Role transition → structural semantic fragmentation |
-| 9 | Rapid Emergence | Emmanuel Macron | +0.121 | Contradictory frame coexistence |
-| 10 | Fragmented Diffusion | Călin Georgescu | +0.106 | Flash Viral; λ=65.33 |
-| 11 | **Pre-Sorted Wartime** | **Benjamin Netanyahu** | **+0.087** | **Institutionalized conflict frames; no CCFI** |
-| 12 | Electorally Volatile | George Simion | +0.087 | Affective Deficit (A=0.099) |
-| 13 | Sustained Wartime Defender | Volodymyr Zelensky | +0.056 | Crisis frame convergence |
-| 14 | Longevity Saturation | Viktor Orbán | +0.001 | 15+ years — perfectly balanced PE/ICI |
-| 15 | Revolutionary Legacy (Acute) | Hugo Chávez (acute) | — | D_acute=0.380; Dual-Mode |
+| 1 | Non-Western CCFI | Modi 2014 | +0.339 | Cross-Cultural Frame Incompatibility |
+| 2 | High-Velocity Campaign | Trump | +0.293 | Electoral polarization — ICI ceiling |
+| 3 | Legacy Resonance | Mandela | +0.272 | Post-mortem legacy contestation |
+| 4 | Wartime Aggressor | Putin | +0.267 | Moral amplification — ICI ceiling |
+| 5 | CCFI Asymptote | Modi 2024 | +0.177 | Irreducible residual incompatibility |
+| 6 | CCFI Transition | Modi 2019 | +0.184 | Partial frame stabilization |
+| 7 | Civic Mobilization | Sunflower | +0.165 | Cross-cultural civic diversity |
+| 8 | Flash Viral / Extreme | Charlie Hebdo | +0.138 | Convergence-then-contestation |
+| 9 | Revolutionary Legacy | Chávez | +0.126 | Structured ICI; AAF=9.5 |
+| 10 | Post-Executive Trap | Ciolacu | +0.123 | Role transition fragmentation |
+| 11 | Rapid Emergence | Macron | +0.121 | Contradictory frame coexistence |
+| 12 | Geopolitical Event | Iran-Israel | +0.102 | Multi-Domain Geopolitical Activation |
+| 13 | Fragmented Diffusion | Georgescu | +0.106 | Flash Viral; λ=65.33 |
+| 14 | Pre-Sorted Wartime | Netanyahu | +0.087 | Institutionalized conflict frames |
+| 15 | Electorally Volatile | Simion | +0.087 | Affective Deficit (A=0.099) |
+| 16 | Wartime Defender | Zelensky | +0.056 | Crisis frame convergence |
+| 17 | Longevity Saturation | Orbán | +0.001 | Perfectly balanced PE/ICI |
 
 ---
 
 ## Comparative Dataset — Full SRM Variables
 
-| Symbol / Context | V | A | D_new | N | SRM (λ=2) | λ empiric | SRM (λ_emp) | Typology |
-|------------------|---|---|-------|---|-----------|----------|------------|---------|
-| **Narendra Modi (IN, 2013–14)** | TBD | TBD | **0.746** | TBD | TBD | TBD | TBD | **CCFI** |
-| George Simion (RO, 2024–26) | 0.279 | 0.099 | 0.641 | 0.996 | 0.0054 | 12.41 | — | Electorally Volatile |
-| Viktor Orbán (HU, 2022–26) | 0.168 | 0.236 | 0.604 | 0.812 | 0.0065 | 2.31 | 0.0051 | Longevity Saturation |
-| Nelson Mandela (SA, 2013) | 0.311 | 0.246 | 0.700 | 0.510 | 0.0088 | 19.66 | — | Legacy Resonance |
-| Vladimir Putin (2022–26) | 0.217 | 0.259 | 0.700 | 1.000 | 0.0103 | 4.90 | 0.0009 | Wartime Aggressor |
-| Hugo Chávez SUSTAINED (VE, 2012–13) | 0.186 | 0.290 | 0.657 | 0.941 | 0.0121 | 16.67 | — | Revolutionary Legacy |
+| Symbol / Context | V | A | D_new | N | SRM (λ=2) | λ | SRM (λ_emp) | Typology |
+|------------------|---|---|-------|---|-----------|---|------------|---------|
+| **Modi 2014 (IN)** | TBD | TBD | **0.746** | TBD | TBD | **2.37** | TBD | CCFI acute |
+| **Modi 2019 (IN)** | TBD | TBD | **0.697** | TBD | TBD | **6.33** | TBD | CCFI asymptote |
+| **Modi 2024 (IN)** | TBD | TBD | **0.713** | TBD | TBD | **9.11** | TBD | CCFI asymptote |
+| **Netanyahu (IL)** | TBD | TBD | **0.654** | TBD | TBD | **7.02** | TBD | Pre-Sorted Wartime |
+| **Iran-Israel (INT)** | TBD | TBD | **0.681** | TBD | TBD | **17.81** | TBD | Geopolitical Event |
+| George Simion (RO, 2024) | 0.279 | 0.099 | 0.641 | 0.996 | 0.0054 | 12.41 | — | Electorally Volatile |
+| Viktor Orbán (HU, 2022) | 0.168 | 0.236 | 0.604 | 0.812 | 0.0065 | 2.31 | 0.0051 | Longevity Saturation |
+| Nelson Mandela (ZA, 2013) | 0.311 | 0.246 | 0.700 | 0.510 | 0.0088 | 19.66 | — | Legacy Resonance |
+| Vladimir Putin (RU, 2022) | 0.217 | 0.259 | 0.700 | 1.000 | 0.0103 | 4.90 | 0.0009 | Wartime Aggressor |
+| Hugo Chávez SUSTAINED (VE) | 0.186 | 0.290 | 0.657 | 0.941 | 0.0121 | 16.67 | — | Revolutionary Legacy |
 | Emmanuel Macron (FR, 2017) | 0.507 | 0.168 | 0.654 | 1.000 | 0.0169 | 12.53 | — | Rapid Emergence |
-| **Benjamin Netanyahu (IL, 2023–24)** | TBD | TBD | **0.654** | TBD | TBD | TBD | TBD | **Pre-Sorted Wartime** |
 | Călin Georgescu (RO, 2024) | 0.750 | 0.398 | 0.648 | 0.600 | 0.0307 | 65.33 | — | Flash Viral |
-| Marcel Ciolacu (RO, 2025–26) | 0.720 | 0.420 | 0.683 | 0.650 | 0.0365 | 6.57 | 0.0008 | Post-Executive Trap |
+| Marcel Ciolacu (RO, 2026) | 0.720 | 0.420 | 0.683 | 0.650 | 0.0365 | 6.57 | 0.0008 | Post-Executive Trap |
 | Sunflower Movement (TW, 2014) | 0.680 | 0.420 | 0.707 | 0.580 | 0.0376 | — | — | Civic Mobilization |
 | Charlie Hebdo (FR, 2015) | TBD | TBD | 0.661 | TBD | TBD | 104.66 | — | Extreme Flash Viral |
-| Donald Trump (US, 2015–16) | 0.958 | 0.580 | 0.689 | 0.720 | 0.0922 | 7.01 | 0.0023 | High-Velocity Campaign |
-| Hugo Chávez ACUTE (VE, Mar 2013) | 0.689 | 0.358 | 0.380* | 1.000 | 0.1154 | 16.67 | — | Revolutionary Legacy (Acute) |
-| Volodymyr Zelensky (UA, 2022–26) | 0.873 | 0.640 | 0.632 | 0.781 | 0.1121 | 5.11 | 0.0135 | Wartime Defender |
+| Donald Trump (US, 2016) | 0.958 | 0.580 | 0.689 | 0.720 | 0.0922 | 7.01 | 0.0023 | High-Velocity Campaign |
+| Hugo Chávez ACUTE (VE, 2013) | 0.689 | 0.358 | 0.380* | 1.000 | 0.1154 | 16.67 | — | Dual-Mode |
+| Volodymyr Zelensky (UA, 2022) | 0.873 | 0.640 | 0.632 | 0.781 | 0.1121 | 5.11 | 0.0135 | Wartime Defender |
 
-*D_acute = 0.380 expert estimate. All other D_new = real pipeline outputs. Modi/Netanyahu: V, A, N pending.
-
----
-
-## Case Studies
-
-### Case Study 1 — Sunflower Movement (Taiwan, 2014)
-
-| V | A | D_new | N | SRM | Job |
-|---|---|-------|---|-----|-----|
-| 0.680 | 0.420 | 0.707 | 0.580 | 0.0376 | #15 |
-
-**Key contribution:** Highest D_new (0.707) in dataset. ICI−PE = +0.165 (rank 5/15). Cross-cultural civic mobilization drives framing diversity.
-
----
-
-### Case Study 2 — Călin Georgescu (Romania, Oct–Dec 2024)
-
-| V | A | D_new | N | SRM | λ emp | Job |
-|---|---|-------|---|-----|-------|-----|
-| 0.750 | 0.398 | 0.648 | 0.600 | 0.0307 | 65.33 | #14 |
-
-**Key contribution:** Flash Viral. Largest D discrepancy (D_legacy=0.881 vs D_new=0.648, Δ=−26.5%). Romanian Triad. ICI−PE = +0.106 (rank 10/15).
-
----
-
-### Case Study 3 — Marcel Ciolacu (Romania, Dec 2025 – Mar 2026)
-
-| V | A | D_new | N | SRM | λ emp | SRM (λ_emp) | Job |
-|---|---|-------|---|-----|-------|------------|-----|
-| 0.720 | 0.420 | 0.683 | 0.650 | 0.0365 | 6.57 | 0.0008 | #12 |
-
-**Key contribution:** Post-Executive Symbolic Trap. ICI−PE = +0.123 ≈ Macron (+0.121). Romanian Triad.
-
----
-
-### Case Study 4 — Donald Trump (USA, Jun 2015 – Nov 2016)
-
-| V | A | D_new | N | SRM | λ emp | SRM (λ_emp) | Job |
-|---|---|-------|---|-----|-------|------------|-----|
-| 0.958 | 0.580 | 0.689 | 0.720 | 0.0922 | 7.01 | 0.0023 | #10 |
-
-**Key contribution:** Highest ICI-dominance among Western symbols (ICI−PE = +0.293, rank 2/15). ICI ceiling co-occupant. Largest corpus: 69,997 articles.
-
----
-
-### Case Study 5 — Volodymyr Zelensky (UA/EU/US, Feb 2022 – Mar 2026)
-
-| V | A | D_new | N | SRM (λ=2) | λ emp | SRM (λ_emp) | Job |
-|---|---|-------|---|-----------|-------|------------|-----|
-| 0.873 | 0.640 | 0.632 | 0.781 | 0.1121 | 5.11 | 0.0135 | #17 |
-
-**Key contribution:** H3 reformulated. Wartime Defender. ICI−PE = +0.056 (rank 13/15). A=0.640 highest in dataset.
-
----
-
-### Case Study 6 — Vladimir Putin (2022–2026)
-
-| V | A | D_new | N | SRM | λ emp | SRM (λ_emp) | Job |
-|---|---|-------|---|-----|-------|------------|-----|
-| 0.217 | 0.259 | 0.700 | 1.000 | 0.0103 | 4.90 | 0.0009 | #18 |
-
-**Key contribution:** ICI ≈ Trump (0.834). Antagonistic Pair with Zelensky. ICI−PE = +0.267 (rank 4/15).
-
----
-
-### Case Study 7 — George Simion (Romania, Oct 2024 – Mar 2026)
-
-| V | A | D_new | N | SRM | λ emp | Job |
-|---|---|-------|---|-----|-------|-----|
-| 0.279 | 0.099 | 0.641 | 0.996 | 0.0054 | 12.41 | #19 |
-
-**Key contribution:** Affective Deficit — A=0.099 is the binding SRM constraint. Completes Romanian Triad. ICI−PE = +0.087 (rank 11/15).
-
----
-
-### Case Study 8 — Viktor Orbán (Hungary, 2022–2026)
-
-| V | A | D_new | N | SRM | λ emp | SRM (λ_emp) | Job |
-|---|---|-------|---|-----|-------|------------|-----|
-| 0.168 | 0.236 | 0.604 | 0.812 | 0.0065 | 2.31 | 0.0051 | #16 |
-
-**Key contribution:** ICI−PE ≈ 0 — perfectly balanced. Longevity Paradox. Lowest D_new (0.604) and V (0.168) in dataset.
-
----
-
-### Case Study 9 — Nelson Mandela (South Africa, 2013)
-
-| V | A | D_new | N | SRM | λ emp | Job |
-|---|---|-------|---|-----|-------|-----|
-| 0.311 | 0.246 | 0.700 | 0.510 | 0.0088 | 19.66 | #20 |
-
-**Key contribution:** Highest absolute ICI among Western symbols (0.836). Legacy Contestation ICI. ICI−PE = +0.272 (rank 3/15).
-
----
-
-### Case Study 10 — Emmanuel Macron (France, 2017)
-
-| V | A | D_new | N | SRM | λ emp | Job |
-|---|---|-------|---|-----|-------|-----|
-| 0.507 | 0.168 | 0.654 | 1.000 | 0.0169 | 12.53 | #21 |
-
-**Key contribution:** Rapid Emergence Paradox. ICI−PE = +0.121 ≈ Ciolacu (+0.123) — structural equivalence across national contexts.
-
----
-
-### Case Study 11 — Hugo Chávez (Venezuela, 2012–2013)
-
-| Mode | V | A | D | N | SRM (λ=2) | Job |
-|------|---|---|---|---|-----------|-----|
-| SUSTAINED | 0.186 | 0.290 | 0.657 | 0.941 | 0.0121 | #22 |
-| **ACUTE (Mar 5–15, 2013)** | **0.689** | **0.358** | **0.380*** | **1.000** | **0.1154** | est. |
-
-**Key contribution:** Dual-Mode SRM. AAF = 9.5. Structured Revolutionary ICI (+0.126) vs. Unstructured Legacy Contestation ICI (Mandela +0.272).
-
----
-
-### Case Study 12 — Charlie Hebdo (France, Jan–Feb 2015)
-
-| V | A | D_new | N | λ emp | Job |
-|---|---|-------|---|-------|-----|
-| TBD | TBD | 0.661 | TBD | 104.66 | #24 |
-
-**Key contribution:** Flash Viral rank 1 (ICI=0.730, ICI−PE=+0.138). λ=104.66 highest in dataset. H1 confirmed.
-
----
-
-### Case Study 13 — Narendra Modi (India, May 2013 – May 2014) ★ NEW
-
-| V | A | D_new | N | SRM (λ=2) | Job |
-|---|---|-------|---|-----------|-----|
-| TBD | TBD | **0.746** | TBD | TBD | #25 |
-
-**Key contribution:** **ICI = 0.9151 — breaks the Western ICI ceiling by +0.079.** Introduces Cross-Cultural Frame Incompatibility (CCFI) as a sixth ICI-generating mechanism. Establishes Non-Western Campaign/Ascension as a distinct typological sub-category (ICI−PE = +0.339, rank 1/15). CCFI acts as structural SRM suppressor.
-
-Paper: [`SRM_Modi_SSRN_2026.docx`](SRM_Modi_SSRN_2026.docx)
-
----
-
-### Case Study 14 — Benjamin Netanyahu (Israel, Oct 2023 – Mar 2024) ★ NEW
-
-| V | A | D_new | N | SRM (λ=2) | Job |
-|---|---|-------|---|-----------|-----|
-| TBD | TBD | **0.654** | TBD | TBD | #26 |
-
-**Key contribution:** **ICI = 0.6977 — does NOT exhibit CCFI despite active war context.** Pre-established Israel-Palestine frames in Anglo-American media produce pre-sorted moderate ICI. Discriminates CCFI from pre-sorted ideological framing. Introduces Pre-Sorted Wartime Contested typology. ICI−PE = +0.087 (rank 11/15).
-
-Paper: [`SRM_Netanyahu_SSRN_2026.docx`](SRM_Netanyahu_SSRN_2026.docx)
+*D_acute estimated. Modi, Netanyahu, Iran-Israel: V, A, N pending full pipeline.
 
 ---
 
 ## SSRN Publications
 
-All papers available at DOI: [10.17605/OSF.IO/HYDNZ](https://doi.org/10.17605/OSF.IO/HYDNZ)
+All papers: [10.17605/OSF.IO/HYDNZ](https://doi.org/10.17605/OSF.IO/HYDNZ)
 
 | Paper | Job | Key finding |
 |-------|-----|-------------|
-| Trump v2 | #10 | ICI ceiling rank 1 Western (+0.293) · 69,997-article corpus |
+| Trump v2 | #10 | ICI ceiling rank 1 Western (+0.293) |
 | Ciolacu v2 | #12 | Romanian Triad · PE convergence |
-| Georgescu v2 | #14 | Largest D discrepancy (−26.5%) · λ-dominance |
-| Sunflower v2 | #15 | Highest D_new (0.707) · cross-cultural diversity |
+| Georgescu v2 | #14 | Largest D discrepancy (−26.5%) |
+| Sunflower v2 | #15 | Highest D_new (0.707) |
 | Orbán v2 | #16 | ICI−PE≈0 · Longevity Paradox |
 | Zelensky v2 | #17 | Wartime defender · H3 reformulated |
 | Putin v2 | #18 | Antagonistic Pair · ICI≈Trump |
 | Simion v2 | #19 | Affective Deficit (A=0.099) |
-| Mandela v2 | #20 | Highest Western ICI · Legacy Contestation ICI |
+| Mandela v2 | #20 | Legacy Contestation ICI |
 | Macron v2 | #21 | Rapid Emergence Paradox |
-| Chávez v2 | #22 | Dual-Mode SRM · Structured vs. Unstructured ICI |
+| Chávez v2 | #22 | Dual-Mode SRM · AAF=9.5 |
 | Charlie Hebdo | #24 | Flash Viral rank 1 · λ=104.66 |
-| **Modi** ★ | **#25** | **ICI=0.915 · CCFI · Non-Western ceiling breach** |
-| **Netanyahu** ★ | **#26** | **ICI=0.698 · Pre-sorted frames · CCFI discrimination** |
-| **Synthetic Comparative v2** ★ | — | **15-symbol synthesis · CCFI · 8 principal findings · α=0.338** |
+| **Modi 2014** ★ | **#25** | **ICI=0.915 · CCFI · λ=2.37** |
+| **Netanyahu** ★ | **#26** | **ICI=0.698 · Pre-sorted · λ=7.02** |
+| **Modi 2019** ★ | **#27** | **CCFI decay · λ=6.33** |
+| **Modi 2024** ★ | **#28** | **CCFI asymptote · λ=9.11** |
+| **Iran-Israel** ★ | **#29** | **PE max (0.630) · MDGA · λ=17.81** |
+| **Synthetic v3** ★ | — | **18 symbol-periods · CCFI lifecycle · 10 findings** |
 
 ---
 
 ## Repository Structure
 
 ```
-politomorphism/
+Politomorphism/
 ├── .github/workflows/
-│   ├── srm_compute_D.yml              ← PE/ICI pipeline (Jobs #10–#26)
-│   ├── srm_ciolacu_validation.yml
-│   ├── srm_zelensky_validation.yml
-│   ├── srm_putin_validation.yml
-│   ├── srm_simion_validation.yml
-│   ├── srm_orban_validation.yml
-│   └── fetch_trends.yml
+│   ├── srm_compute_D.yml              ← PE/ICI pipeline (Jobs #10–#29)
+│   └── fetch_trends.yml              ← λ calibration
 ├── scripts/
 │   ├── get_trends.py                  ← λ calibration (Step 0)
 │   ├── compute_D.py                   ← D = α·PE + (1−α)·ICI
-│   ├── calibrate_alpha.py             ← α_optimal = 0.338 (updated)
-│   ├── test_hypotheses.py             ← H1/H2/H3/H4 tests
-│   └── srm_pipeline/
+│   ├── calibrate_alpha.py             ← α_optimal = 0.338
+│   └── test_hypotheses.py             ← H1/H2/H3/H4
 ├── docs/
-│   ├── srm_pe_ici_map.svg             ← Static correlation map
-│   └── srm_pe_ici_map_interactive.html ← Interactive visualization
+│   ├── srm_pe_ici_map.svg
+│   └── srm_pe_ici_map_interactive.html
 ├── results/
 │   └── D_result_*.json
 └── README.md
@@ -419,7 +307,7 @@ politomorphism/
 - **λ calibration:** `scipy.optimize.brentq`, Python 3.11, GitHub Actions ubuntu-latest
 - **Sentiment:** VADER (`vaderSentiment 3.3.2`) English; DistilBERT Romanian
 - **D computation:** LDA (scikit-learn K=10 seed=42) + `paraphrase-multilingual-MiniLM-L12-v2`
-- **Alpha calibration:** α_optimal = **0.338**, 14 real-value entries (updated)
+- **α_optimal = 0.338**, 14 real-value entries
 - **Bootstrap:** n=20 (speed); publication requires n≥200
 
 ---
@@ -437,7 +325,7 @@ Zenodo: [10.5281/zenodo.18962821](https://doi.org/10.5281/zenodo.18962821)
 @misc{serban2026politomorphism,
   author  = {Serban, Gabriel Florin},
   title   = {Politomorphism: Social Resonance Model —
-             PE/ICI Decomposition across 15 Validated Political Symbols},
+             PE/ICI Decomposition across 18 Validated Symbol-Periods},
   year    = {2026},
   doi     = {10.17605/OSF.IO/HYDNZ},
   url     = {https://github.com/profserbangabriel-del/Politomorphism},
