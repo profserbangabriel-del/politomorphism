@@ -1,0 +1,14 @@
+{
+  "symbol": "Modi2024",
+  "D_result": {
+    "PE": 0.6247,
+    "ICI": 0.8018,
+    "D": 0.7132,
+    "alpha": 0.5,
+    "D_std": 0.0017,
+    "D_ci_low": 0.7098,
+    "D_ci_high": 0.7166,
+    "n_docs": 2000,
+    "bootstrap_n": 20
+  }
+}
