@@ -1,0 +1,14 @@
+{
+  "symbol": "Modi2019",
+  "D_result": {
+    "PE": 0.6047,
+    "ICI": 0.7883,
+    "D": 0.6965,
+    "alpha": 0.5,
+    "D_std": 0.0013,
+    "D_ci_low": 0.6939,
+    "D_ci_high": 0.6991,
+    "n_docs": 3000,
+    "bootstrap_n": 20
+  }
+}
