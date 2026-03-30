@@ -3,354 +3,257 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SRM PE/ICI Correlation Map — Politomorphism Research Project</title>
+<title>SRM — PE/ICI Correlation Map · 18 Symbol-Periods</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #ffffff; --bg2: #f7f6f3; --bg3: #f0efe9;
-    --text: #1a1a18; --text2: #5f5e5a; --text3: #888780;
-    --border: rgba(0,0,0,0.15); --border2: rgba(0,0,0,0.25);
-    --info-bg: #e6f1fb; --info-text: #185fa5; --info-border: rgba(24,95,165,0.3);
-    --danger-bg: #fcebeb; --danger-text: #a32d2d;
-    --warning-bg: #faeeda; --warning-text: #854f0b;
-    --success-bg: #eaf3de; --success-text: #3b6d11;
-    --radius: 8px; --radius-lg: 12px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1c1c1a; --bg2: #242422; --bg3: #2c2c2a;
-      --text: #e8e6de; --text2: #9c9a92; --text3: #6b6a64;
-      --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
-      --info-bg: #0c2840; --info-text: #85b7eb; --info-border: rgba(133,183,235,0.25);
-      --danger-bg: #2a1010; --danger-text: #f09595;
-      --warning-bg: #2a1c08; --warning-text: #fac775;
-      --success-bg: #142210; --success-text: #97c459;
-    }
-  }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    background: var(--bg3); color: var(--text);
-    line-height: 1.6; padding: 24px 16px; min-height: 100vh;
-  }
-  .container { max-width: 900px; margin: 0 auto; }
-  .header { margin-bottom: 24px; }
-  .header h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
-  .header p  { font-size: 13px; color: var(--text2); }
-  .header a  { color: var(--info-text); text-decoration: none; }
-  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; }
-  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .filter-btn {
-    border: 0.5px solid var(--border2); border-radius: var(--radius);
-    padding: 5px 12px; font-size: 12px; cursor: pointer;
-    background: transparent; color: var(--text2); transition: all 0.12s;
-    font-family: inherit;
-  }
-  .filter-btn.active { background: var(--info-bg); color: var(--info-text); border-color: var(--info-border); }
-  .filter-btn:hover:not(.active) { background: var(--bg2); }
-  .chart-wrap { position: relative; }
-  .tooltip {
-    position: absolute; background: var(--bg);
-    border: 0.5px solid var(--border2); border-radius: var(--radius);
-    padding: 12px 16px; font-size: 13px; pointer-events: none;
-    opacity: 0; transition: opacity 0.12s; min-width: 240px;
-    z-index: 10; max-width: 280px;
-  }
-  .tooltip.visible { opacity: 1; }
-  .tt-title { font-weight: 500; font-size: 14px; margin-bottom: 8px; }
-  .tt-country { font-weight: 400; color: var(--text2); font-size: 12px; }
-  .tt-row { display: flex; justify-content: space-between; gap: 16px; color: var(--text2); font-size: 12px; margin: 3px 0; }
-  .tt-row span:last-child { color: var(--text); font-weight: 500; }
-  .tt-finding { margin-top: 10px; font-size: 11px; color: var(--text2); line-height: 1.5; border-top: 0.5px solid var(--border); padding-top: 8px; }
-  .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-  .stat { background: var(--bg2); border-radius: var(--radius); padding: 10px 16px; flex: 1; min-width: 100px; }
-  .stat-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
-  .stat-value { font-size: 18px; font-weight: 500; }
-  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; font-size: 12px; color: var(--text2); }
-  .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
-  .findings { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-  .finding-card { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; font-size: 12px; line-height: 1.5; }
-  .finding-card .sym { font-weight: 500; font-size: 13px; margin-bottom: 4px; }
-  .finding-card .ctx { color: var(--text2); font-size: 11px; margin-bottom: 6px; }
-  .badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 4px; margin-right: 4px; font-weight: 500; }
-  .footer { margin-top: 24px; font-size: 12px; color: var(--text3); text-align: center; }
-  .footer a { color: var(--info-text); }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f8f7f4; color: #2c2c2a; min-height: 100vh; }
+  header { background: #fff; border-bottom: 1px solid #e0ddd6;
+    padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 17px; font-weight: 600; color: #1a1a18; }
+  header p { font-size: 12px; color: #888; margin-top: 2px; }
+  .badge { font-size: 10px; background: #eeedfe; color: #3c3489;
+    padding: 3px 9px; border-radius: 99px; font-weight: 600; }
+  .layout { display: flex; gap: 0; height: calc(100vh - 65px); }
+  .sidebar { width: 260px; min-width: 260px; background: #fff;
+    border-right: 1px solid #e0ddd6; overflow-y: auto; padding: 16px; }
+  .sidebar h3 { font-size: 11px; font-weight: 600; color: #888;
+    text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; }
+  .filter-btn { display: flex; align-items: center; gap: 8px;
+    width: 100%; padding: 7px 10px; margin-bottom: 4px; border: 1px solid #e0ddd6;
+    border-radius: 8px; background: #fff; cursor: pointer; font-size: 12px;
+    color: #444; transition: all .15s; text-align: left; }
+  .filter-btn:hover { background: #f3f2ef; }
+  .filter-btn.active { background: #eeedfe; border-color: #7f77dd; color: #3c3489; font-weight: 500; }
+  .dot-legend { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .chart-area { flex: 1; position: relative; padding: 24px; }
+  svg#chart { width: 100%; height: 100%; }
+  .tooltip { position: absolute; background: #fff; border: 1px solid #ddd;
+    border-radius: 10px; padding: 12px 14px; font-size: 12px; pointer-events: none;
+    opacity: 0; transition: opacity .15s; box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    max-width: 240px; z-index: 100; }
+  .tooltip h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #1a1a18; }
+  .tooltip-row { display: flex; justify-content: space-between; gap: 12px;
+    font-size: 11px; color: #666; margin-bottom: 3px; }
+  .tooltip-val { font-weight: 600; color: #2c2c2a; }
+  .tooltip-finding { font-size: 11px; color: #534ab7; margin-top: 8px;
+    padding-top: 8px; border-top: 1px solid #eee; line-height: 1.4; font-style: italic; }
+  .info-bar { background: #fff; border-top: 1px solid #e0ddd6;
+    padding: 10px 24px; display: flex; gap: 24px; font-size: 11px; color: #888; }
+  .info-bar span b { color: #2c2c2a; }
+  .tier-line { stroke-dasharray: 4 4; stroke-width: 1; opacity: 0.35; }
 </style>
 </head>
 <body>
-<div class="container">
 
-  <div class="header">
-    <h1>SRM PE/ICI Correlation Map</h1>
-    <p>Polysemy Entropy vs. Intra-contextual Incoherence across 13 validated political symbols &middot;
-      <a href="https://github.com/profserbangabriel-del/politomorphism" target="_blank">Politomorphism Research Project</a> &middot;
-      Serban Gabriel Florin &middot; March 2026</p>
+<header>
+  <div>
+    <h1>Politomorphism — SRM PE/ICI Correlation Map</h1>
+    <p>Serban Gabriel Florin · March 2026 · DOI: 10.17605/OSF.IO/HYDNZ</p>
   </div>
+  <span class="badge">18 symbol-periods</span>
+</header>
 
-  <div class="card">
-    <div class="filter-bar">
-      <button class="filter-btn active" onclick="filterType('all',this)">All symbols</button>
-      <button class="filter-btn" onclick="filterType('campaign',this)">Campaign</button>
-      <button class="filter-btn" onclick="filterType('wartime',this)">Wartime</button>
-      <button class="filter-btn" onclick="filterType('flash',this)">Flash Viral</button>
-      <button class="filter-btn" onclick="filterType('legacy',this)">Legacy</button>
-      <button class="filter-btn" onclick="filterType('civic',this)">Civic</button>
-      <button class="filter-btn" onclick="filterType('volatile',this)">Volatile</button>
-      <button class="filter-btn" onclick="filterType('institutional',this)">Institutional</button>
+<div class="layout">
+  <div class="sidebar">
+    <h3>Filter by typology</h3>
+    <button class="filter-btn active" data-group="all" onclick="filterGroup('all')">
+      <span class="dot-legend" style="background:#888"></span> All symbols
+    </button>
+    <button class="filter-btn" data-group="ccfi" onclick="filterGroup('ccfi')">
+      <span class="dot-legend" style="background:#7f77dd"></span> CCFI (Non-Western)
+    </button>
+    <button class="filter-btn" data-group="western_ceil" onclick="filterGroup('western_ceil')">
+      <span class="dot-legend" style="background:#d85a30"></span> Western ICI ceiling
+    </button>
+    <button class="filter-btn" data-group="wartime" onclick="filterGroup('wartime')">
+      <span class="dot-legend" style="background:#e24b4a"></span> Wartime
+    </button>
+    <button class="filter-btn" data-group="campaign" onclick="filterGroup('campaign')">
+      <span class="dot-legend" style="background:#1d9e75"></span> Campaign
+    </button>
+    <button class="filter-btn" data-group="flash" onclick="filterGroup('flash')">
+      <span class="dot-legend" style="background:#ba7517"></span> Flash Viral
+    </button>
+    <button class="filter-btn" data-group="romanian" onclick="filterGroup('romanian')">
+      <span class="dot-legend" style="background:#185fa5"></span> Romanian Triad
+    </button>
+    <button class="filter-btn" data-group="event" onclick="filterGroup('event')">
+      <span class="dot-legend" style="background:#993556"></span> Geopolitical Event
+    </button>
+    <button class="filter-btn" data-group="institutional" onclick="filterGroup('institutional')">
+      <span class="dot-legend" style="background:#5f5e5a"></span> Institutional
+    </button>
+
+    <h3 style="margin-top:20px">ICI structural levels</h3>
+    <div style="font-size:11px;color:#666;line-height:1.8">
+      <div>▲ <b style="color:#7f77dd">CCFI acute</b> &gt;0.90</div>
+      <div>▲ <b style="color:#d85a30">Western ceiling</b> 0.83–0.84</div>
+      <div>▲ <b style="color:#7f77dd">CCFI asymptote</b> 0.79–0.81</div>
+      <div>▲ Cross-cultural civic ~0.79</div>
+      <div>▲ Pre-sorted moderate 0.69–0.75</div>
+      <div>▲ Convergent wartime ~0.66</div>
+      <div>▲ Institutional stable ~0.60</div>
     </div>
 
-    <div class="chart-wrap">
-      <svg id="scatter" width="100%" viewBox="0 0 860 520" style="display:block;">
-        <defs>
-          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-        </defs>
-        <!-- zones filled by JS -->
-        <g id="zones"></g>
-        <!-- diagonal ICI=PE -->
-        <line id="diagline" x1="0" y1="0" x2="0" y2="0" stroke-width="0.8" stroke-dasharray="5 4" opacity="0.5"/>
-        <text id="diaglabel" x="0" y="0" font-size="11" text-anchor="middle"></text>
-        <!-- axes -->
-        <line id="xaxis" x1="0" y1="0" x2="0" y2="0" stroke-width="0.8"/>
-        <line id="yaxis" x1="0" y1="0" x2="0" y2="0" stroke-width="0.8"/>
-        <g id="xticks"></g>
-        <g id="yticks"></g>
-        <text id="xlabel" x="0" y="0" text-anchor="middle" font-size="13"></text>
-        <text id="ylabel" x="0" y="0" text-anchor="middle" font-size="13"></text>
-        <g id="corrline"></g>
-        <g id="symbols"></g>
-      </svg>
+    <h3 style="margin-top:20px">Key findings</h3>
+    <div style="font-size:11px;color:#666;line-height:1.7">
+      <div>· ICI range <b style="color:#2c2c2a">4.0×</b> PE range</div>
+      <div>· α_optimal = <b style="color:#2c2c2a">0.338</b> (Western)</div>
+      <div>· CCFI asymptote <b style="color:#2c2c2a">~0.80</b></div>
+      <div>· Max PE: Iran-Israel <b style="color:#2c2c2a">0.630</b></div>
+      <div>· D_legacy bias <b style="color:#2c2c2a">−16.2%</b></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="chart-area">
+      <svg id="chart" viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg"></svg>
       <div class="tooltip" id="tooltip"></div>
     </div>
-
-    <div class="legend">
-      <span><span class="legend-dot" style="background:#D85A30"></span>Campaign/Ascension</span>
-      <span><span class="legend-dot" style="background:#D4537E"></span>Wartime</span>
-      <span><span class="legend-dot" style="background:#7F77DD"></span>Flash Viral</span>
-      <span><span class="legend-dot" style="background:#1D9E75"></span>Legacy post-mortem</span>
-      <span><span class="legend-dot" style="background:#378ADD"></span>Civic mobilization</span>
-      <span><span class="legend-dot" style="background:#BA7517"></span>Electorally Volatile</span>
-      <span><span class="legend-dot" style="background:#888780"></span>Institutionally Durable</span>
-      <span style="margin-left:8px;color:var(--text3);">Circle size = corpus size (log scale)</span>
+    <div class="info-bar">
+      <span>Jobs <b>#10–#29</b></span>
+      <span>Media Cloud + Google Trends</span>
+      <span>LDA K=10 · paraphrase-multilingual-MiniLM-L12-v2</span>
+      <span>bootstrap n=20</span>
+      <span><a href="https://github.com/profserbangabriel-del/Politomorphism" style="color:#534ab7">github.com/profserbangabriel-del/Politomorphism</a></span>
     </div>
-
-    <div class="stats" id="statsbar"></div>
-  </div>
-
-  <div class="card">
-    <h2 style="font-size:15px;font-weight:500;margin-bottom:14px;">Key findings per symbol</h2>
-    <div class="findings" id="findings"></div>
-  </div>
-
-  <div class="footer">
-    <p>Data: Media Cloud (mediacloud.org) &middot; Pipeline: github.com/profserbangabriel-del/politomorphism &middot;
-      ORCID: 0009-0000-2266-3356 &middot; DOI: 10.17605/OSF.IO/HYDNZ &middot; CC BY 4.0</p>
   </div>
 </div>
 
 <script>
-const DATA = [
-  {id:"trump",    label:"Trump",         country:"USA 2016",  pe:0.5423,ici:0.8351,d:0.6887,srm:0.0922,type:"campaign",    n:69997, finding:"Highest ICI-dominance (+0.293). Domestic electoral polarization. ICI ceiling co-occupant."},
-  {id:"mandela",  label:"Mandela",       country:"ZA 2013",   pe:0.5639,ici:0.8362,d:0.7001,srm:0.0088,type:"legacy",      n:4000,  finding:"Highest absolute ICI (0.836). Legacy Contestation ICI — hagiographic vs. critical reassessment frames, affectively compatible but semantically incompatible."},
-  {id:"putin",    label:"Putin",         country:"RU 2022",   pe:0.5662,ici:0.8335,d:0.6999,srm:0.0103,type:"wartime",     n:2000,  finding:"ICI ≈ Trump (0.834). Wartime aggressor moral-political amplification. Antagonistic Pair with Zelensky on identical Feb–Jun 2022 corpus."},
-  {id:"sunflower",label:"Sunflower Mvt", country:"TW 2014",   pe:0.6248,ici:0.7894,d:0.7071,srm:0.0376,type:"civic",       n:585,   finding:"Highest D_new (0.707). Cross-cultural civic mobilization: domestic consensus frames collide with internationally divergent geopolitical frames."},
-  {id:"charlie",  label:"Charlie Hebdo", country:"FR 2015",   pe:0.5920,ici:0.7295,d:0.6607,srm:0.0,   type:"flash",       n:2000,  finding:"Flash Viral rank 1 (ICI=0.730, ICI−PE=+0.138). λ=104.66 — SRM≈0 regardless of D. Convergence-then-contestation mechanism."},
-  {id:"chavez",   label:"Chávez",        country:"VE 2013",   pe:0.5938,ici:0.7202,d:0.6570,srm:0.0121,type:"volatile",    n:2000,  finding:"Structured Revolutionary ICI (+0.126). Lower than Mandela (same year) — pre-sorted ideological frames. Dual-Mode SRM: D_acute=0.380 at death event."},
-  {id:"ciolacu",  label:"Ciolacu",       country:"RO 2026",   pe:0.6217,ici:0.7446,d:0.6832,srm:0.0365,type:"campaign",   n:1330,  finding:"Post-executive Campaign. ICI−PE (+0.123) ≈ Macron (+0.121). Romanian Triad PE convergence confirmed."},
-  {id:"macron",   label:"Macron",        country:"FR 2017",   pe:0.5934,ici:0.7143,d:0.6539,srm:0.0169,type:"campaign",   n:2000,  finding:"Rapid Emergence Paradox: V=0.507 (3rd highest) but SRM stays Low. Contradictory frame coexistence — anti-establishment vs. Rothschild banker."},
-  {id:"georgescu",label:"Georgescu",     country:"RO 2024",   pe:0.5949,ici:0.7004,d:0.6477,srm:0.0307,type:"flash",      n:2000,  finding:"Flash Viral rank 2 (ICI=0.700, ICI−PE=+0.106). Largest D discrepancy (−26.5%). λ-dominance at λ=65.33."},
-  {id:"simion",   label:"Simion",        country:"RO 2024",   pe:0.5980,ici:0.6849,d:0.6414,srm:0.0054,type:"volatile",   n:2000,  finding:"Affective Deficit: A=0.099 is the binding SRM constraint, not D. Romanian Triad. λ=12.41."},
-  {id:"zelensky", label:"Zelensky",      country:"UA 2022",   pe:0.6040,ici:0.6604,d:0.6322,srm:0.1121,type:"wartime",    n:2000,  finding:"Wartime Defender. H3 revised: Putin ICI amplification on same corpus, not Zelensky suppression. Highest SRM in dataset (0.1121)."},
-  {id:"orban",    label:"Orbán",         country:"HU 2022",   pe:0.6038,ici:0.6046,d:0.6042,srm:0.0065,type:"institutional",n:2000, finding:"ICI−PE≈0 — perfectly balanced. Institutionally Durable signature. Longevity Paradox: V=0.168, lowest in dataset."},
+const symbols = [
+  { id:"modi2014", label:"Modi 2014", country:"IN", pe:0.5760, ici:0.9151, d:0.746, icipe:0.339, lam:2.37, group:"ccfi", color:"#7f77dd", finding:"ICI=0.915 breaks Western ceiling by +0.079. Cross-Cultural Frame Incompatibility (CCFI): no pre-established Anglo-American frameworks for Hindu nationalism." },
+  { id:"trump", label:"Trump 2016", country:"US", pe:0.5423, ici:0.8351, d:0.689, icipe:0.293, lam:7.01, group:"western_ceil", color:"#d85a30", finding:"First Medium Resonance case (SRM=0.092). ICI ceiling through domestic electoral polarization. Largest corpus: 69,997 articles." },
+  { id:"mandela", label:"Mandela 2013", country:"ZA", pe:0.5639, ici:0.8362, d:0.700, icipe:0.272, lam:19.66, group:"western_ceil", color:"#d85a30", finding:"Highest absolute ICI among Western symbols. Legacy Contestation ICI: hagiographic vs. critical reassessment frames are incompatible despite affective consensus." },
+  { id:"putin", label:"Putin 2022", country:"RU", pe:0.5662, ici:0.8335, d:0.700, icipe:0.267, lam:4.90, group:"wartime", color:"#e24b4a", finding:"Wartime aggressor moral amplification reaches ICI ceiling. Antagonistic Pair with Zelensky (identical corpus). ICI≈Trump despite completely different mechanism." },
+  { id:"modi2024", label:"Modi 2024", country:"IN", pe:0.6247, ici:0.8018, d:0.713, icipe:0.177, lam:9.11, group:"ccfi", color:"#7f77dd", finding:"CCFI asymptote: ICI stabilizes at ~0.80, NOT continuing linear decay. Irreducible incompatibilities (secularism vs. Hindu nationalism) persist regardless of coverage accumulation." },
+  { id:"modi2019", label:"Modi 2019", country:"IN", pe:0.6047, ici:0.7883, d:0.697, icipe:0.184, lam:6.33, group:"ccfi", color:"#7f77dd", finding:"CCFI partial decay: ICI drops from 0.915 (2014) to 0.788 — rate ≈ −0.025/year. Basic Anglo-American categories ('Hindutva', 'strongman') accumulate but incompatibility persists." },
+  { id:"sunflower", label:"Sunflower 2014", country:"TW", pe:0.6248, ici:0.7894, d:0.707, icipe:0.165, lam:null, group:"campaign", color:"#1d9e75", finding:"Highest D_new (0.707) in dataset. Cross-cultural civic mobilization drives framing diversity. First proof that high visibility does not guarantee resonance." },
+  { id:"charlie", label:"Charlie Hebdo", country:"FR", pe:0.5920, ici:0.7295, d:0.661, icipe:0.138, lam:104.66, group:"flash", color:"#ba7517", finding:"λ=104.66 — Extreme Flash Viral (highest in dataset). H1 confirmed: Flash Viral symbols have ICI > PE. Convergence-then-contestation mechanism." },
+  { id:"chavez", label:"Chávez 2013", country:"VE", pe:0.5938, ici:0.7202, d:0.657, icipe:0.126, lam:16.67, group:"campaign", color:"#1d9e75", finding:"Dual-Mode SRM: AAF=9.5. SRM jumped 0.0121→0.1154 as D collapsed 0.720→0.380 during 11-day death window. Structured Revolutionary ICI." },
+  { id:"ciolacu", label:"Ciolacu 2026", country:"RO", pe:0.6217, ici:0.7446, d:0.683, icipe:0.123, lam:6.57, group:"romanian", color:"#185fa5", finding:"Post-Executive Symbolic Trap. ICI−PE=+0.123 ≈ Macron (+0.121) — structural equivalence across national contexts. Romanian Triad anchor." },
+  { id:"macron", label:"Macron 2017", country:"FR", pe:0.5934, ici:0.7143, d:0.654, icipe:0.121, lam:12.53, group:"campaign", color:"#1d9e75", finding:"Rapid Emergence Paradox: V=0.507 (3rd highest) but SRM stays Low. Contradictory frame coexistence ≈ Ciolacu despite different national context." },
+  { id:"iranisrael", label:"Iran-Israel 2024", country:"INT", pe:0.6296, ici:0.7318, d:0.681, icipe:0.102, lam:17.81, group:"event", color:"#993556", finding:"Maximum PE in dataset (0.630) through Multi-Domain Geopolitical Activation: nuclear + security + economic + diplomatic domains activated simultaneously within 6 months." },
+  { id:"georgescu", label:"Georgescu 2024", country:"RO", pe:0.5949, ici:0.7004, d:0.648, icipe:0.106, lam:65.33, group:"romanian", color:"#185fa5", finding:"Flash Viral: λ=65.33. Largest D discrepancy (D_legacy=0.881 vs D_new=0.648, Δ=−26.5%). Romanian Triad." },
+  { id:"netanyahu", label:"Netanyahu 2023", country:"IL", pe:0.6104, ici:0.6977, d:0.654, icipe:0.087, lam:7.02, group:"wartime", color:"#e24b4a", finding:"Pre-sorted conflict framing: ICI=0.698 despite active war. Israel-Palestine has institutionalized Anglo-American frameworks → no CCFI. Discriminates CCFI from pre-sorted." },
+  { id:"simion", label:"Simion 2024", country:"RO", pe:0.5980, ici:0.6849, d:0.641, icipe:0.087, lam:12.41, group:"romanian", color:"#185fa5", finding:"Affective Deficit: A=0.099 (lowest in dataset) is the binding SRM constraint, not D. Romanian Triad completed. PE convergence confirmed." },
+  { id:"zelensky", label:"Zelensky 2022", country:"UA", pe:0.6040, ici:0.6604, d:0.632, icipe:0.056, lam:5.11, group:"wartime", color:"#e24b4a", finding:"Wartime Defender: crisis frame convergence produces lowest wartime ICI. H3 reformulated — not ICI suppression but Putin ICI amplification on identical corpus. A=0.640 highest in dataset." },
+  { id:"orban", label:"Orbán 2022", country:"HU", pe:0.6038, ici:0.6046, d:0.604, icipe:0.001, lam:2.31, group:"institutional", color:"#5f5e5a", finding:"ICI−PE≈0: perfectly balanced after 15+ years. Longevity Paradox: lowest V (0.168) + lowest D_new (0.604) make Low Resonance overdetermined. Institutional stable floor." },
 ];
 
-const COLORS = {campaign:"#D85A30",wartime:"#D4537E",flash:"#7F77DD",
-  legacy:"#1D9E75",civic:"#378ADD",volatile:"#BA7517",institutional:"#888780"};
-const TYPE_LABEL = {campaign:"Campaign",wartime:"Wartime",flash:"Flash Viral",
-  legacy:"Legacy",civic:"Civic",volatile:"Volatile",institutional:"Institutional"};
+const W = 800, H = 520;
+const ml = 64, mr = 24, mt = 32, mb = 52;
+const pw = W - ml - mr, ph = H - mt - mb;
 
-const VB_W=860, VB_H=520;
-const PX0=80, PX1=820, PY0=30, PY1=450;
-const PEmin=0.52,PEmax=0.645,ICImin=0.58,ICImax=0.875;
+const peMin = 0.52, peMax = 0.64;
+const iciMin = 0.58, iciMax = 0.94;
 
-function sx(pe)  { return PX0+(pe-PEmin)/(PEmax-PEmin)*(PX1-PX0); }
-function sy(ici) { return PY1-(ici-ICImin)/(ICImax-ICImin)*(PY1-PY0); }
-function logR(n) { return Math.max(8,Math.min(18,4+Math.log10(n)*3.2)); }
+function xScale(pe) { return ml + (pe - peMin) / (peMax - peMin) * pw; }
+function yScale(ici) { return mt + ph - (ici - iciMin) / (iciMax - iciMin) * ph; }
 
-function isDark() { return matchMedia('(prefers-color-scheme: dark)').matches; }
-function tv(lv,dv) { return isDark()?dv:lv; }
+const svg = document.getElementById('chart');
+let activeGroup = 'all';
 
-const svg = document.getElementById('scatter');
+function draw() {
+  svg.innerHTML = '';
 
-function initAxes() {
-  // zones
-  const zg = document.getElementById('zones');
-  const zones = [
-    {y1:ICImax,y2:0.775,fill:tv('#fcebeb','#2a1010'),label:'ICI ceiling zone (>0.775)',tc:tv('#a32d2d','#f09595')},
-    {y1:0.775,y2:0.655,fill:tv('#faeeda','#2a1c08'),label:'Moderate ICI (0.655–0.775)',tc:tv('#854f0b','#fac775')},
-    {y1:0.655,y2:ICImin,fill:tv('#eaf3de','#142210'),label:'Near-balanced ICI (<0.655)',tc:tv('#3b6d11','#97c459')},
+  // Grid
+  const gridPE = [0.54, 0.56, 0.58, 0.60, 0.62, 0.64];
+  const gridICI = [0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90];
+
+  gridPE.forEach(v => {
+    const x = xScale(v);
+    svg.innerHTML += `<line x1="${x}" y1="${mt}" x2="${x}" y2="${mt+ph}" stroke="#e8e6df" stroke-width="1"/>`;
+    svg.innerHTML += `<text x="${x}" y="${mt+ph+16}" text-anchor="middle" font-size="10" fill="#aaa">${v.toFixed(2)}</text>`;
+  });
+  gridICI.forEach(v => {
+    const y = yScale(v);
+    svg.innerHTML += `<line x1="${ml}" y1="${y}" x2="${ml+pw}" y2="${y}" stroke="#e8e6df" stroke-width="1"/>`;
+    svg.innerHTML += `<text x="${ml-6}" y="${y+4}" text-anchor="end" font-size="10" fill="#aaa">${v.toFixed(2)}</text>`;
+  });
+
+  // Tier lines
+  const tiers = [
+    { ici: 0.90, label: "CCFI acute >0.90", color: "#7f77dd" },
+    { ici: 0.835, label: "Western ceiling 0.83–0.84", color: "#d85a30" },
+    { ici: 0.795, label: "CCFI asymptote ~0.80", color: "#7f77dd" },
+    { ici: 0.66, label: "Convergent wartime", color: "#e24b4a" },
   ];
-  zg.innerHTML = zones.map(z=>{
-    const y1=sy(Math.min(z.y1,ICImax)), y2=sy(Math.max(z.y2,ICImin));
-    return `<rect x="${PX0}" y="${y1}" width="${PX1-PX0}" height="${y2-y1}" rx="4" fill="${z.fill}" opacity="0.22"/>
-    <text x="${PX0+10}" y="${y1+18}" font-size="11" fill="${z.tc}">${z.label}</text>`;
-  }).join('');
-
-  // diagonal ICI=PE
-  const dl = document.getElementById('diagline');
-  const x1=sx(Math.max(PEmin,ICImin)), x2=sx(Math.min(PEmax,ICImax));
-  const y1=sy(Math.max(PEmin,ICImin)), y2=sy(Math.min(PEmax,ICImax));
-  dl.setAttribute('x1',x1); dl.setAttribute('y1',y1);
-  dl.setAttribute('x2',x2); dl.setAttribute('y2',y2);
-  dl.setAttribute('stroke',tv('rgba(0,0,0,0.25)','rgba(255,255,255,0.2)'));
-  const dlb = document.getElementById('diaglabel');
-  dlb.setAttribute('x',(x1+x2)/2+20); dlb.setAttribute('y',(y1+y2)/2-12);
-  dlb.setAttribute('fill',tv('#888780','#6b6a64')); dlb.textContent='ICI = PE';
-
-  // axes
-  const tc = tv('#1a1a18','#e8e6de'), bc=tv('rgba(0,0,0,0.25)','rgba(255,255,255,0.22)');
-  document.getElementById('xaxis').setAttribute('x1',PX0); document.getElementById('xaxis').setAttribute('y1',PY1);
-  document.getElementById('xaxis').setAttribute('x2',PX1); document.getElementById('xaxis').setAttribute('y2',PY1);
-  document.getElementById('xaxis').setAttribute('stroke',bc);
-  document.getElementById('yaxis').setAttribute('x1',PX0); document.getElementById('yaxis').setAttribute('y1',PY0);
-  document.getElementById('yaxis').setAttribute('x2',PX0); document.getElementById('yaxis').setAttribute('y2',PY1);
-  document.getElementById('yaxis').setAttribute('stroke',bc);
-
-  // x ticks
-  const xt=document.getElementById('xticks');
-  xt.innerHTML='';
-  [0.52,0.54,0.56,0.58,0.60,0.62,0.64].forEach(v=>{
-    const x=sx(v);
-    xt.innerHTML+=`<line x1="${x}" y1="${PY1}" x2="${x}" y2="${PY1+5}" stroke="${bc}" stroke-width="0.8"/>
-    <text x="${x}" y="${PY1+18}" text-anchor="middle" font-size="11" fill="${tv('#5f5e5a','#9c9a92')}">${v.toFixed(2)}</text>`;
-  });
-  const xl=document.getElementById('xlabel');
-  xl.setAttribute('x',(PX0+PX1)/2); xl.setAttribute('y',PY1+38);
-  xl.setAttribute('fill',tv('#5f5e5a','#9c9a92')); xl.textContent='PE — Polysemy Entropy (topical breadth)';
-
-  // y ticks
-  const yt=document.getElementById('yticks');
-  yt.innerHTML='';
-  [0.60,0.65,0.70,0.75,0.80,0.85].forEach(v=>{
-    const y=sy(v);
-    yt.innerHTML+=`<line x1="${PX0-5}" y1="${y}" x2="${PX0}" y2="${y}" stroke="${bc}" stroke-width="0.8"/>
-    <text x="${PX0-10}" y="${y+4}" text-anchor="end" font-size="11" fill="${tv('#5f5e5a','#9c9a92')}">${v.toFixed(2)}</text>`;
-  });
-  const yl=document.getElementById('ylabel');
-  yl.setAttribute('x',20); yl.setAttribute('y',(PY0+PY1)/2);
-  yl.setAttribute('fill',tv('#5f5e5a','#9c9a92'));
-  yl.setAttribute('transform',`rotate(-90,20,${(PY0+PY1)/2})`);
-  yl.textContent='ICI — Framing Contestation';
-}
-
-function drawRegression(filtered) {
-  const n=filtered.length;
-  const cl=document.getElementById('corrline');
-  if(n<3){cl.innerHTML='';return;}
-  const mx=filtered.reduce((s,d)=>s+d.pe,0)/n;
-  const my=filtered.reduce((s,d)=>s+d.ici,0)/n;
-  let num=0,denX=0,denY=0;
-  filtered.forEach(d=>{num+=(d.pe-mx)*(d.ici-my);denX+=(d.pe-mx)**2;denY+=(d.ici-my)**2;});
-  const slope=num/denX, intercept=my-slope*mx;
-  const r=(num/Math.sqrt(denX*denY));
-  const x1v=PEmin, x2v=PEmax;
-  const y1v=slope*x1v+intercept, y2v=slope*x2v+intercept;
-  cl.innerHTML=`<line x1="${sx(x1v)}" y1="${sy(y1v)}" x2="${sx(x2v)}" y2="${sy(y2v)}"
-    stroke="#185fa5" stroke-width="1.5" stroke-dasharray="6 3" opacity="0.6"/>
-    <rect x="${(sx(x1v)+sx(x2v))/2-28}" y="${(sy(y1v)+sy(y2v))/2-20}" width="56" height="18" rx="4" fill="${tv('#e6f1fb','#0c2840')}"/>
-    <text x="${(sx(x1v)+sx(x2v))/2}" y="${(sy(y1v)+sy(y2v))/2-8}" text-anchor="middle" font-size="12"
-      fill="${tv('#185fa5','#85b7eb')}" font-weight="500">r = ${r.toFixed(3)}</text>`;
-
-  // stats
-  const iciR=(Math.max(...filtered.map(d=>d.ici))-Math.min(...filtered.map(d=>d.ici))).toFixed(3);
-  const peR=(Math.max(...filtered.map(d=>d.pe))-Math.min(...filtered.map(d=>d.pe))).toFixed(3);
-  const ratio=(parseFloat(iciR)/parseFloat(peR)).toFixed(1);
-  const meanD=(filtered.reduce((s,d)=>s+(d.ici-d.pe),0)/n).toFixed(3);
-  document.getElementById('statsbar').innerHTML=[
-    ['ICI range',iciR],['PE range',peR],['ICI/PE ratio',ratio+'×'],
-    ['Mean ICI−PE','+'+meanD],['Pearson r',r.toFixed(3)],['Symbols',n]
-  ].map(([l,v])=>`<div class="stat"><div class="stat-label">${l}</div><div class="stat-value">${v}</div></div>`).join('');
-}
-
-function drawSymbols(filtered) {
-  const g=document.getElementById('symbols'); g.innerHTML='';
-  const tooltip=document.getElementById('tooltip');
-  const tc=tv('#1a1a18','#e8e6de'), tc2=tv('#5f5e5a','#9c9a92');
-
-  filtered.forEach(d=>{
-    const cx=sx(d.pe), cy=sy(d.ici), rr=logR(d.n), col=COLORS[d.type];
-    const peEqY=sy(d.pe);
-    // vertical connector to diagonal
-    g.innerHTML+=`<line x1="${cx}" y1="${Math.min(cy,peEqY)}" x2="${cx}" y2="${Math.max(cy,peEqY)}"
-      stroke="${col}" stroke-width="1" stroke-dasharray="3 2" opacity="0.4"/>`;
-    // circle
-    g.innerHTML+=`<circle id="dot-${d.id}" cx="${cx}" cy="${cy}" r="${rr}"
-      fill="${col}" fill-opacity="0.8" stroke="${col}" stroke-width="1.5"
-      style="cursor:pointer;transition:r 0.1s" data-id="${d.id}"/>`;
-    // label
-    const side = d.pe > 0.595 ? -1 : 1;
-    const lx = cx + side*(rr+5);
-    const anchor = side>0 ? 'start' : 'end';
-    g.innerHTML+=`<text x="${lx}" y="${cy-rr-4}" text-anchor="${anchor}" font-size="11"
-      fill="${tc}" style="pointer-events:none;font-weight:500">${d.label}</text>`;
+  tiers.forEach(t => {
+    const y = yScale(t.ici);
+    svg.innerHTML += `<line x1="${ml}" y1="${y}" x2="${ml+pw}" y2="${y}" stroke="${t.color}" stroke-dasharray="5 4" stroke-width="1" opacity="0.4"/>`;
+    svg.innerHTML += `<text x="${ml+pw-4}" y="${y-4}" text-anchor="end" font-size="9" fill="${t.color}" opacity="0.7">${t.label}</text>`;
   });
 
-  // hover events
-  filtered.forEach(d=>{
-    const el=document.getElementById('dot-'+d.id);
-    if(!el)return;
-    el.addEventListener('mouseenter',()=>{
-      el.setAttribute('r',parseFloat(el.getAttribute('r'))+3);
-      tooltip.className='tooltip visible';
-      tooltip.innerHTML=`<div class="tt-title">${d.label} <span class="tt-country">${d.country}</span></div>
-        <div class="tt-row"><span>PE</span><span>${d.pe}</span></div>
-        <div class="tt-row"><span>ICI</span><span>${d.ici}</span></div>
-        <div class="tt-row"><span>D_new</span><span>${d.d}</span></div>
-        <div class="tt-row"><span>ICI−PE</span><span>+${(d.ici-d.pe).toFixed(3)}</span></div>
-        <div class="tt-row"><span>SRM</span><span>${d.srm}</span></div>
-        <div class="tt-row"><span>Typology</span><span>${TYPE_LABEL[d.type]}</span></div>
-        <div class="tt-finding">${d.finding}</div>`;
-    });
-    el.addEventListener('mouseleave',()=>{
-      el.setAttribute('r',logR(d.n));
-      tooltip.className='tooltip';
-    });
-    el.addEventListener('mousemove',e=>{
-      const rect=document.getElementById('scatter').getBoundingClientRect();
-      let left=e.clientX-rect.left+16, top=e.clientY-rect.top-10;
-      if(left>rect.width-260) left=e.clientX-rect.left-260;
-      tooltip.style.left=left+'px'; tooltip.style.top=top+'px';
-    });
-  });
-  drawRegression(filtered);
-}
+  // Axis labels
+  svg.innerHTML += `<text x="${ml+pw/2}" y="${H-4}" text-anchor="middle" font-size="11" fill="#888">PE — Polysemy Entropy</text>`;
+  svg.innerHTML += `<text x="12" y="${mt+ph/2}" text-anchor="middle" font-size="11" fill="#888" transform="rotate(-90,12,${mt+ph/2})">ICI — Intra-contextual Incoherence</text>`;
 
-function filterType(type,btn) {
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  const filtered=type==='all'?DATA:DATA.filter(d=>d.type===type);
-  drawSymbols(filtered);
-  DATA.forEach(d=>{
-    const el=document.getElementById('dot-'+d.id);
-    if(el) el.style.opacity=(type==='all'||d.type===type)?'1':'0.1';
+  // CCFI trajectory arrow (Modi 2014→2019→2024)
+  const m14 = { x: xScale(0.5760), y: yScale(0.9151) };
+  const m19 = { x: xScale(0.6047), y: yScale(0.7883) };
+  const m24 = { x: xScale(0.6247), y: yScale(0.8018) };
+  if (activeGroup === 'all' || activeGroup === 'ccfi') {
+    svg.innerHTML += `<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#7f77dd" stroke-width="2"/></marker></defs>`;
+    svg.innerHTML += `<path d="M${m14.x} ${m14.y} L${m19.x} ${m19.y}" stroke="#7f77dd" stroke-width="1.5" stroke-dasharray="4 3" fill="none" marker-end="url(#arr)" opacity="0.5"/>`;
+    svg.innerHTML += `<path d="M${m19.x} ${m19.y} L${m24.x} ${m24.y}" stroke="#7f77dd" stroke-width="1.5" stroke-dasharray="4 3" fill="none" marker-end="url(#arr)" opacity="0.5"/>`;
+    svg.innerHTML += `<text x="${(m14.x+m19.x)/2-18}" y="${(m14.y+m19.y)/2}" font-size="9" fill="#7f77dd" opacity="0.7">CCFI decay</text>`;
+  }
+
+  // Symbols
+  symbols.forEach(s => {
+    const visible = activeGroup === 'all' || activeGroup === s.group;
+    const x = xScale(s.pe), y = yScale(s.ici);
+    const r = 7;
+    const op = visible ? 1 : 0.12;
+
+    svg.innerHTML += `<g class="sym" data-id="${s.id}" style="cursor:pointer;opacity:${op};transition:opacity .2s">
+      <circle cx="${x}" cy="${y}" r="${r}" fill="${s.color}" stroke="#fff" stroke-width="1.5"/>
+      <text x="${x}" y="${y-r-3}" text-anchor="middle" font-size="9" fill="${s.color}" font-weight="500">${s.label}</text>
+    </g>`;
   });
 }
 
-// Findings cards
-function drawFindings() {
-  document.getElementById('findings').innerHTML=DATA.map(d=>`
-    <div class="finding-card">
-      <div class="sym">${d.label}
-        <span class="badge" style="background:${COLORS[d.type]}22;color:${COLORS[d.type]};border:0.5px solid ${COLORS[d.type]}44">${TYPE_LABEL[d.type]}</span>
-      </div>
-      <div class="ctx">${d.country} &middot; PE=${d.pe} &middot; ICI=${d.ici} &middot; ICI−PE=+${(d.ici-d.pe).toFixed(3)}</div>
-      <div>${d.finding}</div>
-    </div>`).join('');
-}
+draw();
 
-initAxes();
-drawSymbols(DATA);
-drawFindings();
+// Tooltip
+document.getElementById('chart').addEventListener('mousemove', e => {
+  const el = e.target.closest('.sym');
+  const tip = document.getElementById('tooltip');
+  if (!el) { tip.style.opacity = 0; return; }
+  const s = symbols.find(x => x.id === el.dataset.id);
+  if (!s) return;
+  const lam = s.lam ? s.lam.toFixed(2) : 'TBD';
+  tip.innerHTML = `
+    <h4>${s.label} <span style="color:#888;font-weight:400">(${s.country})</span></h4>
+    <div class="tooltip-row"><span>PE</span><span class="tooltip-val">${s.pe.toFixed(4)}</span></div>
+    <div class="tooltip-row"><span>ICI</span><span class="tooltip-val">${s.ici.toFixed(4)}</span></div>
+    <div class="tooltip-row"><span>D_new</span><span class="tooltip-val">${s.d.toFixed(4)}</span></div>
+    <div class="tooltip-row"><span>ICI−PE</span><span class="tooltip-val">+${s.icipe.toFixed(3)}</span></div>
+    <div class="tooltip-row"><span>λ</span><span class="tooltip-val">${lam}</span></div>
+    <div class="tooltip-finding">${s.finding}</div>`;
+  const rect = document.querySelector('.chart-area').getBoundingClientRect();
+  let tx = e.clientX - rect.left + 14;
+  let ty = e.clientY - rect.top - 10;
+  if (tx + 250 > rect.width) tx = e.clientX - rect.left - 254;
+  tip.style.left = tx + 'px';
+  tip.style.top = ty + 'px';
+  tip.style.opacity = 1;
+});
+
+document.getElementById('chart').addEventListener('mouseleave', () => {
+  document.getElementById('tooltip').style.opacity = 0;
+});
+
+function filterGroup(g) {
+  activeGroup = g;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.group === g);
+  });
+  draw();
+}
 </script>
 </body>
 </html>
