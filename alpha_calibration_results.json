@@ -16,19 +16,32 @@
   "real_values_count": 12,
   "total_cases": 12,
   "global_calibration": {
-    "alpha_optimal": 0.1731,
-    "RMSE_at_alpha_opt": 0.1443,
-    "MAE_at_alpha_opt": 0.1108,
-    "RMSE_at_alpha_05": 0.1548,
-    "MAE_at_alpha_05": 0.1341,
-    "pearson_r": -0.0383,
-    "pearson_p": 0.906,
-    "spearman_r": -0.007,
-    "spearman_p": 0.9828,
-    "verdict": "Consider updating to alpha=0.1731"
+    "alpha_optimal": 0.2121,
+    "RMSE_at_alpha_opt": 0.1462,
+    "MAE_at_alpha_opt": 0.1158,
+    "RMSE_at_alpha_05": 0.1543,
+    "MAE_at_alpha_05": 0.1305,
+    "pearson_r": -0.0406,
+    "pearson_p": 0.9004,
+    "spearman_r": -0.0629,
+    "spearman_p": 0.8459,
+    "verdict": "Consider updating to alpha=0.2121"
   },
   "typology_calibration": {
-    "Civic Mobilization": {
+    "Campaign/Ascension": {
+      "n": 2,
+      "cases": [
+        "Marcel Ciolacu",
+        "Donald Trump"
+      ],
+      "alpha_optimal": 0.314,
+      "RMSE": 0.1036,
+      "PE_mean": 0.6065,
+      "ICI_mean": 0.8135,
+      "D_legacy_mean": 0.7875,
+      "interpretation": "ICI-dominant"
+    },
+    "Flash Viral": {
       "n": 1,
       "note": "Insufficient cases (n<2)"
     },
@@ -46,20 +59,7 @@
       "D_legacy_mean": 0.775,
       "interpretation": "ICI-dominant"
     },
-    "Campaign/Ascension": {
-      "n": 2,
-      "cases": [
-        "Marcel Ciolacu",
-        "Donald Trump"
-      ],
-      "alpha_optimal": 0.1761,
-      "RMSE": 0.0905,
-      "PE_mean": 0.582,
-      "ICI_mean": 0.7898,
-      "D_legacy_mean": 0.7875,
-      "interpretation": "ICI-dominant"
-    },
-    "Flash Viral": {
+    "Civic Mobilization": {
       "n": 1,
       "note": "Insufficient cases (n<2)"
     },
@@ -118,10 +118,10 @@
       "symbol": "Donald Trump",
       "typology": "Campaign/Ascension",
       "D_legacy": 0.734,
-      "PE": 0.5423,
-      "ICI": 0.8351,
-      "D_new": 0.6887,
-      "delta": -0.0453,
+      "PE": 0.5913,
+      "ICI": 0.8824,
+      "D_new": 0.7368,
+      "delta": 0.0028,
       "dominant": "ICI",
       "data_source": "compute_D.py (real)"
     },
@@ -222,7 +222,7 @@
     "flash_ICI_mean": 0.7004,
     "flash_PE_mean": 0.5949,
     "flash_ICI_PE_ratio": 1.1773,
-    "nonflash_ICI_PE_ratio": 1.2638,
+    "nonflash_ICI_PE_ratio": 1.2594,
     "supported": false
   }
 }
