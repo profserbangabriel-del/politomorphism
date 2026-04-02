@@ -16,18 +16,34 @@
   "real_values_count": 12,
   "total_cases": 12,
   "global_calibration": {
-    "alpha_optimal": 0.2068,
-    "RMSE_at_alpha_opt": 0.1532,
-    "MAE_at_alpha_opt": 0.1224,
-    "RMSE_at_alpha_05": 0.1611,
-    "MAE_at_alpha_05": 0.1363,
-    "pearson_r": -0.1139,
-    "pearson_p": 0.7246,
-    "spearman_r": -0.2378,
-    "spearman_p": 0.4568,
-    "verdict": "Consider updating to alpha=0.2068"
+    "alpha_optimal": 0.3081,
+    "RMSE_at_alpha_opt": 0.1561,
+    "MAE_at_alpha_opt": 0.1294,
+    "RMSE_at_alpha_05": 0.1603,
+    "MAE_at_alpha_05": 0.1338,
+    "pearson_r": -0.1396,
+    "pearson_p": 0.6653,
+    "spearman_r": -0.3217,
+    "spearman_p": 0.3079,
+    "verdict": "Consider updating to alpha=0.3081"
   },
   "typology_calibration": {
+    "Electorally Volatile": {
+      "n": 5,
+      "cases": [
+        "George Simion",
+        "Nelson Mandela",
+        "Emmanuel Macron",
+        "Hugo Chávez (sust.)",
+        "Hugo Chávez (acute)"
+      ],
+      "alpha_optimal": 0.5589,
+      "RMSE": 0.1653,
+      "PE_mean": 0.5861,
+      "ICI_mean": 0.7794,
+      "D_legacy_mean": 0.6928,
+      "interpretation": "Balanced"
+    },
     "Campaign/Ascension": {
       "n": 2,
       "cases": [
@@ -40,26 +56,6 @@
       "ICI_mean": 0.7703,
       "D_legacy_mean": 0.7875,
       "interpretation": "ICI-dominant"
-    },
-    "Flash Viral": {
-      "n": 1,
-      "note": "Insufficient cases (n<2)"
-    },
-    "Electorally Volatile": {
-      "n": 5,
-      "cases": [
-        "George Simion",
-        "Nelson Mandela",
-        "Emmanuel Macron",
-        "Hugo Chávez (sust.)",
-        "Hugo Chávez (acute)"
-      ],
-      "alpha_optimal": 0.4623,
-      "RMSE": 0.1674,
-      "PE_mean": 0.586,
-      "ICI_mean": 0.7409,
-      "D_legacy_mean": 0.6928,
-      "interpretation": "Balanced"
     },
     "Institutionally Durable": {
       "n": 3,
@@ -74,6 +70,10 @@
       "ICI_mean": 0.6995,
       "D_legacy_mean": 0.775,
       "interpretation": "ICI-dominant"
+    },
+    "Flash Viral": {
+      "n": 1,
+      "note": "Insufficient cases (n<2)"
     },
     "Civic Mobilization": {
       "n": 1,
@@ -195,10 +195,10 @@
       "symbol": "Hugo Chávez (sust.)",
       "typology": "Electorally Volatile",
       "D_legacy": 0.72,
-      "PE": 0.5938,
-      "ICI": 0.7202,
-      "D_new": 0.657,
-      "delta": -0.063,
+      "PE": 0.5941,
+      "ICI": 0.9127,
+      "D_new": 0.7534,
+      "delta": 0.0334,
       "dominant": "ICI",
       "data_source": "compute_D.py (real)"
     },
@@ -222,7 +222,7 @@
     "flash_ICI_mean": 0.7004,
     "flash_PE_mean": 0.5949,
     "flash_ICI_PE_ratio": 1.1773,
-    "nonflash_ICI_PE_ratio": 1.2548,
+    "nonflash_ICI_PE_ratio": 1.2842,
     "supported": false
   }
 }
