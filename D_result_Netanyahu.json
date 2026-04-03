@@ -1,14 +1,14 @@
 {
   "symbol": "Netanyahu",
   "D_result": {
-    "PE": 0.5628,
-    "ICI": 0.7413,
-    "D": 0.6521,
+    "PE": 0.5907,
+    "ICI": 0.7351,
+    "D": 0.6629,
     "alpha": 0.5,
-    "D_std": 0.0021,
-    "D_ci_low": 0.648,
-    "D_ci_high": 0.6562,
-    "n_docs": 4000,
-    "bootstrap_n": 20
+    "D_std": 0.0028,
+    "D_ci_low": 0.6575,
+    "D_ci_high": 0.6683,
+    "n_docs": 2000,
+    "bootstrap_n": 200
   }
 }
