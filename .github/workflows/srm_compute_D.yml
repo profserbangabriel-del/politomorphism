@@ -24,15 +24,15 @@ on:
         required: false
         default: '2024-12-31'
       V:
-        description: 'Viral Velocity'
+        description: 'Viral Velocity (lăsat gol = calculat automat din lambda)'
         required: false
         default: ''
       A:
-        description: 'Affective Weight'
+        description: 'Affective Weight (lăsat gol = calculat automat din VADER)'
         required: false
         default: ''
       N:
-        description: 'Network Coverage'
+        description: 'Network Coverage (lăsat gol = calculat automat din CSV)'
         required: false
         default: ''
       lam:
@@ -77,7 +77,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install scikit-learn scipy numpy sentence-transformers mediacloud
+          pip install scikit-learn scipy numpy sentence-transformers mediacloud vaderSentiment
 
       - name: Fetch data from Media Cloud
         if: ${{ github.event.inputs.csv_path == '' }}
@@ -159,6 +159,24 @@ jobs:
 
           python scripts/compute_D.py $ARGS
 
+      - name: Compute V, A, N automatically
+        run: |
+          D_VALUE=$(python3 -c "
+          import json
+          with open('D_result_${{ github.event.inputs.symbol }}.json') as f:
+              d = json.load(f)
+          print(d['D_result']['D'])
+          ")
+
+          python scripts/compute_V_A_N.py \
+            --csv ${{ steps.resolve_csv.outputs.csv }} \
+            --symbol ${{ github.event.inputs.symbol }} \
+            --lam ${{ github.event.inputs.lam }} \
+            --start ${{ github.event.inputs.mediacloud_start }} \
+            --end ${{ github.event.inputs.mediacloud_end }} \
+            --D $D_VALUE \
+            --out V_A_N_${{ github.event.inputs.symbol }}.json
+
       - name: Run calibrate_alpha.py
         run: python scripts/calibrate_alpha.py
         continue-on-error: true
@@ -170,11 +188,11 @@ jobs:
       - name: Display results
         run: |
           echo "=== D Result ==="
-          cat D_result_${{ github.event.inputs.symbol }}.json || echo "D result file not found"
+          cat D_result_${{ github.event.inputs.symbol }}.json || echo "not found"
+          echo "=== V, A, N Result ==="
+          cat V_A_N_${{ github.event.inputs.symbol }}.json || echo "not found"
           echo "=== Alpha Calibration ==="
-          cat alpha_calibration_results.json || echo "Alpha calibration not run yet"
-          echo "=== Hypothesis Tests ==="
-          cat hypothesis_test_results.json || echo "Hypothesis tests not run yet"
+          cat alpha_calibration_results.json || echo "not found"
 
       - name: Upload results as artifacts
         uses: actions/upload-artifact@v4
@@ -182,6 +200,7 @@ jobs:
           name: D-computation-${{ github.event.inputs.symbol }}-${{ github.run_number }}
           path: |
             D_result_${{ github.event.inputs.symbol }}.json
+            V_A_N_${{ github.event.inputs.symbol }}.json
             alpha_calibration_results.json
             hypothesis_test_results.json
             ${{ github.event.inputs.symbol }}-DATA.csv
@@ -192,12 +211,15 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          git pull --rebase origin main
+
           git add "D_result_${{ github.event.inputs.symbol }}.json" || true
+          git add "V_A_N_${{ github.event.inputs.symbol }}.json" || true
           git add alpha_calibration_results.json || true
           git add hypothesis_test_results.json || true
           git add "${{ github.event.inputs.symbol }}-DATA.csv" || true
 
           git diff --staged --quiet || \
-            git commit -m "SRM D computation: ${{ github.event.inputs.symbol }} — bootstrap=${{ github.event.inputs.bootstrap }}, alpha=${{ github.event.inputs.alpha }}"
+            git commit -m "SRM D+VAN: ${{ github.event.inputs.symbol }} — bootstrap=${{ github.event.inputs.bootstrap }}, alpha=${{ github.event.inputs.alpha }}"
 
           git push
