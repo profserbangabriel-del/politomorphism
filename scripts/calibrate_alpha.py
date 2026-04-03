@@ -17,19 +17,26 @@ from scipy.stats import pearsonr, spearmanr
 # ── DATASET (fallback — estimări structurale) ─────────────────────────────────
 # Coloana json_symbol = valoarea exactă din --symbol când ai rulat compute_D.py
 CASES_FALLBACK = [
-    # name,                  D_legacy,  PE_est,  ICI_est,  lam,    typology,                   json_symbol
-    ("Sunflower Movement",   0.774,     0.72,    0.83,     None,   "Civic Mobilization",       "Sunflower Movement"),
-    ("Călin Georgescu",      0.881,     0.65,    0.97,     65.33,  "Flash Viral",              "Georgescu"),
-    ("Marcel Ciolacu",       0.841,     0.78,    0.88,     6.57,   "Campaign/Ascension",       "Ciolacu"),
-    ("Donald Trump",         0.734,     0.75,    0.71,     7.01,   "Campaign/Ascension",       "Trump"),
-    ("Volodymyr Zelensky",   0.680,     0.60,    0.74,     5.11,   "Institutionally Durable",  "Zelensky"),
-    ("Vladimir Putin",       0.847,     0.80,    0.89,     4.90,   "Institutionally Durable",  "Putin"),
-    ("George Simion",        0.812,     0.70,    0.86,     12.41,  "Electorally Volatile",     "Simion"),
-    ("Viktor Orbán",         0.798,     0.82,    0.77,     2.31,   "Institutionally Durable",  "Orban"),
-    ("Nelson Mandela",       0.742,     0.68,    0.79,     19.66,  "Electorally Volatile",     "Mandela"),
-    ("Emmanuel Macron",      0.810,     0.77,    0.84,     12.53,  "Electorally Volatile",     "Macron"),
-    ("Hugo Chávez (sust.)",  0.720,     0.71,    0.73,     16.67,  "Electorally Volatile",     "Chavez"),
-    ("Hugo Chávez (acute)",  0.380,     0.30,    0.44,     16.67,  "Electorally Volatile",     "Chavez_acute"),
+    # name,                   D_legacy,  PE_est,  ICI_est,  lam,    typology,                   json_symbol
+    ("Sunflower Movement",    0.774,     0.72,    0.83,     None,   "Civic Mobilization",       "Sunflower"),
+    ("Călin Georgescu",       0.881,     0.65,    0.97,     65.33,  "Flash Viral",              "Georgescu"),
+    ("Marcel Ciolacu",        0.841,     0.78,    0.88,     6.57,   "Campaign/Ascension",       "Ciolacu"),
+    ("Donald Trump",          0.734,     0.75,    0.71,     7.01,   "Campaign/Ascension",       "Trump"),
+    ("Volodymyr Zelensky",    0.680,     0.60,    0.74,     5.11,   "Institutionally Durable",  "Zelensky"),
+    ("Vladimir Putin",        0.847,     0.80,    0.89,     4.90,   "Institutionally Durable",  "Putin"),
+    ("George Simion",         0.812,     0.70,    0.86,     12.41,  "Electorally Volatile",     "Simion"),
+    ("Viktor Orbán",          0.798,     0.82,    0.77,     2.31,   "Institutionally Durable",  "Orban"),
+    ("Nelson Mandela",        0.742,     0.68,    0.79,     19.66,  "Electorally Volatile",     "Mandela"),
+    ("Emmanuel Macron",       0.810,     0.77,    0.84,     12.53,  "Electorally Volatile",     "Macron"),
+    ("Hugo Chávez (sust.)",   0.720,     0.71,    0.73,     16.67,  "Electorally Volatile",     "Chavez"),
+    ("Hugo Chávez (acute)",   0.380,     0.30,    0.44,     16.67,  "Electorally Volatile",     "ChavezAcute"),
+    ("Benjamin Netanyahu",    0.651,     0.61,    0.70,     7.02,   "Institutionally Durable",  "Netanyahu"),
+    ("Jair Bolsonaro",        0.696,     0.62,    0.77,     10.43,  "Campaign/Ascension",       "Bolsonaro"),
+    ("Narendra Modi 2014",    0.752,     0.59,    0.91,     2.37,   "CCFI",                     "Modi2014"),
+    ("Narendra Modi 2019",    0.708,     0.60,    0.81,     6.33,   "CCFI",                     "Modi2019"),
+    ("Narendra Modi 2024",    0.727,     0.60,    0.85,     9.11,   "CCFI",                     "Modi2024"),
+    ("Iran-Israel 2024",      0.757,     0.60,    0.91,     17.81,  "Geopolitical Event",       "IranIsrael"),
+    ("Charlie Hebdo",         0.652,     0.57,    0.73,     104.66, "Flash Viral",              "CharlieHebdo"),
 ]
 
 FALLBACK_BY_NAME     = {c[0]: c for c in CASES_FALLBACK}
@@ -196,13 +203,13 @@ def calibrate_by_typology(NAMES, D_legacy, PE_est, ICI_est, TYPES):
         interp  = ("ICI-dominant" if alpha_t < 0.35 else
                    "PE-dominant"  if alpha_t > 0.65 else "Balanced")
         results[typ] = {
-            "n":             len(idx),
-            "cases":         [NAMES[i] for i in idx],
-            "alpha_optimal": alpha_t,
-            "RMSE":          round(res.fun, 4),
-            "PE_mean":       round(float(PE_t.mean()), 4),
-            "ICI_mean":      round(float(ICI_t.mean()), 4),
-            "D_legacy_mean": round(float(D_t.mean()), 4),
+            "n":              len(idx),
+            "cases":          [NAMES[i] for i in idx],
+            "alpha_optimal":  alpha_t,
+            "RMSE":           round(res.fun, 4),
+            "PE_mean":        round(float(PE_t.mean()), 4),
+            "ICI_mean":       round(float(ICI_t.mean()), 4),
+            "D_legacy_mean":  round(float(D_t.mean()), 4),
             "interpretation": interp
         }
     return results
@@ -216,8 +223,8 @@ def per_case_decomposition(NAMES, D_legacy, PE_est, ICI_est, TYPES, sources, alp
             "symbol":      name,
             "typology":    TYPES[i],
             "D_legacy":    D_legacy[i],
-            "PE":          PE_est[i],
-            "ICI":         ICI_est[i],
+            "PE":          round(float(PE_est[i]), 4),
+            "ICI":         round(float(ICI_est[i]), 4),
             "D_new":       d,
             "delta":       round(d - D_legacy[i], 4),
             "dominant":    "PE" if PE_est[i] > ICI_est[i] else "ICI",
