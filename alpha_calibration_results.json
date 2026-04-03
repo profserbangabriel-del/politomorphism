@@ -28,19 +28,6 @@
     "verdict": "Consider updating to alpha=0.3081"
   },
   "typology_calibration": {
-    "Campaign/Ascension": {
-      "n": 2,
-      "cases": [
-        "Marcel Ciolacu",
-        "Donald Trump"
-      ],
-      "alpha_optimal": 0.3087,
-      "RMSE": 0.1528,
-      "PE_mean": 0.5838,
-      "ICI_mean": 0.7703,
-      "D_legacy_mean": 0.7875,
-      "interpretation": "ICI-dominant"
-    },
     "Civic Mobilization": {
       "n": 1,
       "note": "Insufficient cases (n<2)"
@@ -64,6 +51,19 @@
       "ICI_mean": 0.7794,
       "D_legacy_mean": 0.6928,
       "interpretation": "Balanced"
+    },
+    "Campaign/Ascension": {
+      "n": 2,
+      "cases": [
+        "Marcel Ciolacu",
+        "Donald Trump"
+      ],
+      "alpha_optimal": 0.3087,
+      "RMSE": 0.1528,
+      "PE_mean": 0.5838,
+      "ICI_mean": 0.7703,
+      "D_legacy_mean": 0.7875,
+      "interpretation": "ICI-dominant"
     },
     "Institutionally Durable": {
       "n": 3,
