@@ -1,0 +1,123 @@
+<svg width="900" height="520" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" font-family="monospace,sans-serif">
+  <rect width="900" height="520" fill="#f0e8d8"/>
+  <text x="450" y="22" text-anchor="middle" font-size="13" fill="#0f0a05" font-weight="700" font-family="Georgia,serif">SRM — D-Score Ranking · 19 Symbol-Periods · Bootstrap n=200</text>
+
+  <!-- Colors by typology -->
+  <!-- CCFI=#534AB7, Wartime=#0F6E56, Campaign=#854F0B, Flash=#993C1D, Other=#185FA5 -->
+
+  <!-- Bar data: symbol, d, color, y_pos -->
+  <!-- x_start=200, bar_width=(d-0.55)*3200, max_d=0.756 -->
+  
+  <!-- IranIsrael 0.756 Other -->
+  <rect x="200" y="38"  width="659" height="18" fill="#185FA5" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="51"  text-anchor="end" font-size="10" fill="#4a3820">IranIsrael</text>
+  <text x="865" y="51"  text-anchor="start" font-size="10" fill="#185FA5" font-weight="500">0.756</text>
+
+  <!-- Chavez 0.750 Other -->
+  <rect x="200" y="60"  width="640" height="18" fill="#185FA5" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="73"  text-anchor="end" font-size="10" fill="#4a3820">Chavez</text>
+  <text x="845" y="73"  text-anchor="start" font-size="10" fill="#185FA5" font-weight="500">0.750</text>
+
+  <!-- Modi 2014 0.747 CCFI -->
+  <rect x="200" y="82"  width="630" height="18" fill="#534AB7" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="95"  text-anchor="end" font-size="10" fill="#4a3820">Modi 2014</text>
+  <text x="835" y="95"  text-anchor="start" font-size="10" fill="#534AB7" font-weight="500">0.747</text>
+
+  <!-- Trump 0.737 Campaign -->
+  <rect x="200" y="104" width="598" height="18" fill="#854F0B" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="117" text-anchor="end" font-size="10" fill="#4a3820">Trump</text>
+  <text x="803" y="117" text-anchor="start" font-size="10" fill="#854F0B" font-weight="500">0.737</text>
+
+  <!-- Modi 2024 0.726 CCFI -->
+  <rect x="200" y="126" width="563" height="18" fill="#534AB7" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="139" text-anchor="end" font-size="10" fill="#4a3820">Modi 2024</text>
+  <text x="768" y="139" text-anchor="start" font-size="10" fill="#534AB7" font-weight="500">0.726</text>
+
+  <!-- Modi 2019 0.707 CCFI -->
+  <rect x="200" y="148" width="502" height="18" fill="#534AB7" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="161" text-anchor="end" font-size="10" fill="#4a3820">Modi 2019</text>
+  <text x="707" y="161" text-anchor="start" font-size="10" fill="#534AB7" font-weight="500">0.707</text>
+
+  <!-- Sunflower 0.704 Other -->
+  <rect x="200" y="170" width="493" height="18" fill="#185FA5" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="183" text-anchor="end" font-size="10" fill="#4a3820">Sunflower</text>
+  <text x="698" y="183" text-anchor="start" font-size="10" fill="#185FA5" font-weight="500">0.704</text>
+
+  <!-- ChavezAcute 0.701 Other -->
+  <rect x="200" y="192" width="483" height="18" fill="#185FA5" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="205" text-anchor="end" font-size="10" fill="#4a3820">ChavezAcute</text>
+  <text x="688" y="205" text-anchor="start" font-size="10" fill="#185FA5" font-weight="500">0.701</text>
+
+  <!-- Bolsonaro 0.698 Campaign -->
+  <rect x="200" y="214" width="474" height="18" fill="#854F0B" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="227" text-anchor="end" font-size="10" fill="#4a3820">Bolsonaro</text>
+  <text x="679" y="227" text-anchor="start" font-size="10" fill="#854F0B" font-weight="500">0.698</text>
+
+  <!-- Macron 0.666 Campaign -->
+  <rect x="200" y="236" width="371" height="18" fill="#854F0B" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="249" text-anchor="end" font-size="10" fill="#4a3820">Macron</text>
+  <text x="576" y="249" text-anchor="start" font-size="10" fill="#854F0B" font-weight="500">0.666</text>
+
+  <!-- Netanyahu 0.663 Wartime -->
+  <rect x="200" y="258" width="362" height="18" fill="#0F6E56" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="271" text-anchor="end" font-size="10" fill="#4a3820">Netanyahu</text>
+  <text x="567" y="271" text-anchor="start" font-size="10" fill="#0F6E56" font-weight="500">0.663</text>
+
+  <!-- CharlieHebdo 0.652 Flash -->
+  <rect x="200" y="280" width="326" height="18" fill="#993C1D" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="293" text-anchor="end" font-size="10" fill="#4a3820">CharlieHebdo</text>
+  <text x="531" y="293" text-anchor="start" font-size="10" fill="#993C1D" font-weight="500">0.652</text>
+
+  <!-- Putin 0.650 Wartime -->
+  <rect x="200" y="302" width="320" height="18" fill="#0F6E56" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="315" text-anchor="end" font-size="10" fill="#4a3820">Putin</text>
+  <text x="525" y="315" text-anchor="start" font-size="10" fill="#0F6E56" font-weight="500">0.650</text>
+
+  <!-- Simion 0.629 Other -->
+  <rect x="200" y="324" width="253" height="18" fill="#185FA5" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="337" text-anchor="end" font-size="10" fill="#4a3820">Simion</text>
+  <text x="458" y="337" text-anchor="start" font-size="10" fill="#185FA5" font-weight="500">0.629</text>
+
+  <!-- Ciolacu 0.617 Campaign -->
+  <rect x="200" y="346" width="214" height="18" fill="#854F0B" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="359" text-anchor="end" font-size="10" fill="#4a3820">Ciolacu</text>
+  <text x="419" y="359" text-anchor="start" font-size="10" fill="#854F0B" font-weight="500">0.617</text>
+
+  <!-- Georgescu 0.606 Flash -->
+  <rect x="200" y="368" width="179" height="18" fill="#993C1D" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="381" text-anchor="end" font-size="10" fill="#4a3820">Georgescu</text>
+  <text x="384" y="381" text-anchor="start" font-size="10" fill="#993C1D" font-weight="500">0.606</text>
+
+  <!-- Orban 0.597 Other -->
+  <rect x="200" y="390" width="150" height="18" fill="#185FA5" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="403" text-anchor="end" font-size="10" fill="#4a3820">Orban</text>
+  <text x="355" y="403" text-anchor="start" font-size="10" fill="#185FA5" font-weight="500">0.597</text>
+
+  <!-- Zelensky 0.569 Wartime -->
+  <rect x="200" y="412" width="60" height="18" fill="#0F6E56" fill-opacity="0.8" rx="2"/>
+  <text x="195" y="425" text-anchor="end" font-size="10" fill="#4a3820">Zelensky</text>
+  <text x="265" y="425" text-anchor="start" font-size="10" fill="#0F6E56" font-weight="500">0.569</text>
+
+  <!-- X axis -->
+  <line x1="200" y1="435" x2="860" y2="435" stroke="#b8a888" stroke-width="0.8"/>
+  <text x="200" y="448" text-anchor="middle" font-size="9" fill="#7a6848">0.55</text>
+  <text x="400" y="448" text-anchor="middle" font-size="9" fill="#7a6848">0.61</text>
+  <text x="600" y="448" text-anchor="middle" font-size="9" fill="#7a6848">0.67</text>
+  <text x="800" y="448" text-anchor="middle" font-size="9" fill="#7a6848">0.73</text>
+  <text x="860" y="448" text-anchor="middle" font-size="9" fill="#7a6848">0.76</text>
+  <text x="530" y="465" text-anchor="middle" font-size="11" fill="#4a3820" font-weight="500">D (Semantic Drift)</text>
+
+  <!-- Legend -->
+  <rect x="82" y="478" width="740" height="36" fill="#e8ddc8" rx="4"/>
+  <rect x="100" y="490" width="12" height="12" fill="#534AB7" fill-opacity="0.8" rx="1"/>
+  <text x="116" y="501" font-size="10" fill="#3C3489">CCFI</text>
+  <rect x="170" y="490" width="12" height="12" fill="#0F6E56" fill-opacity="0.8" rx="1"/>
+  <text x="186" y="501" font-size="10" fill="#085041">Wartime</text>
+  <rect x="255" y="490" width="12" height="12" fill="#854F0B" fill-opacity="0.8" rx="1"/>
+  <text x="271" y="501" font-size="10" fill="#633806">Campaign</text>
+  <rect x="355" y="490" width="12" height="12" fill="#993C1D" fill-opacity="0.8" rx="1"/>
+  <text x="371" y="501" font-size="10" fill="#712B13">Flash Viral</text>
+  <rect x="455" y="490" width="12" height="12" fill="#185FA5" fill-opacity="0.8" rx="1"/>
+  <text x="471" y="501" font-size="10" fill="#0C447C">Other</text>
+  <text x="560" y="501" font-size="10" fill="#7a6848">Mandela excluded (pre-2014, estimated D)</text>
+</svg>
