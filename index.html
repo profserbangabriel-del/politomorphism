@@ -35,7 +35,6 @@ body{
   overflow-x:hidden;
 }
 
-/* NAV */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   background:rgba(240,232,216,0.97);
@@ -45,230 +44,91 @@ nav{
   display:flex;justify-content:space-between;align-items:center;
 }
 
-.logo{
-  font-family:'Playfair Display',serif;
-  font-size:22px;font-weight:900;
-  letter-spacing:1px;color:var(--ink);
-}
+.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;letter-spacing:1px;color:var(--ink);}
 .logo span{color:var(--red);}
 
 .nav-links{display:flex;gap:36px;list-style:none;}
-.nav-links a{
-  font-size:10px;letter-spacing:2px;text-transform:uppercase;
-  color:var(--text-mid);text-decoration:none;transition:color 0.2s;
-}
+.nav-links a{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-mid);text-decoration:none;transition:color 0.2s;}
 .nav-links a:hover{color:var(--red);}
 
-/* HERO */
-.hero{
-  min-height:100vh;
-  display:grid;grid-template-columns:1fr 1fr;
-  padding-top:70px;
-  border-bottom:2px solid var(--ink);
-}
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:70px;border-bottom:2px solid var(--ink);}
+.hero-left{padding:80px 56px 80px 64px;background:var(--bg);border-right:2px solid var(--ink);display:flex;flex-direction:column;justify-content:center;}
+.hero-right{padding:80px 64px 80px 56px;background:var(--bg2);display:flex;flex-direction:column;justify-content:center;}
 
-.hero-left{
-  padding:80px 56px 80px 64px;
-  background:var(--bg);
-  border-right:2px solid var(--ink);
-  display:flex;flex-direction:column;justify-content:center;
-}
-
-.hero-right{
-  padding:80px 64px 80px 56px;
-  background:var(--bg2);
-  display:flex;flex-direction:column;justify-content:center;
-}
-
-.eyebrow{
-  font-size:9px;letter-spacing:4px;text-transform:uppercase;
-  color:var(--red);margin-bottom:24px;
-  display:flex;align-items:center;gap:12px;
-}
+.eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:12px;}
 .eyebrow::before{content:'';width:32px;height:2px;background:var(--red);}
 
-h1{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(48px,6vw,84px);
-  font-weight:900;line-height:0.95;
-  color:var(--ink);margin-bottom:28px;
-  letter-spacing:-2px;
-}
+h1{font-family:'Playfair Display',serif;font-size:clamp(48px,6vw,84px);font-weight:900;line-height:0.95;color:var(--ink);margin-bottom:28px;letter-spacing:-2px;}
 h1 em{font-style:italic;color:var(--red);display:block;}
 
-.hero-desc{
-  font-size:12px;line-height:2;
-  color:var(--text-mid);max-width:420px;margin-bottom:40px;
-}
+.hero-desc{font-size:12px;line-height:2;color:var(--text-mid);max-width:420px;margin-bottom:40px;}
 
-/* FORM */
 .form-wrap{max-width:420px;}
-
-.form-row{
-  display:flex;border:2px solid var(--ink);overflow:hidden;margin-bottom:10px;
-}
-.form-row input{
-  flex:1;background:var(--white);border:none;
-  color:var(--ink);font-family:'IBM Plex Mono',monospace;
-  font-size:12px;font-weight:300;padding:13px 16px;outline:none;
-}
+.form-row{display:flex;border:2px solid var(--ink);overflow:hidden;margin-bottom:10px;}
+.form-row input{flex:1;background:var(--white);border:none;color:var(--ink);font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:300;padding:13px 16px;outline:none;}
 .form-row input::placeholder{color:var(--text-dim);}
 .form-row input:focus{background:#fff;}
-.form-row button{
-  background:var(--red);color:#fff;border:none;
-  font-family:'IBM Plex Mono',monospace;
-  font-size:9px;letter-spacing:2px;font-weight:500;
-  text-transform:uppercase;padding:13px 20px;cursor:pointer;
-  transition:background 0.2s;white-space:nowrap;
-}
+.form-row button{background:var(--red);color:#fff;border:none;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;font-weight:500;text-transform:uppercase;padding:13px 20px;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
 .form-row button:hover{background:var(--red2);}
 
 .form-note{font-size:9px;letter-spacing:1px;color:var(--text-dim);margin-bottom:14px;}
-
 .counter{display:flex;align-items:center;gap:8px;}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
 .counter-text{font-size:10px;color:var(--text-mid);}
 .counter-text strong{color:var(--ink);font-weight:500;}
+.success-msg{display:none;padding:13px 16px;background:var(--red-bg);border:2px solid var(--red);font-size:11px;color:var(--red);letter-spacing:1px;margin-bottom:10px;}
 
-.success-msg{
-  display:none;padding:13px 16px;
-  background:var(--red-bg);border:2px solid var(--red);
-  font-size:11px;color:var(--red);letter-spacing:1px;margin-bottom:10px;
-}
-
-/* HERO RIGHT STATS */
-.stats-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:0;border:2px solid var(--ink);margin-bottom:32px;
-}
-.stat-box{
-  padding:24px 20px;border:1px solid var(--border);
-  transition:background 0.2s;
-}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:2px solid var(--ink);margin-bottom:32px;}
+.stat-box{padding:24px 20px;border:1px solid var(--border);transition:background 0.2s;}
 .stat-box:hover{background:var(--white);}
-.stat-num{
-  font-family:'Playfair Display',serif;
-  font-size:44px;font-weight:900;color:var(--ink);line-height:1;margin-bottom:6px;
-}
+.stat-num{font-family:'Playfair Display',serif;font-size:44px;font-weight:900;color:var(--ink);line-height:1;margin-bottom:6px;}
 .stat-num span{color:var(--red);}
 .stat-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);line-height:1.5;}
 
 .quote-box{border-left:4px solid var(--red);padding-left:20px;}
-.quote-box p{
-  font-family:'Playfair Display',serif;font-style:italic;
-  font-size:15px;line-height:1.7;color:var(--text-mid);margin-bottom:12px;
-}
+.quote-box p{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;line-height:1.7;color:var(--text-mid);margin-bottom:12px;}
 .quote-box cite{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-style:normal;}
 
-/* SECTIONS */
 .section{padding:96px 64px;border-top:2px solid var(--ink);}
 .section.alt{background:var(--bg2);}
-
 .sec-tag{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:12px;}
-
-.sec-title{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(32px,4vw,56px);font-weight:900;
-  line-height:1;color:var(--ink);
-}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(32px,4vw,56px);font-weight:900;line-height:1;color:var(--ink);}
 .sec-title em{font-style:italic;color:var(--red);}
-
-.sec-header{
-  display:flex;align-items:flex-end;justify-content:space-between;
-  margin-bottom:56px;flex-wrap:wrap;gap:24px;
-}
+.sec-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:56px;flex-wrap:wrap;gap:24px;}
 .sec-sub{font-size:11px;color:var(--text-dim);max-width:260px;line-height:1.8;text-align:right;}
 
-/* CASES */
-.cases-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  border:2px solid var(--ink);
-}
-.case-card{
-  padding:36px 28px;border-right:2px solid var(--ink);
-  position:relative;overflow:hidden;transition:background 0.25s;
-}
+.cases-grid{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink);}
+.case-card{padding:36px 28px;border-right:2px solid var(--ink);position:relative;overflow:hidden;transition:background 0.25s;}
 .case-card:last-child{border-right:none;}
 .case-card:hover{background:var(--white);}
-
-.case-num{
-  font-family:'Playfair Display',serif;
-  font-size:72px;font-weight:900;
-  color:var(--border);line-height:1;margin-bottom:20px;
-}
-.case-tag{
-  display:inline-block;font-size:8px;letter-spacing:2px;text-transform:uppercase;
-  border:1px solid var(--border2);padding:3px 10px;color:var(--text-dim);margin-bottom:14px;
-}
-.case-title{
-  font-family:'Playfair Display',serif;font-size:20px;font-weight:700;
-  color:var(--ink);margin-bottom:12px;line-height:1.3;
-}
+.case-num{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:var(--border);line-height:1;margin-bottom:20px;}
+.case-tag{display:inline-block;font-size:8px;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--border2);padding:3px 10px;color:var(--text-dim);margin-bottom:14px;}
+.case-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:12px;line-height:1.3;}
 .case-desc{font-size:11px;color:var(--text-mid);line-height:1.9;}
 
-/* DEMO */
-.demo-section{
-  padding:96px 64px;
-  background:var(--ink);
-  border-top:2px solid var(--ink);
-}
+.demo-section{padding:96px 64px;background:var(--ink);border-top:2px solid var(--ink);}
 .demo-inner{max-width:860px;margin:0 auto;}
 .demo-section .sec-tag{color:var(--red);}
 .demo-section .sec-title{color:#fff;}
 .demo-section .sec-title em{color:var(--red);}
-
-.demo-card{
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.12);
-  padding:40px;margin-top:48px;
-}
-
-.formula-line{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(16px,2.5vw,26px);
-  color:rgba(255,255,255,0.5);
-  margin-bottom:32px;padding-bottom:28px;
-  border-bottom:1px solid rgba(255,255,255,0.1);
-  line-height:1.5;
-}
+.demo-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:40px;margin-top:48px;}
+.formula-line{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,26px);color:rgba(255,255,255,0.5);margin-bottom:32px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.1);line-height:1.5;}
 .formula-line .hi{color:#fff;font-weight:700;}
 .formula-line .ac{color:#ffbb33;}
-
 .sim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-bottom:28px;}
-
-.sim-field label{
-  display:block;font-size:8px;letter-spacing:3px;text-transform:uppercase;
-  color:rgba(255,255,255,0.35);margin-bottom:10px;
-}
+.sim-field label{display:block;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:10px;}
 .sim-field input[type="range"]{width:100%;accent-color:#ffbb33;margin-bottom:6px;cursor:pointer;}
 .sim-val{font-family:'Playfair Display',serif;font-size:32px;color:#fff;font-weight:700;}
-
-.run-btn{
-  width:100%;background:var(--red);border:none;color:#fff;
-  font-family:'IBM Plex Mono',monospace;font-size:11px;
-  letter-spacing:3px;text-transform:uppercase;font-weight:500;
-  padding:16px;cursor:pointer;transition:background 0.2s;
-}
+.run-btn{width:100%;background:var(--red);border:none;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:500;padding:16px;cursor:pointer;transition:background 0.2s;}
 .run-btn:hover{background:var(--red2);}
-
 .result-area{display:none;margin-top:24px;}
 .result-area.show{display:block;}
-
-.result-box{
-  display:flex;align-items:center;gap:28px;
-  padding:24px 28px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);
-}
-.result-score{
-  font-family:'Playfair Display',serif;font-size:68px;
-  font-weight:900;line-height:1;color:#fff;flex-shrink:0;
-}
+.result-box{display:flex;align-items:center;gap:28px;padding:24px 28px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);}
+.result-score{font-family:'Playfair Display',serif;font-size:68px;font-weight:900;line-height:1;color:#fff;flex-shrink:0;}
 .result-state{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:6px;}
 .result-interp{font-size:10px;color:rgba(255,255,255,0.45);line-height:1.9;}
 
-/* HOW */
 .how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:2px solid var(--ink);margin-top:56px;}
 .how-item{padding:32px 24px;border-right:2px solid var(--ink);}
 .how-item:last-child{border-right:none;}
@@ -276,7 +136,6 @@ h1 em{font-style:italic;color:var(--red);display:block;}
 .how-h{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:10px;line-height:1.3;}
 .how-p{font-size:10px;color:var(--text-dim);line-height:1.8;}
 
-/* AUDIENCE */
 .aud-grid{display:grid;grid-template-columns:repeat(2,1fr);border:2px solid var(--ink);margin-top:56px;}
 .aud-card{padding:36px;border:1px solid var(--border);transition:background 0.2s;}
 .aud-card:hover{background:var(--white);}
@@ -284,7 +143,6 @@ h1 em{font-style:italic;color:var(--red);display:block;}
 .aud-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:10px;}
 .aud-desc{font-size:11px;color:var(--text-mid);line-height:1.9;}
 
-/* CTA */
 .cta-section{padding:100px 64px;background:var(--red);text-align:center;border-top:2px solid var(--ink);}
 .cta-section h2{font-family:'Playfair Display',serif;font-size:clamp(40px,5vw,68px);font-weight:900;color:#fff;line-height:1;margin-bottom:14px;}
 .cta-section h2 em{font-style:italic;color:rgba(255,255,255,0.7);}
@@ -296,7 +154,6 @@ h1 em{font-style:italic;color:var(--red);display:block;}
 .cta-form button:hover{background:#333;}
 .cta-success{display:none;color:#fff;font-size:13px;letter-spacing:1px;padding:15px;border:1px solid rgba(255,255,255,0.4);max-width:460px;margin:0 auto;}
 
-/* FOOTER */
 footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
 .footer-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;letter-spacing:1px;color:rgba(240,232,216,0.5);}
 .footer-logo span{color:var(--red);}
@@ -359,8 +216,8 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
     <div class="stats-grid">
       <div class="stat-box"><div class="stat-num">5<span>+</span></div><div class="stat-label">Dimensions per symbol</div></div>
       <div class="stat-box"><div class="stat-num">48<span>h</span></div><div class="stat-label">Ahead of detection</div></div>
-      <div class="stat-box"><div class="stat-num">∞</div><div class="stat-label">Symbols tracked</div></div>
-      <div class="stat-box"><div class="stat-num">3<span>+</span></div><div class="stat-label">Historical validations</div></div>
+      <div class="stat-box"><div class="stat-num">&#x221e;</div><div class="stat-label">Symbols tracked</div></div>
+      <div class="stat-box"><div class="stat-num">19</div><div class="stat-label">Symbol-periods validated</div></div>
     </div>
     <div class="quote-box">
       <p>"A system without transductive reflexivity may persist, but it cannot regenerate. Only by re-writing its own code through the grammar of transformation does a polity become truly alive."</p>
@@ -383,7 +240,7 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
     </div>
     <div class="case-card">
       <div class="case-num">02</div>
-      <div class="case-tag">Researchers & NGOs</div>
+      <div class="case-tag">Researchers &amp; NGOs</div>
       <div class="case-title">Map the Symbolic Battlefield</div>
       <div class="case-desc">Analyze how social movements build and lose symbolic coherence. Quantify memetic dynamics that classical political science cannot see or measure.</div>
     </div>
@@ -400,46 +257,44 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
   <div class="sec-header">
     <div>
       <div class="sec-tag">Validated Research</div>
-      <div class="sec-title">Ten Symbols.<br><em>One Framework.</em></div>
+      <div class="sec-title">19 Symbol-Periods.<br><em>One Framework.</em></div>
     </div>
-    <div class="sec-sub">Every SRM score below is computed from real data — Media Cloud corpora, VADER sentiment analysis, and Google Trends λ calibration. No simulations.</div>
+    <div class="sec-sub">All 19 D values computed via bootstrap n=200 pipeline. V, A, N computed automatically from real Media Cloud corpora. No simulations, no estimates.</div>
   </div>
 
-  <!-- λ CALIBRATION BANNER -->
   <div style="border:2px solid var(--ink);padding:32px 36px;margin-top:48px;background:var(--bg);">
-    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">March 2026 — Methodological Update</div>
-    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:14px;">λ Empirical Calibration: The Decay Parameter Is Not a Constant</div>
-    <p style="font-size:11px;color:var(--text-mid);line-height:1.9;max-width:780px;">Using Google Trends data for all 10 validated symbols, λ was computed empirically from the ratio of average to peak search intensity. Result: λ ranges from <strong>2.31</strong> (Orbán — institutionally durable) to <strong>65.33</strong> (Georgescu — flash viral) — a 28-fold variation. The SRM formula is unchanged; λ is now <em>measured</em>, not assumed.</p>
+    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">April 2026 — Full Dataset Validated</div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:14px;">&#955; Empirical Calibration: The Decay Parameter Is Not a Constant</div>
+    <p style="font-size:11px;color:var(--text-mid);line-height:1.9;max-width:780px;">Using Google Trends data for all 19 validated symbol-periods, &#955; was computed empirically from the ratio of average to peak search intensity. Result: &#955; ranges from <strong>2.00</strong> (Sunflower Movement — civic mobilization) to <strong>104.66</strong> (Charlie Hebdo — extreme flash viral) — a 52-fold variation. The SRM formula is unchanged; &#955; is now <em>measured</em>, not assumed.</p>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);margin-top:24px;">
       <div style="padding:20px 18px;border-right:1px solid var(--border);">
         <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Institutionally Durable</div>
-        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);">λ 2–5</div>
-        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Orbán · Putin · Zelensky</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);">&#955; 2&#x2013;5</div>
+        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Orb&#225;n · Putin · Zelensky · Sunflower</div>
       </div>
       <div style="padding:20px 18px;border-right:1px solid var(--border);">
         <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Campaign / Ascension</div>
-        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);">λ 6–8</div>
-        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Trump · Ciolacu</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);">&#955; 6&#x2013;8</div>
+        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Trump · Ciolacu · Netanyahu · Modi 2019</div>
       </div>
       <div style="padding:20px 18px;border-right:1px solid var(--border);">
         <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Electorally Volatile</div>
-        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);">λ 12–20</div>
-        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Macron · Simion · Mandela</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--ink);">&#955; 9&#x2013;20</div>
+        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Macron · Simion · Chavez · IranIsrael</div>
       </div>
       <div style="padding:20px 18px;">
-        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Flash Viral</div>
-        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--red);">λ 50–70</div>
-        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Georgescu</div>
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Flash / Extreme Flash</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--red);">&#955; 50&#x2013;105</div>
+        <div style="font-size:10px;color:var(--text-mid);margin-top:6px;">Georgescu · Charlie Hebdo</div>
       </div>
     </div>
     <div style="margin-top:18px;font-size:10px;color:var(--text-dim);">
-      Recommended default: <strong>λ=7</strong> (empirical median from fully validated cases: Trump + Ciolacu) · 
-      <a href="SRM_Lambda_Calibration_FULL.docx" style="color:var(--red);text-decoration:none;">Download full paper ↓</a> · 
-      <a href="srm_lambda_calibration.json" style="color:var(--red);text-decoration:none;">JSON data ↓</a>
+      OSF: <a href="https://osf.io/hydnz/" style="color:var(--red);text-decoration:none;">10.17605/OSF.IO/HYDNZ &#x2197;</a> &nbsp;·&nbsp;
+      GitHub: <a href="https://github.com/profserbangabriel-del/Politomorphism" style="color:var(--red);text-decoration:none;">profserbangabriel-del/Politomorphism &#x2197;</a> &nbsp;·&nbsp;
+      ORCID: <a href="https://orcid.org/0009-0000-2266-3356" style="color:var(--red);text-decoration:none;">0009-0000-2266-3356 &#x2197;</a>
     </div>
   </div>
 
-  <!-- COMPARATIVE TABLE -->
   <div style="overflow-x:auto;margin-top:48px;">
     <table style="width:100%;border-collapse:collapse;font-size:10px;">
       <thead>
@@ -449,118 +304,199 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
           <th style="padding:12px 10px;text-align:center;">A</th>
           <th style="padding:12px 10px;text-align:center;">D</th>
           <th style="padding:12px 10px;text-align:center;">N</th>
-          <th style="padding:12px 10px;text-align:center;">SRM (λ=2)</th>
-          <th style="padding:12px 10px;text-align:center;">λ emp.</th>
-          <th style="padding:12px 14px;text-align:left;">Category</th>
+          <th style="padding:12px 10px;text-align:center;">SRM (&#955; emp.)</th>
+          <th style="padding:12px 10px;text-align:center;">&#955; emp.</th>
+          <th style="padding:12px 14px;text-align:left;">Typology</th>
         </tr>
       </thead>
-      <tbody>
+            <tbody>
         <tr style="background:var(--bg2);">
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">George Simion <span style="color:var(--text-dim);">(RO, 2024–26)</span></td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.279</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.099</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.812</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.996</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0054</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">12.41</td>
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Fragmented Diffusion</td>
-        </tr>
-        <tr style="background:var(--white);">
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Viktor Orbán <span style="color:var(--text-dim);">(HU, 2022–26)</span></td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.168</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.236</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.798</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.812</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0065</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">2.31</td>
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Longevity Saturation</td>
-        </tr>
-        <tr style="background:var(--bg2);">
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Nelson Mandela <span style="color:var(--text-dim);">(SA, 2013)</span></td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.311</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.246</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.742</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.510</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0088</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">19.66</td>
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Legacy Resonance</td>
-        </tr>
-        <tr style="background:var(--white);">
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Vladimir Putin <span style="color:var(--text-dim);">(2022–26)</span></td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.217</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.259</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.847</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">1.000</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0103</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">4.90</td>
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Pre-Saturated Contradicted</td>
-        </tr>
-        <tr style="background:var(--bg2);">
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Emmanuel Macron <span style="color:var(--text-dim);">(FR, 2017)</span></td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.507</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.168</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.810</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">1.000</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0169</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">12.53</td>
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Rapid Emergence</td>
-        </tr>
-        <tr style="background:var(--white);">
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Călin Georgescu <span style="color:var(--text-dim);">(RO, 2024)</span></td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.750</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.398</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.881</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.600</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0307</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);color:var(--red);font-weight:500;">65.33</td>
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Flash Viral</td>
-        </tr>
-        <tr style="background:var(--bg2);">
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Marcel Ciolacu <span style="color:var(--text-dim);">(RO, 2025–26)</span></td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.720</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.420</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.841</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.650</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0365</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">6.57</td>
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Post-Executive Trap</td>
-        </tr>
-        <tr style="background:var(--white);">
           <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Sunflower Movement <span style="color:var(--text-dim);">(TW, 2014)</span></td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.680</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.420</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.774</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.580</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0376</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);color:var(--text-dim);">—</td>
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Low — Civic Mobilization</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.091</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.195</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.704</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.971</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:700;color:var(--gold);">0.00419</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">2.00</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Civic Mobilization</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Narendra Modi 2014 <span style="color:var(--text-dim);">(IN, 2014)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.132</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.221</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.747</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.144</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.000714</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">2.37</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">CCFI Acute</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Vladimir Putin <span style="color:var(--text-dim);">(RU, 2022)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.503</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.108</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.650</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.402</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.000904</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">4.90</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Wartime Aggressor</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Narendra Modi 2019 <span style="color:var(--text-dim);">(IN, 2019)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.194</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.184</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.707</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.632</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.000256</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">6.33</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">CCFI Decay</td>
         </tr>
         <tr style="background:var(--bg2);">
           <td style="padding:10px 14px;border-bottom:1px solid var(--border);"><strong>Donald Trump</strong> <span style="color:var(--text-dim);">(US, 2015–16)</span></td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.958</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.580</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.734</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.720</td>
-          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:700;color:var(--gold);">0.0922</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.786</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.222</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.737</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.559</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.000559</td>
           <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">7.01</td>
-          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--gold);font-weight:500;">Medium — High-Velocity Campaign</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Western Ceiling</td>
         </tr>
         <tr style="background:var(--white);">
-          <td style="padding:10px 14px;"><strong>Zelensky</strong> <span style="color:var(--text-dim);">(UA, 2022–26)</span></td>
-          <td style="padding:10px;text-align:center;">0.873</td>
-          <td style="padding:10px;text-align:center;">0.640</td>
-          <td style="padding:10px;text-align:center;">0.680</td>
-          <td style="padding:10px;text-align:center;">0.781</td>
-          <td style="padding:10px;text-align:center;font-weight:700;color:var(--gold);">0.1121</td>
-          <td style="padding:10px;text-align:center;">5.11</td>
-          <td style="padding:10px 14px;color:var(--gold);font-weight:500;">Medium (λ=2) → Low (λ emp.)</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Benjamin Netanyahu <span style="color:var(--text-dim);">(IL, 2023–24)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.428</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.144</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.663</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.825</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.000485</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">7.02</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Pre-sorted Wartime</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Narendra Modi 2024 <span style="color:var(--text-dim);">(IN, 2024)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.383</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.237</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.726</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.529</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.000065</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">9.11</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">CCFI Asymptote</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Jair Bolsonaro <span style="color:var(--text-dim);">(BR, 2022–23)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.550</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.059</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.698</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.478</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.000011</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">10.43</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Partial CCFI</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Emmanuel Macron <span style="color:var(--text-dim);">(FR, 2017)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.478</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.085</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.666</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.570</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.000006</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">12.53</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Campaign</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Hugo Chávez <span style="color:var(--text-dim);">(VE, 2013)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.917</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.258</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.750</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.402</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">~0</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">16.67</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Volatile Legacy</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Iran–Israel 2024 <span style="color:var(--text-dim);">(INT, 2024)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.778</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.295</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.756</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.396</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">~0</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">17.81</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Geopolitical Event</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Călin Georgescu <span style="color:var(--text-dim);">(RO, 2024)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.606</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">~0</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);color:var(--red);font-weight:500;">65.33</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Flash Viral</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Charlie Hebdo <span style="color:var(--text-dim);">(FR, 2015)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.531</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.140</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.652</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.833</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">0.0</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);color:var(--red);font-weight:500;">104.66</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Extreme Flash Viral</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">George Simion <span style="color:var(--text-dim);">(RO, 2024)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.629</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">12.41</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Volatile</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Volodymyr Zelensky <span style="color:var(--text-dim);">(UA, 2022)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.569</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">5.11</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Wartime Defender</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Viktor Orbán <span style="color:var(--text-dim);">(HU, 2022)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.597</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">2.31</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Institutional</td>
+        </tr>
+        <tr style="background:var(--bg2);">
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);">Marcel Ciolacu <span style="color:var(--text-dim);">(RO, 2024–25)</span></td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">0.617</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);font-weight:500;">—</td>
+          <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);">6.57</td>
+          <td style="padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);">Campaign</td>
+        </tr>
+        <tr style="background:var(--white);">
+          <td style="padding:10px 14px;">Hugo Chávez (acute) <span style="color:var(--text-dim);">(VE, Mar 2013)</span></td>
+          <td style="padding:10px;text-align:center;">—</td>
+          <td style="padding:10px;text-align:center;">—</td>
+          <td style="padding:10px;text-align:center;">0.701</td>
+          <td style="padding:10px;text-align:center;">—</td>
+          <td style="padding:10px;text-align:center;font-weight:500;">—</td>
+          <td style="padding:10px;text-align:center;">16.67</td>
+          <td style="padding:10px 14px;color:var(--text-dim);">Dual-Mode</td>
         </tr>
       </tbody>
+
     </table>
   </div>
   <div style="margin-top:16px;font-size:9px;color:var(--text-dim);letter-spacing:0.5px;">
-    All SRM scores computed with λ=2 (standard). λ emp. = empirical decay constant from Google Trends (March 2026). 
-    Full calibration paper: <a href="SRM_Lambda_Calibration_FULL.docx" style="color:var(--red);text-decoration:none;">SRM_Lambda_Calibration_FULL.docx</a>
+    D computed via bootstrap n=200 (Jobs #33&#x2013;#79). V, A, N via VADER + article coverage analysis from real Media Cloud corpora. &#x2014; = pipeline run pending.
+    Full paper: <a href="https://osf.io/hydnz/" style="color:var(--red);text-decoration:none;">OSF 10.17605/OSF.IO/HYDNZ &#x2197;</a>
   </div>
 </section>
 
@@ -570,26 +506,26 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
     <div class="sec-title">The SRM <em>Engine</em></div>
     <div class="demo-card">
       <div class="formula-line">
-        <span class="hi">SRM(s,t)</span> = Σ [ <span class="hi">V</span> · <span class="ac">A</span> · <span class="hi">e<sup>−λD</sup></span> · <span class="hi">N</span> ] / <span class="ac">Z(t)</span>
+        <span class="hi">SRM(s,t)</span> = &#x3a3; [ <span class="hi">V</span> &middot; <span class="ac">A</span> &middot; <span class="hi">e<sup>&#x2212;&#x3bb;D</sup></span> &middot; <span class="hi">N</span> ] / <span class="ac">Z(t)</span>
       </div>
       <div class="sim-grid">
         <div class="sim-field">
-          <label>Viral Velocity — V(s,t)</label>
+          <label>Viral Velocity &mdash; V(s,t)</label>
           <input type="range" id="dV" min="0" max="100" value="65" oninput="dU('dV','dVv')">
           <div class="sim-val" id="dVv">0.65</div>
         </div>
         <div class="sim-field">
-          <label>Affective Weight — A(s,t)</label>
+          <label>Affective Weight &mdash; A(s,t)</label>
           <input type="range" id="dA" min="0" max="100" value="78" oninput="dU('dA','dAv')">
           <div class="sim-val" id="dAv">0.78</div>
         </div>
         <div class="sim-field">
-          <label>Semantic Drift — D(s,t)</label>
+          <label>Semantic Drift &mdash; D(s,t)</label>
           <input type="range" id="dD" min="0" max="100" value="25" oninput="dU('dD','dDv')">
           <div class="sim-val" id="dDv">0.25</div>
         </div>
         <div class="sim-field">
-          <label>Network Reach — N(s,t)</label>
+          <label>Network Reach &mdash; N(s,t)</label>
           <input type="range" id="dN" min="0" max="100" value="82" oninput="dU('dN','dNv')">
           <div class="sim-val" id="dNv">0.82</div>
         </div>
@@ -597,10 +533,10 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
       <button class="run-btn" onclick="runSRM()">COMPUTE SRM SCORE</button>
       <div class="result-area" id="dResult">
         <div class="result-box">
-          <div class="result-score" id="dScore">—</div>
+          <div class="result-score" id="dScore">&mdash;</div>
           <div>
-            <div class="result-state" id="dState">—</div>
-            <div class="result-interp" id="dInterp">—</div>
+            <div class="result-state" id="dState">&mdash;</div>
+            <div class="result-interp" id="dInterp">&mdash;</div>
           </div>
         </div>
       </div>
@@ -623,10 +559,10 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
   <div class="sec-tag">Built For</div>
   <div class="sec-title">Serious <em>Minds</em></div>
   <div class="aud-grid">
-    <div class="aud-card"><div class="aud-icon">🎓</div><div class="aud-title">Academic Researchers</div><div class="aud-desc">Rigorous, falsifiable framework rooted in computational social science. Publishable methodology grounded in Politomorphism (Florin, 2025).</div></div>
-    <div class="aud-card"><div class="aud-icon">🏛️</div><div class="aud-title">Policy Analysts & Think Tanks</div><div class="aud-desc">Anticipate legitimacy crises before they surface in the streets. Track how governance symbols gain or lose resonance across fault lines.</div></div>
-    <div class="aud-card"><div class="aud-icon">📡</div><div class="aud-title">Intelligence & Risk Analysts</div><div class="aud-desc">Monitor symbolic entropy in fragile states. Detect early-warning signals of instability through the memetic layer — before mainstream indicators.</div></div>
-    <div class="aud-card"><div class="aud-icon">⚡</div><div class="aud-title">Technologists & Builders</div><div class="aud-desc">Open computational engine for governance simulation. API access for developers building at the intersection of AI and political complexity.</div></div>
+    <div class="aud-card"><div class="aud-icon">&#x1f393;</div><div class="aud-title">Academic Researchers</div><div class="aud-desc">Rigorous, falsifiable framework rooted in computational social science. Publishable methodology grounded in Politomorphism (Florin, 2025). Full pipeline on GitHub.</div></div>
+    <div class="aud-card"><div class="aud-icon">&#x1f3db;&#xfe0f;</div><div class="aud-title">Policy Analysts &amp; Think Tanks</div><div class="aud-desc">Anticipate legitimacy crises before they surface in the streets. Track how governance symbols gain or lose resonance across fault lines.</div></div>
+    <div class="aud-card"><div class="aud-icon">&#x1f4e1;</div><div class="aud-title">Intelligence &amp; Risk Analysts</div><div class="aud-desc">Monitor symbolic entropy in fragile states. Detect early-warning signals of instability through the memetic layer — before mainstream indicators.</div></div>
+    <div class="aud-card"><div class="aud-icon">&#x26a1;</div><div class="aud-title">Technologists &amp; Builders</div><div class="aud-desc">Open computational engine for governance simulation. API access for developers building at the intersection of AI and political complexity.</div></div>
   </div>
 </section>
 
@@ -637,12 +573,12 @@ footer{background:var(--ink);padding:36px 64px;display:flex;justify-content:spac
     <input type="email" id="ctaEmail" placeholder="your@email.com">
     <button onclick="join('ctaEmail','ctaOk')">JOIN NOW</button>
   </div>
-  <div class="cta-success" id="ctaOk">✓ Welcome to the waitlist. You'll hear from us soon.</div>
+  <div class="cta-success" id="ctaOk">&#x2713; Welcome to the waitlist. You'll hear from us soon.</div>
 </section>
 
 <footer>
-  <div class="footer-logo">POLITО<span>MORPHISM</span></div>
-  <div class="footer-copy">© 2025 Serban Gabriel Florin · All rights reserved</div>
+  <div class="footer-logo">POLIT&#x41E;<span>MORPHISM</span></div>
+  <div class="footer-copy">&#xa9; 2026 Serban Gabriel Florin &middot; All rights reserved &middot; OSF: 10.17605/OSF.IO/HYDNZ &middot; ORCID: 0009-0000-2266-3356</div>
 </footer>
 
 <script>
@@ -650,14 +586,15 @@ function dU(id,vid){document.getElementById(vid).textContent=(document.getElemen
 function runSRM(){
   const V=document.getElementById('dV').value/100,A=document.getElementById('dA').value/100,
         D=document.getElementById('dD').value/100,N=document.getElementById('dN').value/100;
-  const score=Math.min(V*A*Math.exp(-2*D)*N/0.85,1.0);
+  const lam=7;
+  const score=V*A*Math.exp(-lam*D)*N;
   document.getElementById('dResult').classList.add('show');
-  document.getElementById('dScore').textContent=score.toFixed(3);
+  document.getElementById('dScore').textContent=score.toFixed(4);
   let state,color,interp;
-  if(score>=0.7){state='DOMINANT RESONANCE';color='#1a7a2e';interp='High velocity, strong affect, stable meaning, broad network. Likely to precede major political mobilization within 7–30 days.';}
-  else if(score>=0.4){state='ACTIVE DIFFUSION';color='#9a6e00';interp=D>0.5?'Symbol spreading but semantic instability detected. Risk of fragmentation within 14 days.':'Active diffusion with stable meaning. Needs amplification to reach dominant resonance.';}
-  else if(score>=0.2){state='MARGINAL SIGNAL';color='#b8001f';interp='Resonance is weak. Requires a triggering affective event to reactivate diffusion across communities.';}
-  else{state='SYMBOLIC EXTINCTION';color='#b8001f';interp='The symbol has lost political relevance. Semantic drift or failed diffusion has rendered it inert.';}
+  if(score>=0.01){state='HIGH RESONANCE';color='#1a7a2e';interp='Strong symbolic mobilization potential. All components aligned. Likely to precede major political mobilization within 7–30 days.';}
+  else if(score>=0.001){state='MODERATE RESONANCE';color='#9a6e00';interp=D>0.7?'Symbol active but high semantic drift detected. Risk of fragmentation.':'Active diffusion with moderate coherence. Lambda may be limiting SRM.';}
+  else if(score>=0.0001){state='LOW RESONANCE';color='#b8001f';interp='Weak resonance. High lambda or low affect suppressing SRM. Symbol requires triggering event to reactivate.';}
+  else{state='SYMBOLIC EXTINCTION';color='#b8001f';interp='SRM ~ 0. Lambda dominance complete — symbol has lost capacity for political mobilization regardless of V, A, N values.';}
   document.getElementById('dState').textContent=state;
   document.getElementById('dState').style.color=color;
   document.getElementById('dScore').style.color=color;
