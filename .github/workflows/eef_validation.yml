@@ -1,27 +1,22 @@
 name: EEF Validation
-
 on:
   workflow_dispatch:
-
 jobs:
   eef:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
       - name: Run EEF longitudinal validation
         run: python eef/eef_longitudinal.py
-
       - name: Run EEF inter-rater reliability
         run: python eef/eef_interrater.py
-
       - name: Run FIIM v2.0
         run: python eef/eef_fiim.py
-
       - name: Run FIIM vs EEF comparison
         run: python eef/eef_comparison_table.py
+      - name: Run Bootstrap CI
+        run: python eef/eef_bootstrap.py
