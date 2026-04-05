@@ -167,31 +167,33 @@ CCFI group: M = 0.808, SD = 0.052 | Non-CCFI group: M = 0.731, SD = 0.114
 
 ## EEF — Entropic Equilibrium Function
 
-The **Entropic Equilibrium Function (EEF)** is the second validated component of the Politomorphism Engine. It measures political systemic instability as Shannon entropy over institutional state distributions.
+The **Entropic Equilibrium Function (EEF)** is the second validated component of the Politomorphism Engine. It measures political systemic instability as Shannon entropy over institutional state distributions. **FIIM v2.1** extends EEF with fuzzy membership functions and a combined instability score.
 
-    S(t) = -sum( p_i(t) * log(p_i(t)) )    Shannon entropy
-    S_max = log(N)                           maximum entropy for N states
-    ratio = S(t) / S_max                     normalized instability score
+$$S(t) = -\sum_{i} p_i(t) \cdot \ln(p_i(t))$$
 
-    dS/dt = Pi(t) - Phi(t)
-      Pi(t)  = disorder-generating forces (crises, conflicts, disruptive events)
-      Phi(t) = order-restoring forces (reforms, institutional adaptation)
+$$H(t) = \frac{S(t)}{\ln(N)} \in [0,1]$$
 
-    Equilibrium: dS/dt = 0
+$$V(t) = 0.0 \cdot p_0 + 0.5 \cdot p_1 + 1.0 \cdot p_2$$
+
+$$IS(t) = 0.5 \cdot H(t) + 0.5 \cdot V(t)$$
+
+$$\Delta IS(t) = IS(t) - IS(t-1)$$
+
+$$IS_{\text{comp}}(t) = IS(t) + 0.2 \cdot \Delta IS(t)$$
 
 **Entropy zones:**
 
-| S(t)/S_max | Zone | Interpretation |
+| $IS(t)$ | Zone | Interpretation |
 |---|---|---|
-| > 80% | CRITICAL | Structural instability; disorder exceeds self-regulation |
-| 60-80% | HIGH | Significant fragmentation; reform capacity under strain |
-| 40-60% | MODERATE | Manageable tensions; stress containable |
-| < 40% | LOW | System near equilibrium |
+| > 0.70 | CRITICAL | Structural instability; disorder exceeds self-regulation |
+| 0.55-0.70 | HIGH | Significant fragmentation; reform capacity under strain |
+| 0.40-0.55 | MODERATE | Manageable tensions; stress containable |
+| < 0.40 | LOW | System near equilibrium |
 
 **Cross-national results (2024):**
 
 | Country | Justice | Electoral | Coalition | Aggregate | Zone |
-|---------|---------|-----------|-----------|-----------|------|
+|---|---|---|---|---|---|
 | Romania | 90.8% | 82.7% | 80.7% | 84.7% | CRITICAL |
 | Hungary | 73.0% | 94.6% | 62.6% | 76.7% | HIGH |
 | Poland | 97.1% | 84.3% | 88.7% | 90.1% | CRITICAL |
@@ -200,12 +202,23 @@ Sources: Freedom House NIT 2024; BTI 2026; EC Rule of Law 2024; Venice Commissio
 
 Sensitivity analysis: Critical entropy classification robust to plus or minus 10% perturbations across all domains simultaneously.
 
-Scripts: eef/compute_eef.py  
-Configs: eef/config_eef_romania.json | eef/config_eef_hungary.json | eef/config_eef_poland.json
+**EEF Scripts:**
+
+| File | Description |
+|---|---|
+| eef/compute_eef.py | EEF original — hard thresholds, Shannon entropy |
+| eef/eef_fiim.py | FIIM v2.1 — fuzzy membership, H(t), V(t), IS_comp |
+| eef/eef_longitudinal.py | Longitudinal validation 2005-2024 (FH NIT + BTI) |
+| eef/eef_interrater.py | Inter-rater reliability — Krippendorff alpha + Cohen kappa |
+| eef/eef_bootstrap.py | Bootstrap 95% CI for FIIM IS scores (n=1000) |
+| eef/eef_comparison_table.py | EEF vs FIIM comparison — hard vs fuzzy thresholds |
 
 Run:
 
-    python eef/compute_eef.py --config eef/config_eef_romania.json
+```
+python eef/compute_eef.py --config eef/config_eef_romania.json
+python eef/eef_fiim.py
+```
 
 ---
 
@@ -215,6 +228,7 @@ Run:
     .github/workflows/
         srm_compute_D.yml         Full pipeline (Jobs #33-#95)
         fetch_trends.yml          lambda calibration
+        eef_validation.yml        EEF + FIIM validation pipeline
     scripts/
         compute_D.py              D = alpha x PE + (1-alpha) x ICI
         compute_V_A_N.py          V, A, N automatic
@@ -223,6 +237,11 @@ Run:
         loocv_srm.py              LOOCV validation
     eef/
         compute_eef.py            EEF scores + sensitivity analysis
+        eef_fiim.py               FIIM v2.1 — fuzzy + IS_comp
+        eef_longitudinal.py       Longitudinal validation 2005-2024
+        eef_interrater.py         Krippendorff alpha + Cohen kappa
+        eef_bootstrap.py          Bootstrap 95% CI (n=1000)
+        eef_comparison_table.py   EEF vs FIIM comparison
         config_eef_romania.json   Romania 2024 baseline
         config_eef_hungary.json   Hungary 2024 validation
         config_eef_poland.json    Poland 2024 validation
@@ -244,7 +263,7 @@ Run:
 - **Sentiment:** VADER on article titles | **Embeddings:** paraphrase-multilingual-MiniLM-L12-v2
 - **LDA:** scikit-learn, K=10, random_state=42 | **Bootstrap:** n=200, Jobs #33-#95
 - **No local environment required** — all SRM analyses run via GitHub Actions
-- **EEF:** Python >= 3.10, no external dependencies, run locally with compute_eef.py
+- **EEF/FIIM:** Python >= 3.10, no external dependencies, GitHub Actions eef_validation.yml
 
 > **Limitation:** Anglo-American English corpus only. Mandela (2013) predates Media Cloud. All associations correlational; causal interpretation requires experimental designs.
 
