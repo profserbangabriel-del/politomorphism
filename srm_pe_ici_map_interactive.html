@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politomorphism — SRM Interactive Map</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --text: #e8e8f0;
+    --muted: #6e6e8a;
+    --ccfi: #1D9E75;
+    --western: #378ADD;
+    --other: #888780;
+    --flash: #D85A30;
+    --accent: #f0c040;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .logo span { color: var(--muted); }
+
+  .status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  .status em { color: var(--ccfi); font-style: normal; }
+
+  main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  h1 strong { color: var(--accent); font-weight: 600; }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 32px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+
+  .tab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 8px 20px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    position: relative;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 520px;
+  }
+
+  .chart-container-tall {
+    position: relative;
+    width: 100%;
+    height: 720px;
+  }
+
+  .finding {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted);
+  }
+
+  .finding strong { color: var(--accent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    padding: 7px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .badge-ccfi { background: rgba(29,158,117,0.15); color: #1D9E75; }
+  .badge-western { background: rgba(55,138,221,0.15); color: #378ADD; }
+  .badge-flash { background: rgba(216,90,48,0.15); color: #D85A30; }
+  .badge-other { background: rgba(136,135,128,0.15); color: #888780; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 40px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 40px;
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+  }
+
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 700px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">POLITOMORPHISM <span>/</span> Social Resonance Model</div>
+  <div class="status"><em>22/22</em> symbol-periods · Bootstrap n=200 · JCSS under review</div>
+</header>
+
+<main>
+  <h1>SRM <strong>Interactive</strong> Visualization</h1>
+  <div class="subtitle">PE/ICI Decomposition · Cross-Cultural Frame Incompatibility · Lambda Typology</div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Symbol-Periods</div>
+      <div class="stat-value">22</div>
+      <div class="stat-sub">12 countries · 2013–2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">ICI / PE range ratio</div>
+      <div class="stat-value">6.8×</div>
+      <div class="stat-sub">r(ICI,D)=0.51 · r(PE,D)=−0.02</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">H2 CCFI confirmed</div>
+      <div class="stat-value">p=0.043</div>
+      <div class="stat-sub">Welch t=2.17 · d=0.872</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Log-log R²_adj</div>
+      <div class="stat-value">0.87</div>
+      <div class="stat-sub">λ β=−3.50 · p&lt;0.001</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('scatter')">PE/ICI Map</button>
+    <button class="tab" onclick="showTab('ranking')">ICI Ranking</button>
+    <button class="tab" onclick="showTab('lambda')">λ vs SRM</button>
+    <button class="tab" onclick="showTab('table')">Full Dataset</button>
+  </div>
+
+  <div id="scatter" class="panel active">
+    <div class="legend">
+      <div class="legend-item"><div class="dot" style="background:#1D9E75"></div>CCFI / partial</div>
+      <div class="legend-item"><div class="dot" style="background:#378ADD"></div>Western ceiling</div>
+      <div class="legend-item"><div class="dot" style="background:#888780"></div>Pre-sorted / other</div>
+      <div class="legend-item"><div class="dot" style="background:#D85A30"></div>Flash viral</div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-container"><canvas id="scatterChart"></canvas></div>
+    </div>
+    <div class="finding"><strong>Key finding:</strong> ICI range (0.385) is 6.8× larger than PE range (0.057). Zelensky is the only symbol with ICI &lt; PE — wartime frame convergence. Hover over points for details.</div>
+  </div>
+
+  <div id="ranking" class="panel">
+    <div class="chart-wrap">
+      <div class="chart-container-tall"><canvas id="rankingChart"></canvas></div>
+    </div>
+    <div class="finding"><strong>CCFI threshold ~0.90</strong> exceeded by Modi 2014 (0.904), IranIsrael (0.909), Chavez (0.927). Western ceiling ~0.84: Trump (0.881), Mandela (0.836). Erdogan (0.646) = discriminating evidence: pre-sorted despite Non-Western origin.</div>
+  </div>
+
+  <div id="lambda" class="panel">
+    <div class="chart-wrap">
+      <div class="chart-container"><canvas id="lambdaChart"></canvas></div>
+    </div>
+    <div class="finding"><strong>V·A Paradox:</strong> CharlieHebdo (V=0.999, A=0.459) → SRM=0.0 due to λ=104.66. Log-log regression: β_λ = −3.50, p &lt; 0.001, R²_adj = 0.87. LOOCV R²=0.770 (drop=0.073, below 0.10 threshold).</div>
+  </div>
+
+  <div id="table" class="panel">
+    <div class="chart-wrap" style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Symbol</th><th>Country</th><th>Period</th>
+            <th>PE</th><th>ICI</th><th>D</th><th>λ</th><th>SRM</th><th>Typology</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>Serban Gabriel Florin · ORCID: 0009-0000-2266-3356 · <a href="https://doi.org/10.17605/OSF.IO/HYDNZ">OSF: 10.17605/OSF.IO/HYDNZ</a></span>
+  <span>License: CC BY 4.0 · <a href="https://github.com/profserbangabriel-del/Politomorphism">GitHub</a></span>
+</footer>
+
+<script>
+const DATA = [
+  {sym:"IranIsrael", country:"INT", period:"2024", pe:0.604, ici:0.909, d:0.756, lam:17.81, srm:0.000001, v:0.778, a:0.295, n:0.396, cat:"other"},
+  {sym:"Chavez", country:"VE", period:"2013", pe:0.572, ici:0.927, d:0.750, lam:16.67, srm:0.000001, v:0.917, a:0.258, n:0.402, cat:"other"},
+  {sym:"Modi 2014", country:"IN", period:"2014", pe:0.590, ici:0.904, d:0.747, lam:2.37, srm:0.000714, v:0.132, a:0.221, n:0.144, cat:"ccfi"},
+  {sym:"Trump", country:"US", period:"2015-16", pe:0.592, ici:0.881, d:0.737, lam:7.01, srm:0.000559, v:0.786, a:0.222, n:0.559, cat:"western"},
+  {sym:"Modi 2024", country:"IN", period:"2024", pe:0.603, ici:0.849, d:0.726, lam:9.11, srm:0.000065, v:0.383, a:0.237, n:0.529, cat:"ccfi"},
+  {sym:"Mandela", country:"ZA", period:"2013", pe:0.564, ici:0.836, d:null, lam:19.66, srm:null, v:null, a:null, n:null, cat:"western"},
+  {sym:"Modi 2019", country:"IN", period:"2019", pe:0.600, ici:0.815, d:0.707, lam:6.33, srm:0.000256, v:0.194, a:0.184, n:0.632, cat:"ccfi"},
+  {sym:"ChavezAcute", country:"VE", period:"Mar 2013", pe:0.600, ici:0.802, d:0.701, lam:16.67, srm:0.1154, v:null, a:null, n:null, cat:"other"},
+  {sym:"Duterte", country:"PH", period:"2016", pe:0.593, ici:0.796, d:0.695, lam:5.02, srm:0.000599, v:0.395, a:0.246, n:0.275, cat:"ccfi"},
+  {sym:"Sunflower", country:"TW", period:"2014", pe:0.621, ici:0.787, d:0.704, lam:2.00, srm:0.00419, v:0.091, a:0.195, n:0.971, cat:"other"},
+  {sym:"Bolsonaro", country:"BR", period:"2022-23", pe:0.611, ici:0.786, d:0.698, lam:10.43, srm:0.000011, v:0.550, a:0.059, n:0.478, cat:"ccfi"},
+  {sym:"Buhari", country:"NG", period:"2015", pe:0.602, ici:0.778, d:0.690, lam:7.95, srm:0.000055, v:0.463, a:0.246, n:0.116, cat:"ccfi"},
+  {sym:"Putin", country:"RU", period:"2022", pe:0.547, ici:0.753, d:0.650, lam:4.90, srm:0.000904, v:0.503, a:0.108, n:0.402, cat:"western"},
+  {sym:"Netanyahu", country:"IL", period:"2023-24", pe:0.591, ici:0.735, d:0.663, lam:7.02, srm:0.000485, v:0.428, a:0.144, n:0.825, cat:"western"},
+  {sym:"CharlieHebdo", country:"FR", period:"2015", pe:0.572, ici:0.732, d:0.652, lam:104.66, srm:0.0, v:0.531, a:0.140, n:0.833, cat:"flash"},
+  {sym:"Macron", country:"FR", period:"2017", pe:0.603, ici:0.729, d:0.666, lam:12.53, srm:0.000006, v:0.478, a:0.085, n:0.570, cat:"western"},
+  {sym:"Simion", country:"RO", period:"2024", pe:0.566, ici:0.692, d:0.629, lam:12.41, srm:null, v:null, a:null, n:null, cat:"other"},
+  {sym:"Erdogan", country:"TR", period:"2013", pe:0.584, ici:0.646, d:0.615, lam:18.52, srm:0.0, v:0.514, a:0.104, n:0.326, cat:"other"},
+  {sym:"Ciolacu", country:"RO", period:"2024-25", pe:0.576, ici:0.658, d:0.617, lam:6.57, srm:null, v:null, a:null, n:null, cat:"other"},
+  {sym:"Georgescu", country:"RO", period:"2024", pe:0.578, ici:0.634, d:0.606, lam:65.33, srm:0.000001, v:null, a:null, n:null, cat:"flash"},
+  {sym:"Orban", country:"HU", period:"2022", pe:0.601, ici:0.592, d:0.597, lam:2.31, srm:null, v:null, a:null, n:null, cat:"other"},
+  {sym:"Zelensky", country:"UA", period:"2022", pe:0.596, ici:0.542, d:0.569, lam:5.11, srm:0.0173, v:null, a:null, n:null, cat:"other"},
+];
+
+const COLORS = {ccfi:"#1D9E75", western:"#378ADD", other:"#888780", flash:"#D85A30"};
+const BADGES = {ccfi:"badge-ccfi", western:"badge-western", flash:"badge-flash", other:"badge-other"};
+
+Chart.defaults.color = "#6e6e8a";
+Chart.defaults.borderColor = "#1e1e2e";
+Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.font.size = 11;
+
+// ── Scatter Chart ─────────────────────────────────────────────────────
+const scatterDatasets = ["ccfi","western","other","flash"].map(cat => ({
+  label: {ccfi:"CCFI/partial", western:"Western", other:"Other/Event", flash:"Flash viral"}[cat],
+  data: DATA.filter(d=>d.cat===cat).map(d=>({x:d.pe, y:d.ici, label:d.sym, srm:d.srm, lam:d.lam})),
+  backgroundColor: COLORS[cat],
+  pointRadius: 7,
+  pointHoverRadius: 10,
+}));
+
+new Chart(document.getElementById("scatterChart"), {
+  type: "scatter",
+  data: { datasets: scatterDatasets },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: "bottom", labels: { boxWidth: 10, padding: 16 } },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const d = ctx.raw;
+            return [`${d.label}`, `PE=${d.x.toFixed(3)}  ICI=${d.y.toFixed(3)}`, `λ=${d.lam}  SRM=${d.srm!=null?d.srm.toExponential(2):"—"}`];
+          }
+        }
+      }
+    },
+    scales: {
+      x: { title: {display:true, text:"PE (Polysemy Entropy)"}, min:0.535, max:0.635, grid:{color:"#1e1e2e"} },
+      y: { title: {display:true, text:"ICI (Intra-contextual Incoherence)"}, min:0.51, max:0.95, grid:{color:"#1e1e2e"} }
+    }
+  }
+});
+
+// ── Ranking Chart ─────────────────────────────────────────────────────
+const sorted = [...DATA].sort((a,b) => b.ici - a.ici);
+new Chart(document.getElementById("rankingChart"), {
+  type: "bar",
+  data: {
+    labels: sorted.map(d=>d.sym),
+    datasets: [
+      { label:"ICI", data: sorted.map(d=>d.ici), backgroundColor: sorted.map(d=>COLORS[d.cat]), borderRadius:2, barThickness:18 },
+      { label:"PE", data: sorted.map(d=>d.pe), backgroundColor: "rgba(136,135,128,0.25)", borderRadius:2, barThickness:8 }
+    ]
+  },
+  options: {
+    indexAxis: "y", responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position:"bottom", labels:{boxWidth:10, padding:16} },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw.toFixed(3)}` } },
+      annotation: {}
+    },
+    scales: {
+      x: { min:0.38, max:1.02, grid:{color:"#1e1e2e"} },
+      y: { grid:{display:false}, ticks:{font:{size:11}} }
+    }
+  }
+});
+
+// ── Lambda vs SRM ─────────────────────────────────────────────────────
+const srmData = DATA.filter(d=>d.srm!=null && d.srm>0 && d.lam>0);
+const logDatasets = ["ccfi","western","other","flash"].map(cat => ({
+  label: {ccfi:"CCFI/partial", western:"Western", other:"Other/Event", flash:"Flash viral"}[cat],
+  data: srmData.filter(d=>d.cat===cat).map(d=>({x:Math.log10(d.lam), y:Math.log10(d.srm), label:d.sym, lam:d.lam, srm:d.srm})),
+  backgroundColor: COLORS[cat], pointRadius:7, pointHoverRadius:10
+}));
+
+const logX = srmData.map(d=>Math.log10(d.lam));
+const logY = srmData.map(d=>Math.log10(d.srm));
+const n = logX.length;
+const mx = logX.reduce((a,b)=>a+b)/n, my = logY.reduce((a,b)=>a+b)/n;
+const slope = logX.reduce((s,x,i)=>s+(x-mx)*(logY[i]-my),0)/logX.reduce((s,x)=>s+(x-mx)**2,0);
+const intercept = my - slope*mx;
+logDatasets.push({
+  label:"Regression (β=−3.50)", type:"line",
+  data:[{x:Math.log10(1.8),y:slope*Math.log10(1.8)+intercept},{x:Math.log10(120),y:slope*Math.log10(120)+intercept}],
+  borderColor:"#f0c040", borderWidth:1.5, borderDash:[5,4], pointRadius:0, fill:false
+});
+
+new Chart(document.getElementById("lambdaChart"), {
+  type: "scatter",
+  data: { datasets: logDatasets },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend:{display:true, position:"bottom", labels:{boxWidth:10,padding:16}},
+      tooltip:{callbacks:{label:ctx=>{const d=ctx.raw; return d.label?[`${d.label}`,`λ=${d.lam}  SRM=${d.srm?.toExponential(2)}`]:null;}}}
+    },
+    scales: {
+      x:{title:{display:true,text:"log₁₀(λ)"}, min:Math.log10(1.5), max:Math.log10(130),
+         ticks:{callback:v=>`${Math.pow(10,v).toFixed(0)}`}, grid:{color:"#1e1e2e"}},
+      y:{title:{display:true,text:"log₁₀(SRM)"}, min:-7, max:0,
+         ticks:{callback:v=>`10^${v.toFixed(0)}`}, grid:{color:"#1e1e2e"}}
+    }
+  }
+});
+
+// ── Table ─────────────────────────────────────────────────────────────
+const tbody = document.getElementById("tableBody");
+[...DATA].sort((a,b)=>b.ici-a.ici).forEach((d,i)=>{
+  const row = document.createElement("tr");
+  const typMap = {ccfi:"CCFI",western:"Western",flash:"Flash",other:"Other"};
+  row.innerHTML = `
+    <td>${i+1}</td>
+    <td><strong>${d.sym}</strong></td>
+    <td>${d.country}</td>
+    <td>${d.period}</td>
+    <td>${d.pe.toFixed(3)}</td>
+    <td><strong>${d.ici.toFixed(3)}</strong></td>
+    <td>${d.d!=null?d.d.toFixed(3):"—"}</td>
+    <td>${d.lam}</td>
+    <td>${d.srm!=null?(d.srm===0?"0.0":d.srm<0.001?d.srm.toExponential(2):d.srm.toFixed(5)):"—"}</td>
+    <td><span class="badge ${BADGES[d.cat]}">${typMap[d.cat]}</span></td>
+  `;
+  tbody.appendChild(row);
+});
+
+function showTab(id) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
