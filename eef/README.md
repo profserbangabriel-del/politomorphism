@@ -6,38 +6,62 @@ GitHub: https://github.com/profserbangabriel-del/Politomorphism
 
 ## Overview
 
-The Entropic Equilibrium Function (EEF) measures political systemic instability as Shannon entropy over institutional state distributions. It produces a static score S(t)/S_max per domain, an aggregate entropy score with zone classification, and a sensitivity analysis.
+The Entropic Equilibrium Function (EEF) measures political systemic instability as Shannon entropy over institutional state distributions. It produces a static score H(t) per domain, an aggregate instability score with zone classification, and a sensitivity analysis.
 
-FIIM v2.0 (Fuzzy Institutional Instability Model) extends EEF by replacing hard threshold mapping with continuous fuzzy membership functions and combining Shannon entropy with a severity index: IS = 0.5 x H(p) + 0.5 x V(p).
+FIIM v2.1 (Fuzzy Institutional Instability Model) extends EEF by replacing hard threshold mapping with continuous fuzzy membership functions and combining normalized entropy with an expected institutional cost index.
+
+## Notation
+
+| Symbol | Definition |
+|---|---|
+| S(t) | Raw Shannon entropy: S(t) = -sum( p_i(t) * ln(p_i(t)) ) [nats] |
+| S_max | Maximum entropy: S_max = ln(N) = ln(3) ≈ 1.0986 nats |
+| H(t) | Normalized entropy: H(t) = S(t) / S_max, range 0-1 |
+| V(t) | Expected institutional cost: V(t) = 0.0*p0 + 0.5*p1 + 1.0*p2 |
+| IS(t) | Static instability score: IS(t) = alpha*H(t) + (1-alpha)*V(t) |
+| Delta_IS(t) | Discrete dynamics: Delta_IS(t) = IS(t) - IS(t-1) |
+| Pi(t) | Entropy-increasing component: Pi(t) = max(0, Delta_IS(t)) |
+| Phi(t) | Entropy-decreasing component: Phi(t) = max(0, -Delta_IS(t)) |
+| IS_comp(t) | Composite score: IS_comp(t) = IS(t) + beta*Delta_IS(t) |
 
 ## Formula
 
-S(t) = -sum( p_i(t) * log(p_i(t)) )    Shannon entropy
-S_max = log(N)                           maximum entropy for N states
-ratio = S(t) / S_max                     normalized instability score
+S(t)     = -sum( p_i(t) * ln(p_i(t)) )     raw Shannon entropy [nats, base e]
+S_max    = ln(3) ≈ 1.0986                   maximum entropy for N=3 states
+H(t)     = S(t) / S_max                     normalized entropy, base-invariant
+V(t)     = 0.0*p0 + 0.5*p1 + 1.0*p2        expected institutional cost
+IS(t)    = 0.5 * H(t) + 0.5 * V(t)         static instability score
+Delta_IS = IS(t) - IS(t-1)                  discrete dynamics (annual)
+Pi(t)    = max(0, Delta_IS)                 disorder-increasing component
+Phi(t)   = max(0, -Delta_IS)                order-restoring component
+IS_comp  = IS(t) + 0.2 * Delta_IS(t)        composite forward-looking score
 
-FIIM: IS(p) = 0.5 * H(p) + 0.5 * V(p)
-  H(p) = normalized Shannon entropy
-  V(p) = 0.5*p1 + 1.0*p2  (severity index)
+Note: Shannon entropy is computed on discrete annual distributions.
+Continuous-time notation dS/dt is replaced by discrete Delta_IS(t).
+Normalization H(t) = S(t)/S_max cancels the logarithmic base.
 
-dS/dt = Pi(t) - Phi(t)
-  Pi(t)  = disorder-generating forces
-  Phi(t) = order-restoring forces
+## V(t) — Expected Institutional Cost
 
-Equilibrium: dS/dt = 0
+V(t) = E[c(X)] where c is an ordinal cost function defined on the state space:
 
-## Entropy zones
+| State | Label | Cost c(Si) | Interpretation |
+|---|---|---|---|
+| S0 | Stable | 0.0 | Zero institutional cost — functional equilibrium |
+| S1 | Strained | 0.5 | Partial dysfunction — reform capacity under pressure |
+| S2 | Critical | 1.0 | Full institutional failure — self-regulation exhausted |
 
-| S(t)/S_max | Zone | Interpretation |
+## Instability zones
+
+| IS(t) | Zone | Interpretation |
 |---|---|---|
-| > 80% | CRITICAL | Structural instability; disorder exceeds self-regulation |
-| 60-80% | HIGH | Significant fragmentation; reform capacity under strain |
-| 40-60% | MODERATE | Manageable tensions; stress containable |
-| < 40% | LOW | System near equilibrium |
+| > 0.70 | CRITICAL | Structural instability — disorder exceeds self-regulation |
+| 0.55-0.70 | HIGH | Significant fragmentation — reform capacity under strain |
+| 0.40-0.55 | MODERATE | Manageable tensions — stress containable |
+| < 0.40 | LOW | System near equilibrium |
 
 ## State space (three domains, three states each)
 
-| Domain | State 0 | State 1 | State 2 |
+| Domain | S0 — Stable | S1 — Strained | S2 — Critical |
 |---|---|---|---|
 | Justice | Functional independence | Political capture | Paralysis/vacuum |
 | Electoral | Legitimate functioning | Crisis/contested | Delegitimized/captured |
@@ -63,7 +87,7 @@ Sources: Freedom House NIT 2024; BTI 2026; EC Rule of Law 2024; Venice Commissio
 | config_eef_poland.json | Poland 2024 cross-national validation |
 | eef_longitudinal.py | Longitudinal validation 2005-2024 (FH NIT + BTI) |
 | eef_interrater.py | Inter-rater reliability — Krippendorff alpha + Cohen kappa |
-| eef_fiim.py | FIIM v2.0 — fuzzy membership + IS = H + V |
+| eef_fiim.py | FIIM v2.1 — fuzzy membership, H(t), V(t), IS_comp |
 | eef_comparison_table.py | EEF vs FIIM comparison — hard vs fuzzy thresholds |
 | eef_bootstrap.py | Bootstrap 95% CI for FIIM IS scores (n=1000) |
 
@@ -72,7 +96,7 @@ Sources: Freedom House NIT 2024; BTI 2026; EC Rule of Law 2024; Venice Commissio
 Run EEF original:
 python compute_eef.py --config config_eef_romania.json
 
-Run FIIM v2.0:
+Run FIIM v2.1:
 python eef_fiim.py
 
 Run longitudinal validation:
