@@ -1,6 +1,6 @@
 # Politomorphism — Social Resonance Model (SRM)
 
-**Serban Gabriel Florin** | Independent Researcher  
+**Serban Gabriel Florin** | I.Researcher  
 ORCID: [0009-0000-2266-3356](https://orcid.org/0009-0000-2266-3356) | DOI: [10.17605/OSF.IO/HYDNZ](https://doi.org/10.17605/OSF.IO/HYDNZ)  
 GitHub: [profserbangabriel-del/Politomorphism](https://github.com/profserbangabriel-del/Politomorphism) | License: CC BY 4.0
 
