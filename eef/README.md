@@ -14,54 +14,62 @@ FIIM v2.1 (Fuzzy Institutional Instability Model) extends EEF by replacing hard 
 
 | Symbol | Definition |
 |---|---|
-| S(t) | Raw Shannon entropy: S(t) = -sum( p_i(t) * ln(p_i(t)) ) [nats] |
-| S_max | Maximum entropy: S_max = ln(N) = ln(3) ≈ 1.0986 nats |
-| H(t) | Normalized entropy: H(t) = S(t) / S_max, range 0-1 |
-| V(t) | Expected institutional cost: V(t) = 0.0*p0 + 0.5*p1 + 1.0*p2 |
-| IS(t) | Static instability score: IS(t) = alpha*H(t) + (1-alpha)*V(t) |
-| Delta_IS(t) | Discrete dynamics: Delta_IS(t) = IS(t) - IS(t-1) |
-| Pi(t) | Entropy-increasing component: Pi(t) = max(0, Delta_IS(t)) |
-| Phi(t) | Entropy-decreasing component: Phi(t) = max(0, -Delta_IS(t)) |
-| IS_comp(t) | Composite score: IS_comp(t) = IS(t) + beta*Delta_IS(t) |
+| $S(t)$ | Raw Shannon entropy [nats, base e] |
+| $S_{\max}$ | Maximum entropy: $\ln(N) = \ln(3) \approx 1.0986$ nats |
+| $H(t)$ | Normalized entropy: $S(t)/S_{\max} \in [0,1]$ |
+| $V(t)$ | Expected institutional cost: $0.0 \cdot p_0 + 0.5 \cdot p_1 + 1.0 \cdot p_2$ |
+| $IS(t)$ | Static instability score |
+| $\Delta IS(t)$ | Discrete dynamics: $IS(t) - IS(t-1)$ |
+| $\Pi(t)$ | Disorder-increasing component |
+| $\Phi(t)$ | Order-restoring component |
+| $IS_{\text{comp}}(t)$ | Composite forward-looking score |
 
 ## Formula
 
-S(t)     = -sum( p_i(t) * ln(p_i(t)) )     raw Shannon entropy [nats, base e]
-S_max    = ln(3) ≈ 1.0986                   maximum entropy for N=3 states
-H(t)     = S(t) / S_max                     normalized entropy, base-invariant
-V(t)     = 0.0*p0 + 0.5*p1 + 1.0*p2        expected institutional cost
-IS(t)    = 0.5 * H(t) + 0.5 * V(t)         static instability score
-Delta_IS = IS(t) - IS(t-1)                  discrete dynamics (annual)
-Pi(t)    = max(0, Delta_IS)                 disorder-increasing component
-Phi(t)   = max(0, -Delta_IS)                order-restoring component
-IS_comp  = IS(t) + 0.2 * Delta_IS(t)        composite forward-looking score
+$$S(t) = -\sum_{i} p_i(t) \cdot \ln(p_i(t))$$
 
-Note: Shannon entropy is computed on discrete annual distributions.
-Continuous-time notation dS/dt is replaced by discrete Delta_IS(t).
-Normalization H(t) = S(t)/S_max cancels the logarithmic base.
+$$S_{\max} = \ln(N) = \ln(3) \approx 1.0986 \text{ nats}$$
+
+$$H(t) = \frac{S(t)}{S_{\max}} \in [0,1]$$
+
+$$V(t) = 0.0 \cdot p_0 + 0.5 \cdot p_1 + 1.0 \cdot p_2$$
+
+$$IS(t) = \alpha \cdot H(t) + (1-\alpha) \cdot V(t), \quad \alpha = 0.5$$
+
+$$\Delta IS(t) = IS(t) - IS(t-1)$$
+
+$$\Pi(t) = \max(0,\ \Delta IS(t))$$
+
+$$\Phi(t) = \max(0,\ -\Delta IS(t))$$
+
+$$IS_{\text{comp}}(t) = IS(t) + \beta \cdot \Delta IS(t), \quad \beta = 0.2$$
+
+> Note: Shannon entropy is computed on discrete annual distributions.
+> Continuous-time notation dS/dt is replaced by discrete Delta_IS(t).
+> Normalization H(t) = S(t)/S_max cancels the logarithmic base.
 
 ## V(t) — Expected Institutional Cost
 
-V(t) = E[c(X)] where c is an ordinal cost function defined on the state space:
+$V(t) = \mathbb{E}[c(X)]$ where $c$ is an ordinal cost function:
 
-| State | Label | Cost c(Si) | Interpretation |
+| State | Label | Cost $c(S_i)$ | Interpretation |
 |---|---|---|---|
-| S0 | Stable | 0.0 | Zero institutional cost — functional equilibrium |
-| S1 | Strained | 0.5 | Partial dysfunction — reform capacity under pressure |
-| S2 | Critical | 1.0 | Full institutional failure — self-regulation exhausted |
+| $S_0$ | Stable | 0.0 | Zero institutional cost — functional equilibrium |
+| $S_1$ | Strained | 0.5 | Partial dysfunction — reform capacity under pressure |
+| $S_2$ | Critical | 1.0 | Full institutional failure — self-regulation exhausted |
 
 ## Instability zones
 
-| IS(t) | Zone | Interpretation |
+| $IS(t)$ | Zone | Interpretation |
 |---|---|---|
-| > 0.70 | CRITICAL | Structural instability — disorder exceeds self-regulation |
-| 0.55-0.70 | HIGH | Significant fragmentation — reform capacity under strain |
-| 0.40-0.55 | MODERATE | Manageable tensions — stress containable |
-| < 0.40 | LOW | System near equilibrium |
+| $> 0.70$ | CRITICAL | Structural instability — disorder exceeds self-regulation |
+| $0.55 - 0.70$ | HIGH | Significant fragmentation — reform capacity under strain |
+| $0.40 - 0.55$ | MODERATE | Manageable tensions — stress containable |
+| $< 0.40$ | LOW | System near equilibrium |
 
 ## State space (three domains, three states each)
 
-| Domain | S0 — Stable | S1 — Strained | S2 — Critical |
+| Domain | $S_0$ — Stable | $S_1$ — Strained | $S_2$ — Critical |
 |---|---|---|---|
 | Justice | Functional independence | Political capture | Paralysis/vacuum |
 | Electoral | Legitimate functioning | Crisis/contested | Delegitimized/captured |
@@ -94,24 +102,40 @@ Sources: Freedom House NIT 2024; BTI 2026; EC Rule of Law 2024; Venice Commissio
 ## Usage
 
 Run EEF original:
+
+```
 python compute_eef.py --config config_eef_romania.json
+```
 
 Run FIIM v2.1:
+
+```
 python eef_fiim.py
+```
 
 Run longitudinal validation:
+
+```
 python eef_longitudinal.py
+```
 
 Run inter-rater reliability:
+
+```
 python eef_interrater.py
+```
 
 Run bootstrap CI:
+
+```
 python eef_bootstrap.py
+```
 
 ## Adding a new country
 
 Create a JSON config file with this structure:
 
+```json
 {
   "country": "CountryName",
   "year": "2024",
@@ -126,9 +150,13 @@ Create a JSON config file with this structure:
     "Coalition": ["Source 1", "Source 2"]
   }
 }
+```
 
 Then run:
+
+```
 python compute_eef.py --config config_eef_yourcountry.json
+```
 
 ## Requirements
 
