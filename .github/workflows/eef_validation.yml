@@ -20,3 +20,5 @@ jobs:
         run: python eef/eef_comparison_table.py
       - name: Run Bootstrap CI
         run: python eef/eef_bootstrap.py
+      - name: Run Anti-Corruption Romania
+        run: python eef/eef_anticorruption_romania.py
