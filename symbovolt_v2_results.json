@@ -1,0 +1,99 @@
+{
+  "model": "SYMBOVOLT v2.0",
+  "framework": "Politomorphism Engine",
+  "sources": [
+    "MediaCloud",
+    "GoogleTrends",
+    "WikipediaPageviews",
+    "Reddit",
+    "RSS_local",
+    "Eurostat"
+  ],
+  "weights": {
+    "SRM_MediaCloud": 0.35,
+    "GoogleTrends": 0.2,
+    "Wikipedia": 0.15,
+    "Reddit": 0.15,
+    "RSS_local": 0.1,
+    "Eurostat": 0.05
+  },
+  "candidates": {
+    "Magyar": {
+      "VES": 0.59488023,
+      "P_win": 1.0,
+      "P_win_pct": 100.0,
+      "components": {
+        "SRM_last": 0.00789806,
+        "SRM_momentum": 0.00019945,
+        "GoogleTrends": 0.0,
+        "Wikipedia": 2.2277,
+        "Reddit": 0.0,
+        "RSS_local": 0.0376,
+        "Eurostat_crisis": 4.45,
+        "crisis_bonus": 0.0445
+      },
+      "srm_windows": [
+        {
+          "window": "2024-01-01",
+          "SRM": 0.00528308
+        },
+        {
+          "window": "2024-04-01",
+          "SRM": 0.00868442
+        },
+        {
+          "window": "2024-07-01",
+          "SRM": 0.00470328
+        },
+        {
+          "window": "2024-10-01",
+          "SRM": 0.0061274
+        },
+        {
+          "window": "2025-01-01",
+          "SRM": 0.00499863
+        },
+        {
+          "window": "2025-04-01",
+          "SRM": 0.00970496
+        },
+        {
+          "window": "2025-07-01",
+          "SRM": 0.00642503
+        },
+        {
+          "window": "2025-10-01",
+          "SRM": 0.00664786
+        },
+        {
+          "window": "2026-01-01",
+          "SRM": 0.00783475
+        },
+        {
+          "window": "2026-04-01",
+          "SRM": 0.00789806
+        }
+      ]
+    },
+    "Orban": {
+      "VES": 0.36503318,
+      "P_win": 0.0,
+      "P_win_pct": 0.0,
+      "components": {
+        "SRM_last": 0.0,
+        "SRM_momentum": 0.0,
+        "GoogleTrends": 0.0,
+        "Wikipedia": 0.9111,
+        "Reddit": 0.0,
+        "RSS_local": 0.0945,
+        "Eurostat_crisis": 4.45,
+        "crisis_bonus": -0.0223
+      },
+      "srm_windows": []
+    }
+  },
+  "predicted_winner": "Magyar",
+  "predicted_winner_pwin": 100.0,
+  "crisis_index": 4.45,
+  "disclaimer": "SYMBOVOLT masoara rezonanta simbolica multi-sursa. Nu inlocuieste sondaje directe de intentie de vot."
+}
