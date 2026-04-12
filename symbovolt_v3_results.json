@@ -28,85 +28,67 @@
     "lead_Magyar": 0
   },
   "candidates": {
-    "Magyar": {
-      "VES": 0.41308379,
+    "Orban": {
+      "VES": 0.34838197,
       "P_win": 1.0,
       "P_win_pct": 100.0,
       "components": {
-        "srm_last": 0.00789427,
-        "srm_momentum": 0.0001993,
-        "wiki_trend": 2.7785,
+        "srm_last": 0.03843787,
+        "srm_momentum": 0.00168546,
+        "wiki_trend": 1.0,
         "trends_mom": 0.0,
         "reddit": 0.0,
-        "rss": 0.041,
-        "poll_lead": 0,
-        "poll_comp": 0.5,
-        "crisis_index": 4.45,
-        "crisis_bonus": 0.0445
-      },
-      "srm_windows": [
-        {
-          "window": "2024-01-01",
-          "SRM": 0.00529634
-        },
-        {
-          "window": "2024-04-01",
-          "SRM": 0.00880153
-        },
-        {
-          "window": "2024-07-01",
-          "SRM": 0.00468707
-        },
-        {
-          "window": "2024-10-01",
-          "SRM": 0.00617159
-        },
-        {
-          "window": "2025-01-01",
-          "SRM": 0.00503935
-        },
-        {
-          "window": "2025-04-01",
-          "SRM": 0.00983701
-        },
-        {
-          "window": "2025-07-01",
-          "SRM": 0.00642011
-        },
-        {
-          "window": "2025-10-01",
-          "SRM": 0.00676247
-        },
-        {
-          "window": "2026-01-01",
-          "SRM": 0.00788492
-        },
-        {
-          "window": "2026-04-01",
-          "SRM": 0.00789427
-        }
-      ]
-    },
-    "Orban": {
-      "VES": 0.33242565,
-      "P_win": 0.0,
-      "P_win_pct": 0.0,
-      "components": {
-        "srm_last": 0.0,
-        "srm_momentum": 0.0,
-        "wiki_trend": 0.9516,
-        "trends_mom": 0.0,
-        "reddit": 0.0,
-        "rss": 0.0806,
+        "rss": 0.0634,
         "poll_lead": 0,
         "poll_comp": 0.5,
         "crisis_index": 4.45,
         "crisis_bonus": -0.0223
       },
-      "srm_windows": []
+      "srm_windows": [
+        {
+          "window": "2024-01-01",
+          "SRM": 0.02619525
+        },
+        {
+          "window": "2024-04-01",
+          "SRM": 0.02373304
+        },
+        {
+          "window": "2024-07-01",
+          "SRM": 0.01690461
+        },
+        {
+          "window": "2024-10-01",
+          "SRM": 0.01817657
+        },
+        {
+          "window": "2025-01-01",
+          "SRM": 0.0225284
+        },
+        {
+          "window": "2025-04-01",
+          "SRM": 0.02215435
+        },
+        {
+          "window": "2025-07-01",
+          "SRM": 0.02872233
+        },
+        {
+          "window": "2025-10-01",
+          "SRM": 0.023583
+        },
+        {
+          "window": "2026-01-01",
+          "SRM": 0.03848482
+        },
+        {
+          "window": "2026-04-01",
+          "SRM": 0.03843787
+        }
+      ]
     }
   },
-  "predicted_winner": "Magyar",
+  "predicted_winner": "Orban",
   "predicted_winner_pwin": 100.0,
   "crisis_index": 4.45,
   "disclaimer": "SYMBOVOLT v3.0 \u2014 rezonanta simbolica multi-sursa + sondaje reale."
