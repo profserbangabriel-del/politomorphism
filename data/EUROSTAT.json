@@ -1,0 +1,210 @@
+{
+  "country": "HU",
+  "inflation": [
+    {
+      "period": "2024-01",
+      "value": 3.7
+    },
+    {
+      "period": "2024-02",
+      "value": 3.6
+    },
+    {
+      "period": "2024-03",
+      "value": 3.6
+    },
+    {
+      "period": "2024-04",
+      "value": 3.6
+    },
+    {
+      "period": "2024-05",
+      "value": 3.9
+    },
+    {
+      "period": "2024-06",
+      "value": 3.6
+    },
+    {
+      "period": "2024-07",
+      "value": 4.1
+    },
+    {
+      "period": "2024-08",
+      "value": 3.4
+    },
+    {
+      "period": "2024-09",
+      "value": 3.0
+    },
+    {
+      "period": "2024-10",
+      "value": 3.4
+    },
+    {
+      "period": "2024-11",
+      "value": 3.9
+    },
+    {
+      "period": "2024-12",
+      "value": 4.8
+    },
+    {
+      "period": "2025-01",
+      "value": 5.7
+    },
+    {
+      "period": "2025-02",
+      "value": 5.7
+    },
+    {
+      "period": "2025-03",
+      "value": 4.8
+    },
+    {
+      "period": "2025-04",
+      "value": 4.2
+    },
+    {
+      "period": "2025-05",
+      "value": 4.5
+    },
+    {
+      "period": "2025-06",
+      "value": 4.6
+    },
+    {
+      "period": "2025-07",
+      "value": 4.2
+    },
+    {
+      "period": "2025-08",
+      "value": 4.2
+    },
+    {
+      "period": "2025-09",
+      "value": 4.3
+    },
+    {
+      "period": "2025-10",
+      "value": 4.2
+    },
+    {
+      "period": "2025-11",
+      "value": 3.7
+    },
+    {
+      "period": "2025-12",
+      "value": 3.3
+    }
+  ],
+  "unemployment": [
+    {
+      "period": "2024-01",
+      "value": 4.3
+    },
+    {
+      "period": "2024-02",
+      "value": 4.3
+    },
+    {
+      "period": "2024-03",
+      "value": 4.3
+    },
+    {
+      "period": "2024-04",
+      "value": 4.3
+    },
+    {
+      "period": "2024-05",
+      "value": 4.3
+    },
+    {
+      "period": "2024-06",
+      "value": 4.3
+    },
+    {
+      "period": "2024-07",
+      "value": 4.3
+    },
+    {
+      "period": "2024-08",
+      "value": 4.4
+    },
+    {
+      "period": "2024-09",
+      "value": 4.5
+    },
+    {
+      "period": "2024-10",
+      "value": 4.5
+    },
+    {
+      "period": "2024-11",
+      "value": 4.5
+    },
+    {
+      "period": "2024-12",
+      "value": 4.4
+    },
+    {
+      "period": "2025-01",
+      "value": 4.3
+    },
+    {
+      "period": "2025-02",
+      "value": 4.3
+    },
+    {
+      "period": "2025-03",
+      "value": 4.2
+    },
+    {
+      "period": "2025-04",
+      "value": 4.3
+    },
+    {
+      "period": "2025-05",
+      "value": 4.3
+    },
+    {
+      "period": "2025-06",
+      "value": 4.4
+    },
+    {
+      "period": "2025-07",
+      "value": 4.3
+    },
+    {
+      "period": "2025-08",
+      "value": 4.3
+    },
+    {
+      "period": "2025-09",
+      "value": 4.5
+    },
+    {
+      "period": "2025-10",
+      "value": 4.5
+    },
+    {
+      "period": "2025-11",
+      "value": 4.4
+    },
+    {
+      "period": "2025-12",
+      "value": 4.5
+    },
+    {
+      "period": "2026-01",
+      "value": 4.5
+    },
+    {
+      "period": "2026-02",
+      "value": 4.6
+    }
+  ],
+  "crisis_index": 4.45,
+  "unempl_recent": 4.5,
+  "unempl_trend": 0.1
+}

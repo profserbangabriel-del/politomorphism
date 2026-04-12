@@ -1,0 +1,113 @@
+{
+  "model": "SYMBOVOLT v3.0",
+  "framework": "Politomorphism Engine",
+  "sources": [
+    "WikipediaPageviews_EN",
+    "WikipediaPageviews_HU",
+    "GoogleTrends_HU",
+    "Reddit",
+    "RSS_HU",
+    "RSS_EN",
+    "Eurostat",
+    "MediaCloud",
+    "WikipediaPolls"
+  ],
+  "weights": {
+    "polls": 0.35,
+    "srm": 0.2,
+    "wiki": 0.15,
+    "trends": 0.12,
+    "reddit": 0.08,
+    "rss": 0.06,
+    "eurostat": 0.04
+  },
+  "poll_data": {
+    "n_polls": 0,
+    "recent_Magyar": 0,
+    "recent_Orban": 0,
+    "lead_Magyar": 0
+  },
+  "candidates": {
+    "Magyar": {
+      "VES": 0.41308379,
+      "P_win": 1.0,
+      "P_win_pct": 100.0,
+      "components": {
+        "srm_last": 0.00789427,
+        "srm_momentum": 0.0001993,
+        "wiki_trend": 2.7785,
+        "trends_mom": 0.0,
+        "reddit": 0.0,
+        "rss": 0.041,
+        "poll_lead": 0,
+        "poll_comp": 0.5,
+        "crisis_index": 4.45,
+        "crisis_bonus": 0.0445
+      },
+      "srm_windows": [
+        {
+          "window": "2024-01-01",
+          "SRM": 0.00529634
+        },
+        {
+          "window": "2024-04-01",
+          "SRM": 0.00880153
+        },
+        {
+          "window": "2024-07-01",
+          "SRM": 0.00468707
+        },
+        {
+          "window": "2024-10-01",
+          "SRM": 0.00617159
+        },
+        {
+          "window": "2025-01-01",
+          "SRM": 0.00503935
+        },
+        {
+          "window": "2025-04-01",
+          "SRM": 0.00983701
+        },
+        {
+          "window": "2025-07-01",
+          "SRM": 0.00642011
+        },
+        {
+          "window": "2025-10-01",
+          "SRM": 0.00676247
+        },
+        {
+          "window": "2026-01-01",
+          "SRM": 0.00788492
+        },
+        {
+          "window": "2026-04-01",
+          "SRM": 0.00789427
+        }
+      ]
+    },
+    "Orban": {
+      "VES": 0.33242565,
+      "P_win": 0.0,
+      "P_win_pct": 0.0,
+      "components": {
+        "srm_last": 0.0,
+        "srm_momentum": 0.0,
+        "wiki_trend": 0.9516,
+        "trends_mom": 0.0,
+        "reddit": 0.0,
+        "rss": 0.0806,
+        "poll_lead": 0,
+        "poll_comp": 0.5,
+        "crisis_index": 4.45,
+        "crisis_bonus": -0.0223
+      },
+      "srm_windows": []
+    }
+  },
+  "predicted_winner": "Magyar",
+  "predicted_winner_pwin": 100.0,
+  "crisis_index": 4.45,
+  "disclaimer": "SYMBOVOLT v3.0 \u2014 rezonanta simbolica multi-sursa + sondaje reale."
+}
