@@ -1,0 +1,546 @@
+name: SYMBOVOLT — Electoral Forecast
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidates:
+        description: 'Candidați separați prin virgulă (fără spații)'
+        required: true
+        default: 'Magyar,Orban'
+      queries:
+        description: 'Query-uri Media Cloud separate prin | (câte unul per candidat)'
+        required: true
+        default: 'Peter Magyar OR Tisza Hungary|Viktor Orban OR Fidesz Hungary'
+      start_date:
+        description: 'Start date YYYY-MM-DD'
+        required: true
+        default: '2024-01-01'
+      end_date:
+        description: 'End date YYYY-MM-DD'
+        required: true
+        default: '2026-04-12'
+      lambda_values:
+        description: 'Lambda per candidat, separate prin virgulă'
+        required: true
+        default: '3.85,2.10'
+      window_months:
+        description: 'Luni per fereastra temporala (trend)'
+        required: true
+        default: '3'
+      max_articles:
+        description: 'Max articles per candidat'
+        required: true
+        default: '2000'
+      bootstrap_n:
+        description: 'Bootstrap iterations'
+        required: true
+        default: '100'
+
+jobs:
+  symbovolt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install \
+            mediacloud==4.6.0 \
+            vaderSentiment==3.3.2 \
+            scikit-learn==1.4.2 \
+            sentence-transformers==2.7.0 \
+            numpy==1.26.4 \
+            scipy==1.13.0 \
+            requests==2.31.0
+
+      - name: Fetch articles — toate candidatele
+        env:
+          MC_API_KEY:   ${{ secrets.MEDIACLOUD_API_KEY }}
+          CANDIDATES:   ${{ github.event.inputs.candidates }}
+          QUERIES:      ${{ github.event.inputs.queries }}
+          START_DATE:   ${{ github.event.inputs.start_date }}
+          END_DATE:     ${{ github.event.inputs.end_date }}
+          MAX_ART:      ${{ github.event.inputs.max_articles }}
+        run: |
+          cat > /tmp/fetch_all.py << 'PYEOF'
+          import mediacloud.api as mc
+          import json, os, datetime, csv
+
+          candidates = os.environ["CANDIDATES"].strip().split(",")
+          queries    = os.environ["QUERIES"].strip().split("|")
+          start      = os.environ["START_DATE"].strip()
+          end        = os.environ["END_DATE"].strip()
+          max_art    = int(os.environ["MAX_ART"].strip())
+          api_key    = os.environ["MC_API_KEY"].strip()
+
+          search   = mc.SearchApi(api_key)
+          start_dt = datetime.datetime.strptime(start, "%Y-%m-%d").date()
+          end_dt   = datetime.datetime.strptime(end,   "%Y-%m-%d").date()
+
+          os.makedirs("data", exist_ok=True)
+
+          def make_serializable(obj):
+              if isinstance(obj, dict):
+                  return {k: make_serializable(v) for k, v in obj.items()}
+              elif isinstance(obj, list):
+                  return [make_serializable(i) for i in obj]
+              elif isinstance(obj, (datetime.datetime, datetime.date)):
+                  return obj.isoformat()
+              return obj
+
+          for cand, query in zip(candidates, queries):
+              cand  = cand.strip()
+              query = query.strip()
+              print("Fetching: " + cand + " | query: " + query)
+
+              stories = []
+              page    = None
+              while len(stories) < max_art:
+                  result, page = search.story_list(
+                      query,
+                      start_date=start_dt,
+                      end_date=end_dt,
+                      pagination_token=page,
+                      collection_ids=[34412234],
+                  )
+                  if not result:
+                      break
+                  stories.extend(result)
+                  print("  " + cand + ": " + str(len(stories)) + " articles")
+                  if page is None:
+                      break
+
+              stories = make_serializable(stories[:max_art])
+              print(cand + " total: " + str(len(stories)))
+
+              with open("data/" + cand + "-DATA.json", "w") as f:
+                  json.dump(stories, f)
+
+              with open(cand + "-DATA.csv", "w", newline="", encoding="utf-8") as f:
+                  w = csv.writer(f)
+                  w.writerow(["title", "publish_date", "url"])
+                  for s in stories:
+                      w.writerow([s.get("title",""), s.get("publish_date",""), s.get("url","")])
+
+              print("Saved data/" + cand + "-DATA.json")
+          PYEOF
+          python3 /tmp/fetch_all.py
+
+      - name: Compute SRM per candidat per fereastra temporala
+        env:
+          CANDIDATES:    ${{ github.event.inputs.candidates }}
+          LAMBDA_VALUES: ${{ github.event.inputs.lambda_values }}
+          START_DATE:    ${{ github.event.inputs.start_date }}
+          END_DATE:      ${{ github.event.inputs.end_date }}
+          WINDOW_MONTHS: ${{ github.event.inputs.window_months }}
+          BOOTSTRAP_N:   ${{ github.event.inputs.bootstrap_n }}
+        run: |
+          cat > /tmp/compute_srm_windows.py << 'PYEOF'
+          import json, os, math, random, datetime
+          import numpy as np
+          from sklearn.decomposition import LatentDirichletAllocation
+          from sklearn.feature_extraction.text import CountVectorizer
+          from sentence_transformers import SentenceTransformer
+          from sklearn.metrics.pairwise import cosine_similarity
+          from scipy.spatial.distance import jensenshannon
+          from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+          from collections import defaultdict
+          from dateutil.relativedelta import relativedelta
+
+          # pip install python-dateutil
+          import subprocess
+          subprocess.run(["pip", "install", "python-dateutil", "-q"])
+          from dateutil.relativedelta import relativedelta
+
+          candidates    = os.environ["CANDIDATES"].strip().split(",")
+          lambda_values = [float(x) for x in os.environ["LAMBDA_VALUES"].strip().split(",")]
+          start_date    = os.environ["START_DATE"].strip()
+          end_date      = os.environ["END_DATE"].strip()
+          window_months = int(os.environ["WINDOW_MONTHS"].strip())
+          bootstrap_n   = int(os.environ["BOOTSTRAP_N"].strip())
+          alpha_d       = 0.5
+
+          model_emb = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+          vader     = SentimentIntensityAnalyzer()
+
+          def compute_D(texts, bootstrap_n, alpha):
+              if len(texts) < 10:
+                  return 0.5, 0.5, 0.5, 0.0
+
+              vectorizer = CountVectorizer(max_df=0.95, min_df=1, max_features=3000, stop_words="english")
+              try:
+                  X = vectorizer.fit_transform(texts)
+              except Exception:
+                  return 0.5, 0.5, 0.5, 0.0
+
+              K = min(5, len(texts) // 5)
+              if K < 2:
+                  return 0.5, 0.5, 0.5, 0.0
+
+              lda = LatentDirichletAllocation(n_components=K, random_state=42, max_iter=10)
+              doc_topics = lda.fit_transform(X)
+
+              pairs = [(i,j) for i in range(len(doc_topics)) for j in range(i+1, len(doc_topics))]
+              sample_pairs = random.sample(pairs, min(1000, len(pairs)))
+              jsd_vals = []
+              for i,j in sample_pairs:
+                  v = jensenshannon(doc_topics[i], doc_topics[j])**2
+                  if not (v != v):
+                      jsd_vals.append(v)
+              PE = float(np.mean(jsd_vals)) if jsd_vals else 0.5
+
+              samp = random.sample(texts, min(100, len(texts)))
+              emb  = model_emb.encode(samp, show_progress_bar=False)
+              sim  = cosine_similarity(emb)
+              up   = sim[np.triu_indices(len(samp), k=1)]
+              up   = up[~np.isnan(up)]
+              ICI  = float(1 - np.mean(up)) if len(up) > 0 else 0.5
+
+              D_boots = []
+              for _ in range(bootstrap_n):
+                  si  = random.choices(list(range(len(texts))), k=len(texts))
+                  st  = [texts[i] for i in si]
+                  Xb  = vectorizer.transform(st)
+                  dt  = lda.transform(Xb)
+                  sp  = random.sample(list(range(len(dt))), min(50, len(dt)))
+                  jb  = []
+                  for ii in range(len(sp)):
+                      for jj in range(ii+1, len(sp)):
+                          v = jensenshannon(dt[sp[ii]], dt[sp[jj]])**2
+                          if not (v != v):
+                              jb.append(v)
+                          if len(jb) >= 200:
+                              break
+                      if len(jb) >= 200:
+                          break
+                  PE_b = float(np.mean(jb)) if jb else PE
+
+                  stb  = random.sample(st, min(50, len(st)))
+                  eb   = model_emb.encode(stb, show_progress_bar=False)
+                  sb   = cosine_similarity(eb)
+                  ub   = sb[np.triu_indices(len(stb), k=1)]
+                  ub   = ub[~np.isnan(ub)]
+                  ICI_b = float(1 - np.mean(ub)) if len(ub) > 0 else ICI
+
+                  Db = alpha * PE_b + (1 - alpha) * ICI_b
+                  if not (Db != Db):
+                      D_boots.append(Db)
+
+              if not D_boots:
+                  D_boots = [alpha * PE + (1 - alpha) * ICI]
+
+              return PE, ICI, float(np.mean(D_boots)), float(np.std(D_boots))
+
+          def compute_VAN(stories, start_str, end_str):
+              start_dt   = datetime.datetime.strptime(start_str, "%Y-%m-%d")
+              end_dt     = datetime.datetime.strptime(end_str,   "%Y-%m-%d")
+              total_days = max((end_dt - start_dt).days + 1, 1)
+
+              dates_set = set()
+              daily     = defaultdict(int)
+              for s in stories:
+                  pd_val = str(s.get("publish_date",""))[:10]
+                  if pd_val and len(pd_val) == 10:
+                      dates_set.add(pd_val)
+                      daily[pd_val] += 1
+
+              N = round(len(dates_set) / total_days, 4)
+
+              counts = [daily[d] for d in sorted(daily.keys())]
+              if len(counts) >= 10:
+                  baseline = float(np.mean(counts[:max(1, len(counts)//3)]))
+                  peak     = float(np.max(counts))
+                  if baseline > 0 and peak > 0:
+                      V = min(round(math.log((peak/baseline)+1) / math.log(51), 4), 1.0)
+                  else:
+                      V = 0.3
+              else:
+                  V = 0.3
+
+              scores = []
+              for s in stories:
+                  t = s.get("title","")
+                  if t and len(t) > 5:
+                      scores.append(abs(vader.polarity_scores(t)["compound"]))
+              A = round(float(np.mean(scores)), 4) if scores else 0.15
+
+              return V, A, N
+
+          # Generăm ferestrele temporale
+          start_dt_global = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+          end_dt_global   = datetime.datetime.strptime(end_date,   "%Y-%m-%d")
+
+          windows = []
+          cur = start_dt_global
+          while cur < end_dt_global:
+              w_end = min(cur + relativedelta(months=window_months), end_dt_global)
+              windows.append((cur.strftime("%Y-%m-%d"), w_end.strftime("%Y-%m-%d")))
+              cur = w_end
+
+          print("Windows: " + str(len(windows)))
+          for w in windows:
+              print("  " + w[0] + " -> " + w[1])
+
+          all_results = {}
+
+          for cand_idx, cand in enumerate(candidates):
+              cand = cand.strip()
+              lam  = lambda_values[cand_idx] if cand_idx < len(lambda_values) else 2.0
+
+              with open("data/" + cand + "-DATA.json") as f:
+                  all_stories = json.load(f)
+
+              print("Candidate: " + cand + " | total stories: " + str(len(all_stories)))
+
+              windows_data = []
+
+              for w_start, w_end in windows:
+                  ws = datetime.datetime.strptime(w_start, "%Y-%m-%d")
+                  we = datetime.datetime.strptime(w_end,   "%Y-%m-%d")
+
+                  # Filtrăm stories în fereastră
+                  w_stories = []
+                  for s in all_stories:
+                      pd_val = str(s.get("publish_date",""))[:10]
+                      if len(pd_val) == 10:
+                          try:
+                              pd_dt = datetime.datetime.strptime(pd_val, "%Y-%m-%d")
+                              if ws <= pd_dt < we:
+                                  w_stories.append(s)
+                          except:
+                              pass
+
+                  texts = [s.get("title","") + " " + s.get("description","") for s in w_stories]
+                  texts = [t.strip() for t in texts if len(t.strip()) > 15]
+
+                  print("  Window " + w_start + " -> " + w_end + ": " + str(len(w_stories)) + " stories, " + str(len(texts)) + " texts")
+
+                  if len(texts) < 5:
+                      windows_data.append({
+                          "window_start": w_start,
+                          "window_end":   w_end,
+                          "n_articles":   len(w_stories),
+                          "PE": None, "ICI": None, "D": None, "D_std": None,
+                          "V": None, "A": None, "N": None,
+                          "SRM": None,
+                          "insufficient_data": True
+                      })
+                      continue
+
+                  PE, ICI, D, D_std = compute_D(texts, bootstrap_n, alpha_d)
+                  V, A, N           = compute_VAN(w_stories, w_start, w_end)
+                  SRM               = V * A * math.exp(-lam * D) * N
+
+                  windows_data.append({
+                      "window_start": w_start,
+                      "window_end":   w_end,
+                      "n_articles":   len(w_stories),
+                      "PE":    round(PE, 4),
+                      "ICI":   round(ICI, 4),
+                      "D":     round(D, 4),
+                      "D_std": round(D_std, 4),
+                      "V":     round(V, 4),
+                      "A":     round(A, 4),
+                      "N":     round(N, 4),
+                      "SRM":   round(SRM, 8),
+                      "lambda": lam,
+                      "insufficient_data": False
+                  })
+
+                  print("    PE=" + str(round(PE,4)) + " ICI=" + str(round(ICI,4)) +
+                        " D=" + str(round(D,4)) + " V=" + str(round(V,4)) +
+                        " A=" + str(round(A,4)) + " N=" + str(round(N,4)) +
+                        " SRM=" + str(round(SRM,8)))
+
+              all_results[cand] = {
+                  "candidate": cand,
+                  "lambda": lam,
+                  "windows": windows_data
+              }
+
+          with open("symbovolt_windows.json", "w") as f:
+              json.dump(all_results, f, indent=2)
+          print("Saved symbovolt_windows.json")
+          PYEOF
+          python3 /tmp/compute_srm_windows.py
+
+      - name: Compute SYMBOVOLT — VES si probabilitati
+        env:
+          CANDIDATES: ${{ github.event.inputs.candidates }}
+        run: |
+          cat > /tmp/compute_ves.py << 'PYEOF'
+          import json, os, math, numpy as np
+
+          candidates = os.environ["CANDIDATES"].strip().split(",")
+          candidates = [c.strip() for c in candidates]
+
+          with open("symbovolt_windows.json") as f:
+              data = json.load(f)
+
+          # ── Extrage SRM valid per candidat per fereastra ──
+          def get_srm_series(cand_data):
+              series = []
+              for w in cand_data["windows"]:
+                  if not w["insufficient_data"] and w["SRM"] is not None:
+                      series.append({
+                          "window": w["window_start"] + " -> " + w["window_end"],
+                          "SRM": w["SRM"],
+                          "V": w["V"],
+                          "A": w["A"],
+                          "N": w["N"],
+                          "D": w["D"],
+                      })
+              return series
+
+          # ── Momentum: panta regresiei liniare pe SRM ──
+          def compute_momentum(srm_series):
+              if len(srm_series) < 2:
+                  return 0.0
+              y = [s["SRM"] for s in srm_series]
+              x = list(range(len(y)))
+              xm, ym = np.mean(x), np.mean(y)
+              num = sum((xi - xm)*(yi - ym) for xi, yi in zip(x, y))
+              den = sum((xi - xm)**2 for xi in x)
+              return float(num / den) if den > 0 else 0.0
+
+          # ── SRM trend: media ultimelor 2 ferestre vs primele 2 ──
+          def compute_trend(srm_series):
+              if len(srm_series) < 2:
+                  return srm_series[-1]["SRM"] if srm_series else 0.0
+              early = np.mean([s["SRM"] for s in srm_series[:max(1, len(srm_series)//2)]])
+              late  = np.mean([s["SRM"] for s in srm_series[len(srm_series)//2:]])
+              return float(late - early)
+
+          # ── Calcul VES per candidat ──
+          ves_scores = {}
+          details    = {}
+
+          for cand in candidates:
+              if cand not in data:
+                  print("WARNING: " + cand + " not in data")
+                  ves_scores[cand] = 0.0
+                  continue
+
+              series   = get_srm_series(data[cand])
+              srm_last = series[-1]["SRM"] if series else 0.0
+              srm_mean = float(np.mean([s["SRM"] for s in series])) if series else 0.0
+              momentum = compute_momentum(series)
+              trend    = compute_trend(series)
+
+              # Normalizare momentum: sigmoid
+              mom_norm = 1 / (1 + math.exp(-momentum * 1000))
+
+              # VES = SRM_recente x (1 + momentum_norm) x (1 + trend_bonus)
+              trend_bonus = max(0, trend) * 10
+              VES = srm_last * (1 + mom_norm) * (1 + trend_bonus)
+
+              ves_scores[cand] = VES
+              details[cand] = {
+                  "srm_series":  series,
+                  "srm_last":    round(srm_last, 8),
+                  "srm_mean":    round(srm_mean, 8),
+                  "momentum":    round(momentum, 8),
+                  "trend":       round(trend, 8),
+                  "mom_norm":    round(mom_norm, 4),
+                  "trend_bonus": round(trend_bonus, 6),
+                  "VES":         round(VES, 8),
+              }
+
+          # ── Softmax -> probabilitati ──
+          ves_vals = np.array([ves_scores[c] for c in candidates])
+
+          # Scaling per evitare overflow
+          ves_scaled = ves_vals * 1000
+          exp_vals   = np.exp(ves_scaled - np.max(ves_scaled))
+          probs      = exp_vals / exp_vals.sum()
+
+          # ── Output final ──
+          print("")
+          print("=" * 60)
+          print("SYMBOVOLT — Symbolic Voltage Electoral Forecast")
+          print("=" * 60)
+
+          results = {}
+          for i, cand in enumerate(candidates):
+              p = float(probs[i])
+              v = ves_scores[cand]
+              results[cand] = {
+                  "VES":         round(v, 8),
+                  "P_win":       round(p, 4),
+                  "P_win_pct":   round(p * 100, 2),
+                  "srm_last":    details.get(cand, {}).get("srm_last", 0),
+                  "srm_mean":    details.get(cand, {}).get("srm_mean", 0),
+                  "momentum":    details.get(cand, {}).get("momentum", 0),
+                  "trend":       details.get(cand, {}).get("trend", 0),
+                  "windows":     details.get(cand, {}).get("srm_series", []),
+              }
+              print(cand + ":")
+              print("  VES         = " + str(round(v, 8)))
+              print("  SRM_last    = " + str(results[cand]["srm_last"]))
+              print("  SRM_mean    = " + str(results[cand]["srm_mean"]))
+              print("  Momentum    = " + str(results[cand]["momentum"]))
+              print("  Trend       = " + str(results[cand]["trend"]))
+              print("  P_win       = " + str(round(p*100, 2)) + "%")
+              print("")
+
+          # Winner
+          winner = max(results, key=lambda c: results[c]["P_win"])
+          print("PREDICTED WINNER: " + winner + " (" + str(results[winner]["P_win_pct"]) + "%)")
+          print("=" * 60)
+
+          output = {
+              "model": "SYMBOVOLT v1.0",
+              "framework": "Politomorphism Engine",
+              "candidates": results,
+              "predicted_winner": winner,
+              "predicted_winner_pwin": results[winner]["P_win_pct"],
+              "interpretation": {
+                  "VES": "Symbolic Voltage — SRM ponderat cu momentum si trend temporal",
+                  "P_win": "Probabilitate relativa de castig bazata pe rezonanta mediatică",
+                  "momentum": "Panta trendului SRM (pozitiv=in crestere, negativ=in declin)",
+                  "trend": "Diferenta SRM(recent) - SRM(devreme): cat de mult a crescut rezonanta",
+                  "WARNING": "SYMBOVOLT masoara rezonanta simbolica mediatică, nu intentie de vot directa"
+              }
+          }
+
+          with open("symbovolt_results.json", "w") as f:
+              json.dump(output, f, indent=2)
+          print("Saved symbovolt_results.json")
+          PYEOF
+          python3 /tmp/compute_ves.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SYMBOVOLT-${{ github.run_number }}
+          retention-days: 90
+          path: |
+            symbovolt_results.json
+            symbovolt_windows.json
+            Magyar-DATA.csv
+            Orban-DATA.csv
+
+      - name: Commit results to repo
+        env:
+          CANDIDATES: ${{ github.event.inputs.candidates }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config pull.rebase false
+          git stash --include-untracked || true
+          git pull origin main || true
+          git stash pop || true
+          git add symbovolt_results.json symbovolt_windows.json || true
+          git diff --cached --quiet && echo "Nothing to commit" && exit 0
+          git commit -m "SYMBOVOLT results [Run #${{ github.run_number }}]"
+          git push origin main
