@@ -1,4 +1,4 @@
-name: SYMBOVOLT — Electoral Forecast
+name: SYMBOVOLT v2.0 — Multi-Source Electoral Forecast
 
 on:
   workflow_dispatch:
@@ -7,10 +7,30 @@ on:
         description: 'Candidați separați prin virgulă (fără spații)'
         required: true
         default: 'Magyar,Orban'
-      queries:
-        description: 'Query-uri Media Cloud separate prin | (câte unul per candidat)'
+      queries_mediacloud:
+        description: 'Query-uri Media Cloud separate prin |'
         required: true
-        default: 'Peter Magyar OR Tisza Hungary|Viktor Orban OR Fidesz Hungary'
+        default: 'Peter Magyar OR Tisza Hungary|Orban Hungary OR Fidesz'
+      wiki_pages:
+        description: 'Pagini Wikipedia separate prin | (exact title)'
+        required: true
+        default: 'Péter_Magyar|Viktor_Orbán'
+      trends_keywords:
+        description: 'Cuvinte cheie Google Trends separate prin | (max 5 total)'
+        required: true
+        default: 'Peter Magyar|Viktor Orban'
+      reddit_queries:
+        description: 'Query-uri Reddit separate prin |'
+        required: true
+        default: 'Magyar Hungary|Orban Hungary'
+      eurostat_country:
+        description: 'Cod tara Eurostat (HU, RO, PL etc)'
+        required: true
+        default: 'HU'
+      rss_feeds:
+        description: 'RSS feeds separate prin | (URL-uri complete)'
+        required: true
+        default: 'https://telex.hu/rss|https://444.hu/feed'
       start_date:
         description: 'Start date YYYY-MM-DD'
         required: true
@@ -24,11 +44,11 @@ on:
         required: true
         default: '3.85,2.10'
       window_months:
-        description: 'Luni per fereastra temporala (trend)'
+        description: 'Luni per fereastra temporala'
         required: true
         default: '3'
       max_articles:
-        description: 'Max articles per candidat'
+        description: 'Max articles per candidat (Media Cloud)'
         required: true
         default: '2000'
       bootstrap_n:
@@ -37,7 +57,7 @@ on:
         default: '100'
 
 jobs:
-  symbovolt:
+  symbovolt-v2:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     permissions:
@@ -61,20 +81,26 @@ jobs:
             sentence-transformers==2.7.0 \
             numpy==1.26.4 \
             scipy==1.13.0 \
-            requests==2.31.0
+            pytrends==4.9.2 \
+            requests==2.31.0 \
+            feedparser==6.0.11 \
+            python-dateutil==2.9.0
 
-      - name: Fetch articles — toate candidatele
+      # ══════════════════════════════════════════
+      # SURSA 1: Media Cloud
+      # ══════════════════════════════════════════
+      - name: "Sursa 1 — Media Cloud articles"
         env:
-          MC_API_KEY:   ${{ secrets.MEDIACLOUD_API_KEY }}
-          CANDIDATES:   ${{ github.event.inputs.candidates }}
-          QUERIES:      ${{ github.event.inputs.queries }}
-          START_DATE:   ${{ github.event.inputs.start_date }}
-          END_DATE:     ${{ github.event.inputs.end_date }}
-          MAX_ART:      ${{ github.event.inputs.max_articles }}
+          MC_API_KEY:  ${{ secrets.MEDIACLOUD_API_KEY }}
+          CANDIDATES:  ${{ github.event.inputs.candidates }}
+          QUERIES:     ${{ github.event.inputs.queries_mediacloud }}
+          START_DATE:  ${{ github.event.inputs.start_date }}
+          END_DATE:    ${{ github.event.inputs.end_date }}
+          MAX_ART:     ${{ github.event.inputs.max_articles }}
         run: |
-          cat > /tmp/fetch_all.py << 'PYEOF'
+          cat > /tmp/fetch_mediacloud.py << 'PYEOF'
           import mediacloud.api as mc
-          import json, os, datetime, csv
+          import json, os, datetime, csv, time
 
           candidates = os.environ["CANDIDATES"].strip().split(",")
           queries    = os.environ["QUERIES"].strip().split("|")
@@ -101,29 +127,39 @@ jobs:
           for cand, query in zip(candidates, queries):
               cand  = cand.strip()
               query = query.strip()
-              print("Fetching: " + cand + " | query: " + query)
+              print("MediaCloud fetching: " + cand)
 
               stories = []
               page    = None
+              retries = 3
+
               while len(stories) < max_art:
-                  result, page = search.story_list(
-                      query,
-                      start_date=start_dt,
-                      end_date=end_dt,
-                      pagination_token=page,
-                      collection_ids=[34412234],
-                  )
+                  for attempt in range(retries):
+                      try:
+                          result, page = search.story_list(
+                              query,
+                              start_date=start_dt,
+                              end_date=end_dt,
+                              pagination_token=page,
+                              collection_ids=[34412234],
+                          )
+                          break
+                      except Exception as e:
+                          print("  Attempt " + str(attempt+1) + " failed: " + str(e))
+                          time.sleep(5)
+                          result, page = [], None
+
                   if not result:
                       break
                   stories.extend(result)
-                  print("  " + cand + ": " + str(len(stories)) + " articles")
+                  print("  " + cand + ": " + str(len(stories)))
                   if page is None:
                       break
 
               stories = make_serializable(stories[:max_art])
-              print(cand + " total: " + str(len(stories)))
+              print(cand + " MediaCloud total: " + str(len(stories)))
 
-              with open("data/" + cand + "-DATA.json", "w") as f:
+              with open("data/" + cand + "-MC.json", "w") as f:
                   json.dump(stories, f)
 
               with open(cand + "-DATA.csv", "w", newline="", encoding="utf-8") as f:
@@ -132,11 +168,426 @@ jobs:
                   for s in stories:
                       w.writerow([s.get("title",""), s.get("publish_date",""), s.get("url","")])
 
-              print("Saved data/" + cand + "-DATA.json")
-          PYEOF
-          python3 /tmp/fetch_all.py
+              time.sleep(2)
 
-      - name: Compute SRM per candidat per fereastra temporala
+          print("MediaCloud done.")
+          PYEOF
+          python3 /tmp/fetch_mediacloud.py
+
+      # ══════════════════════════════════════════
+      # SURSA 2: Wikipedia Pageviews
+      # ══════════════════════════════════════════
+      - name: "Sursa 2 — Wikipedia Pageviews"
+        env:
+          CANDIDATES:  ${{ github.event.inputs.candidates }}
+          WIKI_PAGES:  ${{ github.event.inputs.wiki_pages }}
+          START_DATE:  ${{ github.event.inputs.start_date }}
+          END_DATE:    ${{ github.event.inputs.end_date }}
+        run: |
+          cat > /tmp/fetch_wiki.py << 'PYEOF'
+          import requests, json, os, datetime, time
+
+          candidates = os.environ["CANDIDATES"].strip().split(",")
+          wiki_pages = os.environ["WIKI_PAGES"].strip().split("|")
+          start      = os.environ["START_DATE"].strip()
+          end        = os.environ["END_DATE"].strip()
+
+          start_dt = datetime.datetime.strptime(start, "%Y-%m-%d")
+          end_dt   = datetime.datetime.strptime(end,   "%Y-%m-%d")
+          start_str = start_dt.strftime("%Y%m%d")
+          end_str   = end_dt.strftime("%Y%m%d")
+
+          os.makedirs("data", exist_ok=True)
+
+          BASE = "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article"
+          HEADERS = {"User-Agent": "SYMBOVOLT/2.0 (research; politomorphism)"}
+
+          for cand, page in zip(candidates, wiki_pages):
+              cand = cand.strip()
+              page = page.strip().replace(" ", "_")
+              print("Wikipedia fetching: " + cand + " | page: " + page)
+
+              url = BASE + "/en.wikipedia/all-access/all-agents/" + page + "/daily/" + start_str + "/" + end_str
+
+              for attempt in range(3):
+                  try:
+                      r = requests.get(url, headers=HEADERS, timeout=30)
+                      if r.status_code == 200:
+                          data = r.json()
+                          items = data.get("items", [])
+                          print("  " + cand + " wiki views: " + str(len(items)) + " days")
+                          with open("data/" + cand + "-WIKI.json", "w") as f:
+                              json.dump(items, f)
+                          break
+                      else:
+                          print("  HTTP " + str(r.status_code) + " for " + page)
+                          with open("data/" + cand + "-WIKI.json", "w") as f:
+                              json.dump([], f)
+                          break
+                  except Exception as e:
+                      print("  Attempt " + str(attempt+1) + " failed: " + str(e))
+                      time.sleep(5)
+              else:
+                  with open("data/" + cand + "-WIKI.json", "w") as f:
+                      json.dump([], f)
+
+              time.sleep(1)
+
+          print("Wikipedia done.")
+          PYEOF
+          python3 /tmp/fetch_wiki.py
+
+      # ══════════════════════════════════════════
+      # SURSA 3: Google Trends (pytrends)
+      # ══════════════════════════════════════════
+      - name: "Sursa 3 — Google Trends"
+        env:
+          CANDIDATES:       ${{ github.event.inputs.candidates }}
+          TRENDS_KEYWORDS:  ${{ github.event.inputs.trends_keywords }}
+          START_DATE:       ${{ github.event.inputs.start_date }}
+          END_DATE:         ${{ github.event.inputs.end_date }}
+          EUROSTAT_COUNTRY: ${{ github.event.inputs.eurostat_country }}
+        run: |
+          cat > /tmp/fetch_trends.py << 'PYEOF'
+          import json, os, time, datetime
+          import numpy as np
+
+          candidates = os.environ["CANDIDATES"].strip().split(",")
+          keywords   = os.environ["TRENDS_KEYWORDS"].strip().split("|")
+          start      = os.environ["START_DATE"].strip()
+          end        = os.environ["END_DATE"].strip()
+          geo        = os.environ["EUROSTAT_COUNTRY"].strip()
+
+          os.makedirs("data", exist_ok=True)
+
+          timeframe = start + " " + end
+
+          try:
+              from pytrends.request import TrendReq
+              pytrends = TrendReq(hl="en-US", tz=60, timeout=(15, 30), retries=3, backoff_factor=2)
+
+              # Max 5 keywords per request — luam primele 5
+              kw_list = [k.strip() for k in keywords[:5]]
+              print("Google Trends keywords: " + str(kw_list))
+              print("Geo: " + geo + " | Timeframe: " + timeframe)
+
+              time.sleep(5)
+              pytrends.build_payload(kw_list, cat=0, timeframe=timeframe, geo=geo)
+              time.sleep(5)
+
+              df = pytrends.interest_over_time()
+
+              if df is not None and not df.empty:
+                  print("Google Trends rows: " + str(len(df)))
+                  trends_data = {}
+                  for kw in kw_list:
+                      if kw in df.columns:
+                          series = []
+                          for idx, row in df.iterrows():
+                              series.append({
+                                  "date": str(idx.date()),
+                                  "value": int(row[kw])
+                              })
+                          trends_data[kw] = series
+                          print("  " + kw + ": " + str(len(series)) + " datapoints")
+
+                  # Mapeaza keywords la candidati
+                  for i, cand in enumerate(candidates):
+                      cand = cand.strip()
+                      kw   = keywords[i].strip() if i < len(keywords) else kw_list[0]
+                      data = trends_data.get(kw, [])
+                      with open("data/" + cand + "-TRENDS.json", "w") as f:
+                          json.dump({"keyword": kw, "geo": geo, "data": data}, f)
+                      print("Saved " + cand + "-TRENDS.json (" + str(len(data)) + " pts)")
+              else:
+                  print("Google Trends returned empty — saving fallback")
+                  for cand in candidates:
+                      with open("data/" + cand.strip() + "-TRENDS.json", "w") as f:
+                          json.dump({"keyword": "", "geo": geo, "data": []}, f)
+
+          except Exception as e:
+              print("Google Trends error: " + str(e))
+              for cand in candidates:
+                  with open("data/" + cand.strip() + "-TRENDS.json", "w") as f:
+                      json.dump({"keyword": "", "geo": geo, "data": []}, f)
+
+          print("Google Trends done.")
+          PYEOF
+          python3 /tmp/fetch_trends.py
+
+      # ══════════════════════════════════════════
+      # SURSA 4: Reddit sentiment
+      # ══════════════════════════════════════════
+      - name: "Sursa 4 — Reddit sentiment"
+        env:
+          CANDIDATES:    ${{ github.event.inputs.candidates }}
+          REDDIT_QUERIES: ${{ github.event.inputs.reddit_queries }}
+        run: |
+          cat > /tmp/fetch_reddit.py << 'PYEOF'
+          import requests, json, os, time
+          from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+          candidates     = os.environ["CANDIDATES"].strip().split(",")
+          reddit_queries = os.environ["REDDIT_QUERIES"].strip().split("|")
+
+          os.makedirs("data", exist_ok=True)
+          analyzer = SentimentIntensityAnalyzer()
+
+          HEADERS = {"User-Agent": "SYMBOVOLT/2.0 Research Bot"}
+          SUBREDDITS = ["hungary", "europe", "worldnews", "politics"]
+
+          for cand, query in zip(candidates, reddit_queries):
+              cand  = cand.strip()
+              query = query.strip()
+              print("Reddit fetching: " + cand + " | query: " + query)
+
+              all_posts = []
+              for sub in SUBREDDITS:
+                  url = "https://www.reddit.com/r/" + sub + "/search.json"
+                  params = {"q": query, "sort": "new", "limit": 100, "t": "all"}
+                  try:
+                      r = requests.get(url, headers=HEADERS, params=params, timeout=20)
+                      if r.status_code == 200:
+                          data = r.json()
+                          posts = data.get("data", {}).get("children", [])
+                          for p in posts:
+                              pd = p.get("data", {})
+                              title = pd.get("title", "")
+                              score = analyzer.polarity_scores(title)
+                              all_posts.append({
+                                  "title":     title,
+                                  "subreddit": sub,
+                                  "score":     pd.get("score", 0),
+                                  "created":   pd.get("created_utc", 0),
+                                  "compound":  score["compound"],
+                                  "pos":       score["pos"],
+                                  "neg":       score["neg"],
+                              })
+                          print("  r/" + sub + ": " + str(len(posts)) + " posts")
+                      else:
+                          print("  r/" + sub + " HTTP " + str(r.status_code))
+                  except Exception as e:
+                      print("  r/" + sub + " error: " + str(e))
+                  time.sleep(2)
+
+              print(cand + " Reddit total: " + str(len(all_posts)) + " posts")
+
+              # Agregare sentiment
+              if all_posts:
+                  compounds = [p["compound"] for p in all_posts]
+                  sentiment_summary = {
+                      "n_posts":       len(all_posts),
+                      "mean_compound": round(sum(compounds)/len(compounds), 4),
+                      "pos_ratio":     round(sum(1 for c in compounds if c > 0.05)/len(compounds), 4),
+                      "neg_ratio":     round(sum(1 for c in compounds if c < -0.05)/len(compounds), 4),
+                      "posts":         all_posts
+                  }
+              else:
+                  sentiment_summary = {
+                      "n_posts": 0, "mean_compound": 0.0,
+                      "pos_ratio": 0.0, "neg_ratio": 0.0, "posts": []
+                  }
+
+              with open("data/" + cand + "-REDDIT.json", "w") as f:
+                  json.dump(sentiment_summary, f)
+              print("Saved " + cand + "-REDDIT.json")
+
+          print("Reddit done.")
+          PYEOF
+          python3 /tmp/fetch_reddit.py
+
+      # ══════════════════════════════════════════
+      # SURSA 5: RSS ziare locale
+      # ══════════════════════════════════════════
+      - name: "Sursa 5 — RSS ziare locale"
+        env:
+          CANDIDATES:  ${{ github.event.inputs.candidates }}
+          RSS_FEEDS:   ${{ github.event.inputs.rss_feeds }}
+          START_DATE:  ${{ github.event.inputs.start_date }}
+          END_DATE:    ${{ github.event.inputs.end_date }}
+        run: |
+          cat > /tmp/fetch_rss.py << 'PYEOF'
+          import feedparser, json, os, datetime, time
+          from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+          candidates = os.environ["CANDIDATES"].strip().split(",")
+          rss_feeds  = os.environ["RSS_FEEDS"].strip().split("|")
+          start      = os.environ["START_DATE"].strip()
+          end        = os.environ["END_DATE"].strip()
+
+          start_dt = datetime.datetime.strptime(start, "%Y-%m-%d")
+          end_dt   = datetime.datetime.strptime(end,   "%Y-%m-%d")
+
+          os.makedirs("data", exist_ok=True)
+          analyzer = SentimentIntensityAnalyzer()
+
+          # Fetch toate RSS-urile
+          all_articles = []
+          for feed_url in rss_feeds:
+              feed_url = feed_url.strip()
+              print("RSS fetching: " + feed_url)
+              try:
+                  feed = feedparser.parse(feed_url)
+                  for entry in feed.entries:
+                      title   = entry.get("title", "")
+                      summary = entry.get("summary", "")
+                      link    = entry.get("link", "")
+                      pub     = entry.get("published", "")
+                      all_articles.append({
+                          "title":   title,
+                          "summary": summary,
+                          "url":     link,
+                          "pub":     pub,
+                          "source":  feed_url
+                      })
+                  print("  " + feed_url + ": " + str(len(feed.entries)) + " articles")
+              except Exception as e:
+                  print("  RSS error: " + str(e))
+              time.sleep(1)
+
+          print("RSS total articles: " + str(len(all_articles)))
+
+          # Per candidat: filtram articolele care mentioneaza candidatul
+          cand_keywords = {
+              "Magyar":  ["Magyar", "Tisza", "Péter"],
+              "Orban":   ["Orbán", "Orban", "Fidesz", "Viktor"],
+          }
+
+          for cand in candidates:
+              cand = cand.strip()
+              keywords = cand_keywords.get(cand, [cand])
+
+              filtered = []
+              for art in all_articles:
+                  text = art["title"] + " " + art["summary"]
+                  if any(kw.lower() in text.lower() for kw in keywords):
+                      sc = analyzer.polarity_scores(art["title"])
+                      art["compound"] = sc["compound"]
+                      filtered.append(art)
+
+              print(cand + " RSS filtered: " + str(len(filtered)) + " articles")
+
+              compounds = [a["compound"] for a in filtered if "compound" in a]
+              summary = {
+                  "n_articles":    len(filtered),
+                  "mean_sentiment": round(sum(compounds)/len(compounds), 4) if compounds else 0.0,
+                  "articles":      filtered
+              }
+
+              with open("data/" + cand + "-RSS.json", "w") as f:
+                  json.dump(summary, f)
+              print("Saved " + cand + "-RSS.json")
+
+          print("RSS done.")
+          PYEOF
+          python3 /tmp/fetch_rss.py
+
+      # ══════════════════════════════════════════
+      # SURSA 6: Eurostat — indicatori economici
+      # ══════════════════════════════════════════
+      - name: "Sursa 6 — Eurostat economic indicators"
+        env:
+          EUROSTAT_COUNTRY: ${{ github.event.inputs.eurostat_country }}
+          START_DATE:       ${{ github.event.inputs.start_date }}
+          END_DATE:         ${{ github.event.inputs.end_date }}
+        run: |
+          cat > /tmp/fetch_eurostat.py << 'PYEOF'
+          import requests, json, os
+
+          country    = os.environ["EUROSTAT_COUNTRY"].strip()
+          start      = os.environ["START_DATE"].strip()
+          end        = os.environ["END_DATE"].strip()
+
+          start_year = start[:4]
+          end_year   = end[:4]
+
+          os.makedirs("data", exist_ok=True)
+
+          BASE = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/"
+          HEADERS = {"Accept": "application/json"}
+
+          indicators = {
+              "inflation": "prc_hicp_manr",
+              "unemployment": "une_rt_m",
+          }
+
+          eurostat_result = {}
+
+          for name, dataset in indicators.items():
+              print("Eurostat fetching: " + name + " (" + dataset + ")")
+              try:
+                  if name == "inflation":
+                      params = {
+                          "geo": country,
+                          "unit": "RCH_A",
+                          "coicop": "CP00",
+                          "sinceTimePeriod": start_year + "-01",
+                          "untilTimePeriod": end_year + "-12",
+                          "format": "JSON"
+                      }
+                  else:
+                      params = {
+                          "geo": country,
+                          "unit": "PC_ACT",
+                          "age": "TOTAL",
+                          "sex": "T",
+                          "s_adj": "SA",
+                          "sinceTimePeriod": start_year + "-01",
+                          "untilTimePeriod": end_year + "-12",
+                          "format": "JSON"
+                      }
+
+                  r = requests.get(BASE + dataset, headers=HEADERS, params=params, timeout=30)
+
+                  if r.status_code == 200:
+                      data = r.json()
+                      values = data.get("value", {})
+                      time_labels = data.get("dimension", {}).get("time", {}).get("category", {}).get("label", {})
+
+                      series = []
+                      for idx_str, val in values.items():
+                          idx = int(idx_str)
+                          time_keys = list(time_labels.keys())
+                          if idx < len(time_keys):
+                              series.append({
+                                  "period": time_keys[idx],
+                                  "value":  round(val, 2) if val is not None else None
+                              })
+
+                      series.sort(key=lambda x: x["period"])
+                      eurostat_result[name] = series
+                      print("  " + name + ": " + str(len(series)) + " datapoints")
+                  else:
+                      print("  HTTP " + str(r.status_code) + " for " + name)
+                      eurostat_result[name] = []
+
+              except Exception as e:
+                  print("  Eurostat error for " + name + ": " + str(e))
+                  eurostat_result[name] = []
+
+          # Crisis index: media inflatie ultimele 12 luni
+          inflation_vals = [x["value"] for x in eurostat_result.get("inflation", [])
+                           if x["value"] is not None]
+          if inflation_vals:
+              recent = inflation_vals[-12:]
+              crisis_index = round(sum(recent)/len(recent), 2)
+          else:
+              crisis_index = 0.0
+
+          eurostat_result["crisis_index"] = crisis_index
+          eurostat_result["country"] = country
+          print("Crisis index: " + str(crisis_index))
+
+          with open("data/EUROSTAT.json", "w") as f:
+              json.dump(eurostat_result, f, indent=2)
+          print("Saved EUROSTAT.json")
+          PYEOF
+          python3 /tmp/fetch_eurostat.py
+
+      # ══════════════════════════════════════════
+      # COMPUTE: SRM per fereastra (Media Cloud)
+      # ══════════════════════════════════════════
+      - name: "Compute SRM per fereastra temporala"
         env:
           CANDIDATES:    ${{ github.event.inputs.candidates }}
           LAMBDA_VALUES: ${{ github.event.inputs.lambda_values }}
@@ -145,8 +596,8 @@ jobs:
           WINDOW_MONTHS: ${{ github.event.inputs.window_months }}
           BOOTSTRAP_N:   ${{ github.event.inputs.bootstrap_n }}
         run: |
-          cat > /tmp/compute_srm_windows.py << 'PYEOF'
-          import json, os, math, random, datetime
+          cat > /tmp/compute_srm.py << 'PYEOF'
+          import json, os, math, random, datetime, subprocess
           import numpy as np
           from sklearn.decomposition import LatentDirichletAllocation
           from sklearn.feature_extraction.text import CountVectorizer
@@ -155,10 +606,7 @@ jobs:
           from scipy.spatial.distance import jensenshannon
           from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
           from collections import defaultdict
-          from dateutil.relativedelta import relativedelta
 
-          # pip install python-dateutil
-          import subprocess
           subprocess.run(["pip", "install", "python-dateutil", "-q"])
           from dateutil.relativedelta import relativedelta
 
@@ -174,122 +622,99 @@ jobs:
           vader     = SentimentIntensityAnalyzer()
 
           def compute_D(texts, bootstrap_n, alpha):
-              if len(texts) < 10:
+              if len(texts) < 5:
                   return 0.5, 0.5, 0.5, 0.0
-
-              vectorizer = CountVectorizer(max_df=0.95, min_df=1, max_features=3000, stop_words="english")
+              vectorizer = CountVectorizer(max_df=0.95, min_df=1, max_features=2000, stop_words="english")
               try:
                   X = vectorizer.fit_transform(texts)
               except Exception:
                   return 0.5, 0.5, 0.5, 0.0
-
-              K = min(5, len(texts) // 5)
+              K = min(5, len(texts)//5)
               if K < 2:
                   return 0.5, 0.5, 0.5, 0.0
-
               lda = LatentDirichletAllocation(n_components=K, random_state=42, max_iter=10)
               doc_topics = lda.fit_transform(X)
-
-              pairs = [(i,j) for i in range(len(doc_topics)) for j in range(i+1, len(doc_topics))]
-              sample_pairs = random.sample(pairs, min(1000, len(pairs)))
+              pairs = [(i,j) for i in range(len(doc_topics)) for j in range(i+1,len(doc_topics))]
+              sample_pairs = random.sample(pairs, min(500, len(pairs)))
               jsd_vals = []
               for i,j in sample_pairs:
                   v = jensenshannon(doc_topics[i], doc_topics[j])**2
                   if not (v != v):
                       jsd_vals.append(v)
               PE = float(np.mean(jsd_vals)) if jsd_vals else 0.5
-
-              samp = random.sample(texts, min(100, len(texts)))
+              samp = random.sample(texts, min(80, len(texts)))
               emb  = model_emb.encode(samp, show_progress_bar=False)
               sim  = cosine_similarity(emb)
               up   = sim[np.triu_indices(len(samp), k=1)]
               up   = up[~np.isnan(up)]
               ICI  = float(1 - np.mean(up)) if len(up) > 0 else 0.5
-
               D_boots = []
               for _ in range(bootstrap_n):
                   si  = random.choices(list(range(len(texts))), k=len(texts))
                   st  = [texts[i] for i in si]
                   Xb  = vectorizer.transform(st)
                   dt  = lda.transform(Xb)
-                  sp  = random.sample(list(range(len(dt))), min(50, len(dt)))
+                  sp  = random.sample(list(range(len(dt))), min(30, len(dt)))
                   jb  = []
                   for ii in range(len(sp)):
                       for jj in range(ii+1, len(sp)):
                           v = jensenshannon(dt[sp[ii]], dt[sp[jj]])**2
                           if not (v != v):
                               jb.append(v)
-                          if len(jb) >= 200:
+                          if len(jb) >= 100:
                               break
-                      if len(jb) >= 200:
+                      if len(jb) >= 100:
                           break
                   PE_b = float(np.mean(jb)) if jb else PE
-
-                  stb  = random.sample(st, min(50, len(st)))
+                  stb  = random.sample(st, min(40, len(st)))
                   eb   = model_emb.encode(stb, show_progress_bar=False)
                   sb   = cosine_similarity(eb)
                   ub   = sb[np.triu_indices(len(stb), k=1)]
                   ub   = ub[~np.isnan(ub)]
                   ICI_b = float(1 - np.mean(ub)) if len(ub) > 0 else ICI
-
                   Db = alpha * PE_b + (1 - alpha) * ICI_b
                   if not (Db != Db):
                       D_boots.append(Db)
-
               if not D_boots:
                   D_boots = [alpha * PE + (1 - alpha) * ICI]
-
               return PE, ICI, float(np.mean(D_boots)), float(np.std(D_boots))
 
           def compute_VAN(stories, start_str, end_str):
               start_dt   = datetime.datetime.strptime(start_str, "%Y-%m-%d")
               end_dt     = datetime.datetime.strptime(end_str,   "%Y-%m-%d")
               total_days = max((end_dt - start_dt).days + 1, 1)
-
-              dates_set = set()
-              daily     = defaultdict(int)
+              dates_set  = set()
+              daily      = defaultdict(int)
               for s in stories:
                   pd_val = str(s.get("publish_date",""))[:10]
                   if pd_val and len(pd_val) == 10:
                       dates_set.add(pd_val)
                       daily[pd_val] += 1
-
-              N = round(len(dates_set) / total_days, 4)
-
+              N      = round(len(dates_set) / total_days, 4)
               counts = [daily[d] for d in sorted(daily.keys())]
               if len(counts) >= 10:
                   baseline = float(np.mean(counts[:max(1, len(counts)//3)]))
                   peak     = float(np.max(counts))
-                  if baseline > 0 and peak > 0:
-                      V = min(round(math.log((peak/baseline)+1) / math.log(51), 4), 1.0)
-                  else:
-                      V = 0.3
+                  V = min(round(math.log((peak/baseline)+1)/math.log(51), 4), 1.0) if baseline > 0 and peak > 0 else 0.3
               else:
                   V = 0.3
-
               scores = []
               for s in stories:
                   t = s.get("title","")
                   if t and len(t) > 5:
                       scores.append(abs(vader.polarity_scores(t)["compound"]))
               A = round(float(np.mean(scores)), 4) if scores else 0.15
-
               return V, A, N
 
-          # Generăm ferestrele temporale
-          start_dt_global = datetime.datetime.strptime(start_date, "%Y-%m-%d")
-          end_dt_global   = datetime.datetime.strptime(end_date,   "%Y-%m-%d")
-
+          # Ferestre temporale
+          start_dt_g = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+          end_dt_g   = datetime.datetime.strptime(end_date,   "%Y-%m-%d")
           windows = []
-          cur = start_dt_global
-          while cur < end_dt_global:
-              w_end = min(cur + relativedelta(months=window_months), end_dt_global)
+          cur = start_dt_g
+          while cur < end_dt_g:
+              w_end = min(cur + relativedelta(months=window_months), end_dt_g)
               windows.append((cur.strftime("%Y-%m-%d"), w_end.strftime("%Y-%m-%d")))
               cur = w_end
-
-          print("Windows: " + str(len(windows)))
-          for w in windows:
-              print("  " + w[0] + " -> " + w[1])
 
           all_results = {}
 
@@ -297,18 +722,16 @@ jobs:
               cand = cand.strip()
               lam  = lambda_values[cand_idx] if cand_idx < len(lambda_values) else 2.0
 
-              with open("data/" + cand + "-DATA.json") as f:
-                  all_stories = json.load(f)
-
-              print("Candidate: " + cand + " | total stories: " + str(len(all_stories)))
+              try:
+                  with open("data/" + cand + "-MC.json") as f:
+                      all_stories = json.load(f)
+              except Exception:
+                  all_stories = []
 
               windows_data = []
-
               for w_start, w_end in windows:
                   ws = datetime.datetime.strptime(w_start, "%Y-%m-%d")
                   we = datetime.datetime.strptime(w_end,   "%Y-%m-%d")
-
-                  # Filtrăm stories în fereastră
                   w_stories = []
                   for s in all_stories:
                       pd_val = str(s.get("publish_date",""))[:10]
@@ -319,20 +742,15 @@ jobs:
                                   w_stories.append(s)
                           except:
                               pass
-
-                  texts = [s.get("title","") + " " + s.get("description","") for s in w_stories]
+                  texts = [s.get("title","")+" "+s.get("description","") for s in w_stories]
                   texts = [t.strip() for t in texts if len(t.strip()) > 15]
-
-                  print("  Window " + w_start + " -> " + w_end + ": " + str(len(w_stories)) + " stories, " + str(len(texts)) + " texts")
 
                   if len(texts) < 5:
                       windows_data.append({
-                          "window_start": w_start,
-                          "window_end":   w_end,
-                          "n_articles":   len(w_stories),
-                          "PE": None, "ICI": None, "D": None, "D_std": None,
-                          "V": None, "A": None, "N": None,
-                          "SRM": None,
+                          "window_start": w_start, "window_end": w_end,
+                          "n_articles": len(w_stories),
+                          "PE": None, "ICI": None, "D": None,
+                          "V": None, "A": None, "N": None, "SRM": None,
                           "insufficient_data": True
                       })
                       continue
@@ -342,197 +760,269 @@ jobs:
                   SRM               = V * A * math.exp(-lam * D) * N
 
                   windows_data.append({
-                      "window_start": w_start,
-                      "window_end":   w_end,
-                      "n_articles":   len(w_stories),
-                      "PE":    round(PE, 4),
-                      "ICI":   round(ICI, 4),
-                      "D":     round(D, 4),
-                      "D_std": round(D_std, 4),
-                      "V":     round(V, 4),
-                      "A":     round(A, 4),
-                      "N":     round(N, 4),
-                      "SRM":   round(SRM, 8),
-                      "lambda": lam,
+                      "window_start": w_start, "window_end": w_end,
+                      "n_articles": len(w_stories),
+                      "PE": round(PE,4), "ICI": round(ICI,4),
+                      "D": round(D,4), "D_std": round(D_std,4),
+                      "V": round(V,4), "A": round(A,4), "N": round(N,4),
+                      "SRM": round(SRM,8), "lambda": lam,
                       "insufficient_data": False
                   })
+                  print(cand + " " + w_start + ": SRM=" + str(round(SRM,8)))
 
-                  print("    PE=" + str(round(PE,4)) + " ICI=" + str(round(ICI,4)) +
-                        " D=" + str(round(D,4)) + " V=" + str(round(V,4)) +
-                        " A=" + str(round(A,4)) + " N=" + str(round(N,4)) +
-                        " SRM=" + str(round(SRM,8)))
+              all_results[cand] = {"candidate": cand, "lambda": lam, "windows": windows_data}
 
-              all_results[cand] = {
-                  "candidate": cand,
-                  "lambda": lam,
-                  "windows": windows_data
-              }
-
-          with open("symbovolt_windows.json", "w") as f:
+          with open("srm_windows.json", "w") as f:
               json.dump(all_results, f, indent=2)
-          print("Saved symbovolt_windows.json")
+          print("Saved srm_windows.json")
           PYEOF
-          python3 /tmp/compute_srm_windows.py
+          python3 /tmp/compute_srm.py
 
-      - name: Compute SYMBOVOLT — VES si probabilitati
+      # ══════════════════════════════════════════
+      # COMPUTE: SYMBOVOLT VES final
+      # ══════════════════════════════════════════
+      - name: "Compute SYMBOVOLT v2.0 — VES multi-source"
         env:
           CANDIDATES: ${{ github.event.inputs.candidates }}
         run: |
-          cat > /tmp/compute_ves.py << 'PYEOF'
-          import json, os, math, numpy as np
+          cat > /tmp/compute_ves_v2.py << 'PYEOF'
+          import json, os, math
+          import numpy as np
 
           candidates = os.environ["CANDIDATES"].strip().split(",")
           candidates = [c.strip() for c in candidates]
 
-          with open("symbovolt_windows.json") as f:
-              data = json.load(f)
+          # Load SRM windows
+          with open("srm_windows.json") as f:
+              srm_data = json.load(f)
 
-          # ── Extrage SRM valid per candidat per fereastra ──
+          # Load Eurostat
+          try:
+              with open("data/EUROSTAT.json") as f:
+                  eurostat = json.load(f)
+              crisis_index = eurostat.get("crisis_index", 0.0)
+          except Exception:
+              crisis_index = 0.0
+
+          print("Crisis index (inflation avg): " + str(crisis_index))
+
           def get_srm_series(cand_data):
               series = []
-              for w in cand_data["windows"]:
-                  if not w["insufficient_data"] and w["SRM"] is not None:
-                      series.append({
-                          "window": w["window_start"] + " -> " + w["window_end"],
-                          "SRM": w["SRM"],
-                          "V": w["V"],
-                          "A": w["A"],
-                          "N": w["N"],
-                          "D": w["D"],
-                      })
+              for w in cand_data.get("windows", []):
+                  if not w.get("insufficient_data") and w.get("SRM") is not None:
+                      series.append({"window": w["window_start"], "SRM": w["SRM"]})
               return series
 
-          # ── Momentum: panta regresiei liniare pe SRM ──
-          def compute_momentum(srm_series):
-              if len(srm_series) < 2:
+          def compute_momentum(series):
+              if len(series) < 2:
                   return 0.0
-              y = [s["SRM"] for s in srm_series]
+              y = [s["SRM"] for s in series]
               x = list(range(len(y)))
               xm, ym = np.mean(x), np.mean(y)
-              num = sum((xi - xm)*(yi - ym) for xi, yi in zip(x, y))
-              den = sum((xi - xm)**2 for xi in x)
-              return float(num / den) if den > 0 else 0.0
+              num = sum((xi-xm)*(yi-ym) for xi,yi in zip(x,y))
+              den = sum((xi-xm)**2 for xi in x)
+              return float(num/den) if den > 0 else 0.0
 
-          # ── SRM trend: media ultimelor 2 ferestre vs primele 2 ──
-          def compute_trend(srm_series):
-              if len(srm_series) < 2:
-                  return srm_series[-1]["SRM"] if srm_series else 0.0
-              early = np.mean([s["SRM"] for s in srm_series[:max(1, len(srm_series)//2)]])
-              late  = np.mean([s["SRM"] for s in srm_series[len(srm_series)//2:]])
-              return float(late - early)
+          def get_wiki_trend(cand):
+              try:
+                  with open("data/" + cand + "-WIKI.json") as f:
+                      items = json.load(f)
+                  if not items:
+                      return 0.0
+                  views = [x.get("views",0) for x in items]
+                  if len(views) < 2:
+                      return 0.0
+                  mid  = len(views)//2
+                  early = np.mean(views[:mid]) if mid > 0 else 1
+                  late  = np.mean(views[mid:]) if len(views[mid:]) > 0 else 1
+                  ratio = float(late/early) if early > 0 else 1.0
+                  return round(min(ratio, 5.0), 4)
+              except Exception:
+                  return 1.0
 
-          # ── Calcul VES per candidat ──
+          def get_trends_momentum(cand):
+              try:
+                  with open("data/" + cand + "-TRENDS.json") as f:
+                      td = json.load(f)
+                  data = td.get("data", [])
+                  if len(data) < 4:
+                      return 0.0
+                  vals = [x["value"] for x in data]
+                  mid  = len(vals)//2
+                  early = np.mean(vals[:mid]) if mid > 0 else 1
+                  late  = np.mean(vals[mid:]) if len(vals[mid:]) > 0 else 1
+                  return float((late - early) / max(early, 1))
+              except Exception:
+                  return 0.0
+
+          def get_reddit_sentiment(cand):
+              try:
+                  with open("data/" + cand + "-REDDIT.json") as f:
+                      rd = json.load(f)
+                  compound = rd.get("mean_compound", 0.0)
+                  pos_ratio = rd.get("pos_ratio", 0.0)
+                  return round((compound + pos_ratio) / 2, 4)
+              except Exception:
+                  return 0.0
+
+          def get_rss_sentiment(cand):
+              try:
+                  with open("data/" + cand + "-RSS.json") as f:
+                      rd = json.load(f)
+                  return round(rd.get("mean_sentiment", 0.0), 4)
+              except Exception:
+                  return 0.0
+
+          # ── WEIGHTS per sursa ──
+          W_SRM      = 0.35   # Media Cloud SRM — backbone
+          W_TRENDS   = 0.20   # Google Trends momentum
+          W_WIKI     = 0.15   # Wikipedia pageviews trend
+          W_REDDIT   = 0.15   # Reddit sentiment
+          W_RSS      = 0.10   # RSS ziare locale
+          W_EUROSTAT = 0.05   # Crisis index (shared — avantajeaza opozitia)
+
           ves_scores = {}
           details    = {}
 
           for cand in candidates:
-              if cand not in data:
-                  print("WARNING: " + cand + " not in data")
+              if cand not in srm_data:
                   ves_scores[cand] = 0.0
                   continue
 
-              series   = get_srm_series(data[cand])
-              srm_last = series[-1]["SRM"] if series else 0.0
-              srm_mean = float(np.mean([s["SRM"] for s in series])) if series else 0.0
-              momentum = compute_momentum(series)
-              trend    = compute_trend(series)
+              series         = get_srm_series(srm_data[cand])
+              srm_last       = series[-1]["SRM"] if series else 0.0
+              srm_mean       = float(np.mean([s["SRM"] for s in series])) if series else 0.0
+              momentum       = compute_momentum(series)
+              mom_norm       = 1 / (1 + math.exp(-momentum * 1000))
+              trend_bonus    = max(0, (series[-1]["SRM"] - series[0]["SRM"])) * 10 if len(series) >= 2 else 0
 
-              # Normalizare momentum: sigmoid
-              mom_norm = 1 / (1 + math.exp(-momentum * 1000))
+              srm_component  = srm_last * (1 + mom_norm) * (1 + trend_bonus)
 
-              # VES = SRM_recente x (1 + momentum_norm) x (1 + trend_bonus)
-              trend_bonus = max(0, trend) * 10
-              VES = srm_last * (1 + mom_norm) * (1 + trend_bonus)
+              trends_mom     = get_trends_momentum(cand)
+              wiki_trend     = get_wiki_trend(cand)
+              reddit_sent    = get_reddit_sentiment(cand)
+              rss_sent       = get_rss_sentiment(cand)
 
-              ves_scores[cand] = VES
+              # Crisis index avantajeaza opozitia (non-incumbent)
+              # Magyar = opozitie, Orban = incumbent
+              is_opposition  = (cand == "Magyar")
+              crisis_bonus   = crisis_index * 0.01 if is_opposition else -crisis_index * 0.005
+
+              VES = (
+                  W_SRM    * srm_component +
+                  W_TRENDS * max(0, trends_mom + 0.5) +
+                  W_WIKI   * wiki_trend +
+                  W_REDDIT * max(0, reddit_sent + 0.5) +
+                  W_RSS    * max(0, rss_sent + 0.5) +
+                  W_EUROSTAT * (crisis_index * 0.01)
+              ) * (1 + crisis_bonus)
+
+              ves_scores[cand] = max(VES, 0.0001)
               details[cand] = {
-                  "srm_series":  series,
-                  "srm_last":    round(srm_last, 8),
-                  "srm_mean":    round(srm_mean, 8),
-                  "momentum":    round(momentum, 8),
-                  "trend":       round(trend, 8),
-                  "mom_norm":    round(mom_norm, 4),
-                  "trend_bonus": round(trend_bonus, 6),
-                  "VES":         round(VES, 8),
+                  "srm_last":      round(srm_last, 8),
+                  "srm_mean":      round(srm_mean, 8),
+                  "srm_momentum":  round(momentum, 8),
+                  "srm_component": round(srm_component, 8),
+                  "trends_momentum": round(trends_mom, 4),
+                  "wiki_trend":    round(wiki_trend, 4),
+                  "reddit_sentiment": round(reddit_sent, 4),
+                  "rss_sentiment": round(rss_sent, 4),
+                  "crisis_index":  round(crisis_index, 4),
+                  "crisis_bonus":  round(crisis_bonus, 4),
+                  "is_opposition": is_opposition,
+                  "VES":           round(VES, 8),
               }
 
-          # ── Softmax -> probabilitati ──
-          ves_vals = np.array([ves_scores[c] for c in candidates])
-
-          # Scaling per evitare overflow
+          # Softmax -> probabilitati
+          ves_vals   = np.array([ves_scores[c] for c in candidates])
           ves_scaled = ves_vals * 1000
           exp_vals   = np.exp(ves_scaled - np.max(ves_scaled))
           probs      = exp_vals / exp_vals.sum()
 
-          # ── Output final ──
+          # Output
           print("")
           print("=" * 60)
-          print("SYMBOVOLT — Symbolic Voltage Electoral Forecast")
+          print("SYMBOVOLT v2.0 — Multi-Source Electoral Forecast")
           print("=" * 60)
 
           results = {}
           for i, cand in enumerate(candidates):
               p = float(probs[i])
-              v = ves_scores[cand]
+              v = ves_scores.get(cand, 0)
+              d = details.get(cand, {})
               results[cand] = {
-                  "VES":         round(v, 8),
-                  "P_win":       round(p, 4),
-                  "P_win_pct":   round(p * 100, 2),
-                  "srm_last":    details.get(cand, {}).get("srm_last", 0),
-                  "srm_mean":    details.get(cand, {}).get("srm_mean", 0),
-                  "momentum":    details.get(cand, {}).get("momentum", 0),
-                  "trend":       details.get(cand, {}).get("trend", 0),
-                  "windows":     details.get(cand, {}).get("srm_series", []),
+                  "VES":              round(v, 8),
+                  "P_win":            round(p, 4),
+                  "P_win_pct":        round(p * 100, 2),
+                  "components": {
+                      "SRM_last":         d.get("srm_last", 0),
+                      "SRM_momentum":     d.get("srm_momentum", 0),
+                      "GoogleTrends":     d.get("trends_momentum", 0),
+                      "Wikipedia":        d.get("wiki_trend", 0),
+                      "Reddit":           d.get("reddit_sentiment", 0),
+                      "RSS_local":        d.get("rss_sentiment", 0),
+                      "Eurostat_crisis":  d.get("crisis_index", 0),
+                      "crisis_bonus":     d.get("crisis_bonus", 0),
+                  },
+                  "srm_windows": [
+                      {"window": w["window"], "SRM": w["SRM"]}
+                      for w in get_srm_series(srm_data.get(cand, {}))
+                  ]
               }
               print(cand + ":")
-              print("  VES         = " + str(round(v, 8)))
-              print("  SRM_last    = " + str(results[cand]["srm_last"]))
-              print("  SRM_mean    = " + str(results[cand]["srm_mean"]))
-              print("  Momentum    = " + str(results[cand]["momentum"]))
-              print("  Trend       = " + str(results[cand]["trend"]))
-              print("  P_win       = " + str(round(p*100, 2)) + "%")
+              print("  VES      = " + str(round(v, 8)))
+              print("  P_win    = " + str(round(p*100, 2)) + "%")
+              print("  SRM_last = " + str(d.get("srm_last", 0)))
+              print("  GTrends  = " + str(d.get("trends_momentum", 0)))
+              print("  Wiki     = " + str(d.get("wiki_trend", 0)))
+              print("  Reddit   = " + str(d.get("reddit_sentiment", 0)))
+              print("  RSS      = " + str(d.get("rss_sentiment", 0)))
+              print("  Crisis   = " + str(d.get("crisis_index", 0)))
               print("")
 
-          # Winner
           winner = max(results, key=lambda c: results[c]["P_win"])
           print("PREDICTED WINNER: " + winner + " (" + str(results[winner]["P_win_pct"]) + "%)")
           print("=" * 60)
 
           output = {
-              "model": "SYMBOVOLT v1.0",
+              "model":   "SYMBOVOLT v2.0",
               "framework": "Politomorphism Engine",
-              "candidates": results,
-              "predicted_winner": winner,
+              "sources": ["MediaCloud", "GoogleTrends", "WikipediaPageviews",
+                          "Reddit", "RSS_local", "Eurostat"],
+              "weights": {
+                  "SRM_MediaCloud": W_SRM,
+                  "GoogleTrends":   W_TRENDS,
+                  "Wikipedia":      W_WIKI,
+                  "Reddit":         W_REDDIT,
+                  "RSS_local":      W_RSS,
+                  "Eurostat":       W_EUROSTAT,
+              },
+              "candidates":        results,
+              "predicted_winner":  winner,
               "predicted_winner_pwin": results[winner]["P_win_pct"],
-              "interpretation": {
-                  "VES": "Symbolic Voltage — SRM ponderat cu momentum si trend temporal",
-                  "P_win": "Probabilitate relativa de castig bazata pe rezonanta mediatică",
-                  "momentum": "Panta trendului SRM (pozitiv=in crestere, negativ=in declin)",
-                  "trend": "Diferenta SRM(recent) - SRM(devreme): cat de mult a crescut rezonanta",
-                  "WARNING": "SYMBOVOLT masoara rezonanta simbolica mediatică, nu intentie de vot directa"
-              }
+              "crisis_index":      crisis_index,
+              "disclaimer": "SYMBOVOLT masoara rezonanta simbolica multi-sursa. Nu inlocuieste sondaje directe de intentie de vot."
           }
 
-          with open("symbovolt_results.json", "w") as f:
+          with open("symbovolt_v2_results.json", "w") as f:
               json.dump(output, f, indent=2)
-          print("Saved symbovolt_results.json")
+          print("Saved symbovolt_v2_results.json")
           PYEOF
-          python3 /tmp/compute_ves.py
+          python3 /tmp/compute_ves_v2.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SYMBOVOLT-${{ github.run_number }}
+          name: SYMBOVOLT-v2-${{ github.run_number }}
           retention-days: 90
           path: |
-            symbovolt_results.json
-            symbovolt_windows.json
+            symbovolt_v2_results.json
+            srm_windows.json
+            data/EUROSTAT.json
             Magyar-DATA.csv
             Orban-DATA.csv
 
       - name: Commit results to repo
-        env:
-          CANDIDATES: ${{ github.event.inputs.candidates }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -540,7 +1030,7 @@ jobs:
           git stash --include-untracked || true
           git pull origin main || true
           git stash pop || true
-          git add symbovolt_results.json symbovolt_windows.json || true
+          git add symbovolt_v2_results.json srm_windows.json || true
           git diff --cached --quiet && echo "Nothing to commit" && exit 0
-          git commit -m "SYMBOVOLT results [Run #${{ github.run_number }}]"
+          git commit -m "SYMBOVOLT v2.0 results [Run #${{ github.run_number }}]"
           git push origin main
